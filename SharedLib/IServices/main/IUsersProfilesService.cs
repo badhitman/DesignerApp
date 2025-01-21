@@ -13,7 +13,7 @@ public partial interface IUsersProfilesService
     /// Получает флаг, указывающий, есть ли у пользователя пароль.
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
-    public Task<UserBooleanResponseModel> UserHasPassword(string? userId = null);
+    public Task<TResponseModel<bool?>> UserHasPassword(string? userId = null);
 
     /// <summary>
     /// Возвращает флаг, указывающий, действителен ли данный <paramref name="password"/> для указанного <paramref name="userId"/>.

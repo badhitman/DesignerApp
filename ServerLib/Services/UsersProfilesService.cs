@@ -64,25 +64,17 @@ public class UsersProfilesService(
         return ResponseBaseModel.CreateSuccess("Данные пользователя удалены!");
     }
 
+    #region done
     /// <inheritdoc/>
-    public async Task<UserBooleanResponseModel> UserHasPassword(string? userId = null)
+    public async Task<TResponseModel<bool?>> UserHasPassword(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
-            return new UserBooleanResponseModel() { Messages = user.Messages };
+            return new TResponseModel<bool?>() { Messages = user.Messages };
 
-        TResponseModel<UserInfoModel[]> rest = await IdentityRepo.GetUsersIdentity([user.ApplicationUser.Id]);
-        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
-            return new() { Messages = rest.Messages };
-
-        return new()
-        {
-            UserInfo = rest.Response[0],
-            Response = await userManager.HasPasswordAsync(user.ApplicationUser)
-        };
+        return await IdentityRepo.UserHasPassword(user.ApplicationUser.Id);
     }
 
-    #region done
     /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> GetTwoFactorEnabled(string? userId = null)
     {

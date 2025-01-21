@@ -1,13 +1,17 @@
-﻿using BlazorLib;
+﻿////////////////////////////////////////////////
+// © https://github.com/badhitman - @FakeGov 
+////////////////////////////////////////////////
+
 using Microsoft.AspNetCore.Components;
+using BlazorLib;
 using SharedLib;
 
 namespace BlazorWebLib.Components.Account.Pages.Manage;
 
 /// <summary>
-/// 
+/// ChangePasswordPage
 /// </summary>
-public partial class ChangePasswordPage : ComponentBase
+public partial class ChangePasswordPage
 {
     [Inject]
     IdentityRedirectManager RedirectManager { get; set; } = default!;
@@ -18,12 +22,13 @@ public partial class ChangePasswordPage : ComponentBase
     [SupplyParameterFromForm]
     private ChangePasswordModel Input { get; set; } = new();
 
+
     IEnumerable<ResultMessage>? Messages;
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        UserBooleanResponseModel rest = await UsersProfilesRepo.UserHasPassword();
+        TResponseModel<bool?> rest = await UsersProfilesRepo.UserHasPassword();
         //user = rest.UserInfo;
         Messages = rest.Messages;
         if (rest.Response != true)

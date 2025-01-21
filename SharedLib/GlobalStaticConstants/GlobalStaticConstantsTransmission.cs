@@ -51,26 +51,31 @@ public static partial class GlobalStaticConstants
         public readonly static string AddPasswordToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.ADD_ACTION_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}");
 
         /// <summary>
+        /// Получает флаг, указывающий, есть ли у пользователя пароль
+        /// </summary>
+        public readonly static string UserHasPasswordReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.HAS_ACTION_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}");
+
+        /// <summary>
         /// Включена ли для указанного userId двухфакторная аутентификация
         /// </summary>
         public readonly static string GetTwoFactorEnabledReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.TWOFACTOR_CONTROLLER_NAME, $"{Routes.ENABLED_CONTROLLER_NAME}-{Routes.GET_ACTION_NAME}");
-        
+
         /// <summary>
         /// Вкл/Выкл двухфакторную аутентификацию для указанного userId
         /// </summary>
         public readonly static string SetTwoFactorEnabledReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.TWOFACTOR_CONTROLLER_NAME, $"{Routes.ENABLED_CONTROLLER_NAME}-{Routes.SET_ACTION_NAME}");
-        
+
         /// <summary>
         /// Сбрасывает ключ аутентификации для пользователя.
         /// </summary>
         public readonly static string ResetAuthenticatorKeyReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.AUTHENTICATOR_CONTROLLER_NAME}-{Routes.KEY_CONTROLLER_NAME}", Routes.RESET_ACTION_NAME);
-        
+
         /// <summary>
         /// Пытается удалить предоставленную внешнюю информацию для входа из указанного userId
         /// и возвращает флаг, указывающий, удалось ли удаление или нет
         /// </summary>
         public readonly static string RemoveLoginForUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.LOGIN_ACTION_NAME}", Routes.DELETE_ACTION_NAME);
-        
+
         /// <summary>
         /// Создает (и отправляет) токен изменения адреса электронной почты для указанного пользователя.
         /// </summary>
@@ -85,23 +90,23 @@ public static partial class GlobalStaticConstants
         /// Проверяет указанную двухфакторную аутентификацию VerificationCode на соответствие UserId
         /// </summary>
         public readonly static string VerifyTwoFactorTokenReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.TWOFACTOR_CONTROLLER_NAME, $"{Routes.VERIFY_ACTION_NAME}-{Routes.TOKEN_CONTROLLER_NAME}");
-        
+
         /// <summary>
         /// GenerateNewTwoFactorRecoveryCodesReceive
         /// </summary>
         public readonly static string GenerateNewTwoFactorRecoveryCodesReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.TWOFACTOR_CONTROLLER_NAME, $"{Routes.GENERATE_ACTION_NAME}-{Routes.RECOVERY_CONTROLLER_NAME}-{Routes.CODES_CONTROLLER_NAME}");
-        
+
         /// <summary>
         /// Ключ аутентификации пользователя.
         /// </summary>
         public readonly static string GetAuthenticatorKeyReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.AUTHENTICATOR_CONTROLLER_NAME}-{Routes.KEY_CONTROLLER_NAME}", Routes.GET_ACTION_NAME);
-        
+
         /// <summary>
         /// Создает токен сброса пароля для указанного "userId", используя настроенного поставщика токенов сброса пароля.
         /// Если "userId" не указан, то команда выполняется для текущего пользователя (запрос/сессия)
         /// </summary>
         public readonly static string GeneratePasswordResetTokenReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.PASSWORD_CONTROLLER_NAME}-{Routes.RESET_ACTION_NAME}", $"{Routes.GENERATE_ACTION_NAME}-{Routes.TOKEN_CONTROLLER_NAME}");
-        
+
         /// <summary>
         /// TelegramJoinAccountStateReceive
         /// </summary>
@@ -590,7 +595,7 @@ public static partial class GlobalStaticConstants
 
         /// <inheritdoc/>
         public readonly static string RecordsAttendancesSelectCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.ATTENDANCES_CONTROLLER_NAME}-{Routes.RECORDS_CONTROLLER_NAME}", Routes.SELECT_ACTION_NAME);
-        
+
         /// <inheritdoc/>
         public readonly static string AttendanceRecordDeleteCommerceReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.COMMERCE_CONTROLLER_NAME, $"{Routes.ATTENDANCE_CONTROLLER_NAME}-{Routes.RECORD_CONTROLLER_NAME}", Routes.DELETE_ACTION_NAME);
 

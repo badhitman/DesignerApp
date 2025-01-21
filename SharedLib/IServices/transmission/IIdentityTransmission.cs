@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTransmission
 {
     /// <summary>
+    /// Получает флаг, указывающий, есть ли у пользователя пароль
+    /// </summary>
+    public Task<TResponseModel<bool?>> UserHasPassword(string userId);
+
+    /// <summary>
     /// Включена ли для указанного <paramref name="userId"/> двухфакторная аутентификация.
     /// </summary>
     public Task<TResponseModel<bool?>> GetTwoFactorEnabled(string userId);

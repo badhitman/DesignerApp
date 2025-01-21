@@ -12,6 +12,10 @@ namespace RemoteCallLib;
 public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmission
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> UserHasPassword(string userId)
+        => await rabbitClient.MqRemoteCall<TResponseModel<bool?>>(GlobalStaticConstants.TransmissionQueues.UserHasPasswordReceive, userId) ?? new();
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> GetTwoFactorEnabled(string userId)
         => await rabbitClient.MqRemoteCall<TResponseModel<bool?>>(GlobalStaticConstants.TransmissionQueues.GetTwoFactorEnabledReceive, userId) ?? new();
 

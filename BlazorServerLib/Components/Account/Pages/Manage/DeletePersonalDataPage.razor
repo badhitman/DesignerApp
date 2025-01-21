@@ -3,6 +3,7 @@
 @inject IdentityRedirectManager RedirectManager
 @inject IUsersProfilesService UsersProfilesRepo
 @inject IUsersAuthenticateService UserAuthRepo
+@inherits BlazorBusyComponentBaseAuthModel
 
 <PageTitle>Удалить персональные данные</PageTitle>
 
@@ -36,18 +37,17 @@
     [SupplyParameterFromForm]
     private PasswordSingleModel Input { get; set; } = new();
 
-    UserInfoModel? user;
     bool requirePassword;
 
     List<ResultMessage> Messages = [];
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         Input ??= new();
-        UserBooleanResponseModel rest = await UsersProfilesRepo.UserHasPassword();
+        var rest = await UsersProfilesRepo.UserHasPassword();
         Messages = rest.Messages;
         requirePassword = rest.Response == true;
-        user = rest.UserInfo;
     }
 
     private async Task OnValidSubmitAsync()

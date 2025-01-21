@@ -31,6 +31,22 @@ public class IdentityTools(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> UserHasPassword(string userId)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        ApplicationUser? user = await userManager.FindByIdAsync(userId); ;
+        if (user is null)
+            return new() { Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = $"Пользователь #{userId} не найден" }] };
+
+        return new()
+        {
+            Response = await userManager.HasPasswordAsync(user)
+        };
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> GetTwoFactorEnabled(string userId)
     {
         using IServiceScope scope = serviceScopeFactory.CreateScope();
