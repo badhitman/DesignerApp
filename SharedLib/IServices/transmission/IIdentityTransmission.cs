@@ -10,6 +10,17 @@ namespace SharedLib;
 public interface IIdentityTransmission
 {
     /// <summary>
+    /// Сбрасывает ключ аутентификации для пользователя.
+    /// </summary>
+    public Task<ResponseBaseModel> ResetAuthenticatorKey(string userId);
+
+    /// <summary>
+    /// Пытается удалить предоставленную внешнюю информацию для входа из указанного userId
+    /// и возвращает флаг, указывающий, удалось ли удаление или нет
+    /// </summary>
+    public Task<ResponseBaseModel> RemoveLogin(RemoveLoginRequestModel req);
+
+    /// <summary>
     /// Проверяет указанную двухфакторную аутентификацию VerificationCode на соответствие UserId
     /// </summary>
     public Task<ResponseBaseModel> VerifyTwoFactorToken(VerifyTwoFactorTokenRequestModel req);

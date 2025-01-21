@@ -30,9 +30,6 @@ public partial class IndexPage : BlazorBusyComponentBaseAuthModel
     protected override async Task OnInitializedAsync()
     {
         await ReadCurrentUser();
-        TResponseModel<string?> username_rest = await UsersProfilesRepo.GetUserName();
-        Messages.AddRange(username_rest.Messages);
-        username = username_rest.Response;
 
         if (CurrentUserSession is null)
             throw new Exception();
@@ -40,6 +37,7 @@ public partial class IndexPage : BlazorBusyComponentBaseAuthModel
         firstName = CurrentUserSession.GivenName;
         lastName = CurrentUserSession.Surname;
         phoneNum = CurrentUserSession.PhoneNumber;
+        username = CurrentUserSession.UserName;
     }
 
     private async Task SaveAsync()

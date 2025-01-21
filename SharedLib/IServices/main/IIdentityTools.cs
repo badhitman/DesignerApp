@@ -10,6 +10,17 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// Сбрасывает ключ аутентификации для пользователя.
+    /// </summary>
+    public Task<ResponseBaseModel> ResetAuthenticatorKey(string userId);
+
+    /// <summary>
+    /// Пытается удалить предоставленную внешнюю информацию для входа из указанного userId
+    /// и возвращает флаг, указывающий, удалось ли удаление или нет
+    /// </summary>
+    public Task<ResponseBaseModel> RemoveLoginForUser(RemoveLoginRequestModel req);
+
+    /// <summary>
     /// Проверяет указанную двухфакторную аутентификацию VerificationCode на соответствие UserId
     /// </summary>
     public Task<ResponseBaseModel> VerifyTwoFactorToken(VerifyTwoFactorTokenRequestModel req);
@@ -88,21 +99,6 @@ public interface IIdentityTools
     public Task<ResponseBaseModel> UpdateUserDetails(IdentityDetailsModel req);
 
     /// <summary>
-    /// Claim: Remove
-    /// </summary>
-    public Task<ResponseBaseModel> ClaimDelete(ClaimAreaIdModel req);
-
-    /// <summary>
-    /// Claim: Update or create
-    /// </summary>
-    public Task<ResponseBaseModel> ClaimUpdateOrCreate(ClaimUpdateModel req);
-
-    /// <summary>
-    /// Get claims
-    /// </summary>
-    public Task<List<ClaimBaseModel>> GetClaims(ClaimAreaOwnerModel req);
-
-    /// <summary>
     /// Установить блокировку пользователю
     /// </summary>
     public Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req);
@@ -143,15 +139,32 @@ public interface IIdentityTools
     public Task<RegistrationNewUserResponseModel> CreateNewUserWithPassword(RegisterNewUserPasswordModel req);
 
     /// <summary>
-    /// Установить пользователю Claim`s[TelegramId, FirstName, LastName, PhoneNum]
-    /// </summary>
-    public Task<TResponseModel<bool>> ClaimsUserFlush(string user_id);
-
-    /// <summary>
     /// Проверяет, соответствует ли токен подтверждения электронной почты указанному пользователю.
     /// </summary>
     /// <param name="req">Пользователь, для которого необходимо проверить токен подтверждения электронной почты.</param>
     public Task<ResponseBaseModel> ConfirmEmail(UserCodeModel req);
+
+    #region claims
+    /// <summary>
+    /// Claim: Remove
+    /// </summary>
+    public Task<ResponseBaseModel> ClaimDelete(ClaimAreaIdModel req);
+
+    /// <summary>
+    /// Claim: Update or create
+    /// </summary>
+    public Task<ResponseBaseModel> ClaimUpdateOrCreate(ClaimUpdateModel req);
+
+    /// <summary>
+    /// Get claims
+    /// </summary>
+    public Task<List<ClaimBaseModel>> GetClaims(ClaimAreaOwnerModel req);
+
+    /// <summary>
+    /// Установить пользователю Claim`s[TelegramId, FirstName, LastName, PhoneNum]
+    /// </summary>
+    public Task<TResponseModel<bool>> ClaimsUserFlush(string user_id);
+    #endregion
 
     #region telegram
     /// <summary>

@@ -2,16 +2,12 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using System.Text.Encodings.Web;
 using System.Security.Claims;
 using System.Net.Mail;
 using IdentityLib;
-using System.Text;
 using SharedLib;
 
 namespace ServerLib;
@@ -115,23 +111,19 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<UserBooleanResponseModel> IsEmailConfirmed(string? userId = null)
+    public async Task<TResponseModel<bool>> IsEmailConfirmed(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        TResponseModel<UserInfoModel[]> rest = await IdentityRepo.GetUsersIdentity([user.ApplicationUser.Id]);
-        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
-            return new() { Messages = rest.Messages };
-
         return new()
         {
-            Response = rest.Response[0].EmailConfirmed,
-            UserInfo = rest.Response[0]
+            Response = user.ApplicationUser.EmailConfirmed,
         };
     }
 
+    #region done
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ResetAuthenticatorKey(string? userId = null)
     {
@@ -139,21 +131,14 @@ public class UsersProfilesService(
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        await userManager.ResetAuthenticatorKeyAsync(user.ApplicationUser);
+        ResponseBaseModel res = await IdentityRepo.ResetAuthenticatorKey(user.ApplicationUser.Id);
+        if (!res.Success())
+            return res;
+
         string msg = $"Пользователь с идентификатором '{userId}' сбросил ключ приложения для аутентификации.";
         LoggerRepo.LogInformation(msg);
         await signInManager.RefreshSignInAsync(user.ApplicationUser);
         return ResponseBaseModel.CreateSuccess(msg);
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<string?>> GetUserName(string? userId = null)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        return new() { Response = user.ApplicationUser.UserName };
     }
 
     /// <inheritdoc/>
@@ -195,15 +180,14 @@ public class UsersProfilesService(
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        IdentityResult result = await userManager.RemoveLoginAsync(user.ApplicationUser, loginProvider, providerKey);
-        if (!result.Succeeded)
-            return ResponseBaseModel.CreateError("Ошибка удаления. error {832D1C29-D362-4238-AA88-C3E4E41A97FD}");
-        await signInManager.RefreshSignInAsync(user.ApplicationUser);
+        ResponseBaseModel res = await IdentityRepo.RemoveLogin(new() { LoginProvider = loginProvider, ProviderKey = providerKey, UserId = user.ApplicationUser.Id });
+        if (!res.Success())
+            return res;
 
+        await signInManager.RefreshSignInAsync(user.ApplicationUser);
         return ResponseBaseModel.CreateSuccess("Успешно удалено");
     }
 
-    #region done
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> VerifyTwoFactorToken(string verificationCode, string? userId = null)
     {

@@ -6,6 +6,8 @@
 @inject IUsersProfilesService UsersProfilesRepo
 @inject IIdentityTransmission IdentityRepo
 
+@inherits BlazorBusyComponentBaseAuthModel
+
 <PageTitle>Управление электронной почтой</PageTitle>
 
 <h3>Управление электронной почтой</h3>
@@ -46,47 +48,3 @@
         </EditForm>
     </div>
 </div>
-
-@code {
-    [SupplyParameterFromForm(FormName = "change-email")]
-    private NewEmailSingleModel Input { get; set; } = new();
-
-    UserInfoModel user = default!;
-    private string? email;
-    private bool isEmailConfirmed;
-    IEnumerable<ResultMessage>? Messages;
-
-    protected override async Task OnInitializedAsync()
-    {
-        UserBooleanResponseModel rest = await UsersProfilesRepo.IsEmailConfirmed();
-        Messages = rest.Messages;
-        user = rest.UserInfo ?? throw new Exception("user info is null. error {C07C574D-9E16-4986-822E-0EFF81C1F74E}");
-        email = user.Email;
-        isEmailConfirmed = rest.Response == true;
-
-        Input.NewEmail ??= email;
-    }
-
-    private async Task OnValidSubmitAsync()
-    {
-        if (Input.NewEmail is null || Input.NewEmail == email)
-        {
-            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = "Ваш адрес электронной почты не изменился." }];
-            return;
-        }
-
-        ResponseBaseModel rest = await UsersProfilesRepo.GenerateChangeEmailToken(Input.NewEmail, NavigationManager.ToAbsoluteUri("Account/ConfirmEmailChange").AbsoluteUri);
-        Messages = rest.Messages;
-    }
-
-    private async Task OnSendEmailVerificationAsync()
-    {
-        if (!MailAddress.TryCreate(email, out _))
-        {
-            Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"email [{email}] имеет не корректный формат" }];
-            return;
-        }
-        ResponseBaseModel rest = await IdentityRepo.GenerateEmailConfirmation(new() { Email = email, BaseAddress = NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri });
-        Messages = rest.Messages;
-    }
-}

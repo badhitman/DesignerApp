@@ -36,7 +36,7 @@ public partial class ForgotPasswordPage
         if (user.Response is null)
             RedirectManager.RedirectTo("Account/ForgotPasswordConfirmation");
 
-        UserBooleanResponseModel email_is_confirmed_rest = await UsersProfilesRepo.IsEmailConfirmed(user.Response.UserId);
+        TResponseModel<bool> email_is_confirmed_rest = await UsersProfilesRepo.IsEmailConfirmed(user.Response.UserId);
         if (user is null || !email_is_confirmed_rest.Success() || email_is_confirmed_rest.Response != true)
         {
             // Don't reveal that the user does not exist or is not confirmed

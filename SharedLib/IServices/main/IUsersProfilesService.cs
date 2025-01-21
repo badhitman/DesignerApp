@@ -54,19 +54,13 @@ public partial interface IUsersProfilesService
     /// Был ли подтвержден адрес электронной почты для указанного <paramref name="userId"/>; true, если адрес электронной почты проверен/подтвержден.
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
-    public Task<UserBooleanResponseModel> IsEmailConfirmed(string? userId = null);
+    public Task<TResponseModel<bool>> IsEmailConfirmed(string? userId = null);
 
     /// <summary>
     /// Сбрасывает ключ аутентификации для пользователя.
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
     public Task<ResponseBaseModel> ResetAuthenticatorKey(string? userId = null);
-
-    /// <summary>
-    /// Получает имя пользователя для указанного <paramref name="userId"/>.
-    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    public Task<TResponseModel<string?>> GetUserName(string? userId = null);
 
     /// <summary>
     /// Извлекает связанные логины для указанного <param ref="userId"/>.
