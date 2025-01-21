@@ -11,7 +11,7 @@ using IdentityLib;
 using SharedLib;
 
 namespace ServerLib;
-#pragma warning disable CS9107
+
 /// <summary>
 /// Сервис работы с профилями пользователей
 /// </summary>
@@ -22,27 +22,24 @@ public class UsersProfilesService(
     IHttpContextAccessor httpContextAccessor,
     ILogger<UsersProfilesService> LoggerRepo) : IUsersProfilesService
 {
-#pragma warning restore CS9107
     /// <inheritdoc/>
-    public async Task<UserBooleanResponseModel> CheckUserPassword(string password, string? userId = null)
+    public async Task<TResponseModel<IEnumerable<UserLoginInfoModel>>> GetUserLogins(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        string msg;
-        if (!await userManager.CheckPasswordAsync(user.ApplicationUser, password))
-        {
-            msg = "Ошибка: Неправильный пароль. error {91A2600D-5EBF-4F79-83BE-28F6FA55301C}";
-            LoggerRepo.LogError(msg);
-            return (UserBooleanResponseModel)ResponseBaseModel.CreateError(msg);
-        }
+        return await IdentityRepo.GetUserLogins(user.ApplicationUser.Id);
+    }
 
-        TResponseModel<UserInfoModel[]> rest = await IdentityRepo.GetUsersIdentity([user.ApplicationUser.Id]);
-        if (!rest.Success() || rest.Response is null || rest.Response.Length != 1)
-            return new() { Messages = rest.Messages };
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> CheckUserPassword(string password, string? userId = null)
+    {
+        ApplicationUserResponseModel user = await GetUser(userId);
+        if (!user.Success() || user.ApplicationUser is null)
+            return new() { Messages = user.Messages };
 
-        return new() { UserInfo = rest.Response[0], Messages = [new ResultMessage() { TypeMessage = ResultTypesEnum.Success, Text = "Пароль проверку прошёл!" }] };
+        return await IdentityRepo.CheckUserPassword(new() { Password = password, UserId = user.ApplicationUser.Id });
     }
 
     /// <inheritdoc/>
@@ -52,19 +49,9 @@ public class UsersProfilesService(
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        bool user_has_pass = await userManager.HasPasswordAsync(user.ApplicationUser);
-
-        if (!user_has_pass || !await userManager.CheckPasswordAsync(user.ApplicationUser, password))
-            return ResponseBaseModel.CreateError("Ошибка изменения пароля. error {F268D35F-9697-4667-A4BA-6E57220A90EC}");
-
-        IdentityResult result = await userManager.DeleteAsync(user.ApplicationUser);
-        if (!result.Succeeded)
-            return ResponseBaseModel.CreateError("Произошла непредвиденная ошибка при удалении пользователя.");
-
-        return ResponseBaseModel.CreateSuccess("Данные пользователя удалены!");
+        return await IdentityRepo.DeleteUserData(new() { Password = password, UserId = user.ApplicationUser.Id });
     }
 
-    #region done
     /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> UserHasPassword(string? userId = null)
     {
@@ -123,20 +110,6 @@ public class UsersProfilesService(
         LoggerRepo.LogInformation(msg);
         await signInManager.RefreshSignInAsync(user.ApplicationUser);
         return ResponseBaseModel.CreateSuccess(msg);
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<IEnumerable<UserLoginInfoModel>?>> GetUserLogins(string? userId = null)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        IList<UserLoginInfo> data_logins = await userManager.GetLoginsAsync(user.ApplicationUser);
-        return new()
-        {
-            Response = data_logins.Select(x => new UserLoginInfoModel(x.LoginProvider, x.ProviderKey, x.ProviderDisplayName))
-        };
     }
 
     /// <inheritdoc/>
@@ -345,5 +318,4 @@ public class UsersProfilesService(
 
         return ResponseBaseModel.CreateSuccess("Вход выполнен");
     }
-    #endregion
 }

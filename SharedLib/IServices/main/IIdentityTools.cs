@@ -10,6 +10,24 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// Извлекает связанные логины для указанного <param ref="userId"/>
+    /// </summary>
+    public Task<TResponseModel<IEnumerable<UserLoginInfoModel>>> GetUserLogins(string userId);
+
+    /// <summary>
+    /// Возвращает флаг, указывающий, действителен ли данный password для указанного userId
+    /// </summary>
+    /// <returns>
+    /// true, если указанный password соответствует для userId, в противном случае значение false.
+    /// </returns>
+    public Task<ResponseBaseModel> CheckUserPassword(IdentityPasswordModel req);
+
+    /// <summary>
+    /// Удалить Identity данные пользователя
+    /// </summary>
+    public Task<ResponseBaseModel> DeleteUserData(DeleteUserDataRequestModel req);
+
+    /// <summary>
     /// Получает флаг, указывающий, есть ли у пользователя пароль
     /// </summary>
     public Task<TResponseModel<bool?>> UserHasPassword(string userId);

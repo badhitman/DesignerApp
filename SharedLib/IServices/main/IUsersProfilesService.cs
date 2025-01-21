@@ -24,7 +24,7 @@ public partial interface IUsersProfilesService
     /// <returns>
     /// true, если указанный <paramref name="password" /> соответствует одному хранилищу для <paramref name="userId"/>, в противном случае значение false.
     /// </returns>
-    public Task<UserBooleanResponseModel> CheckUserPassword(string password, string? userId = null);
+    public Task<ResponseBaseModel> CheckUserPassword(string password, string? userId = null);
 
     /// <summary>
     /// Удалить Identity данные пользователя.
@@ -66,7 +66,7 @@ public partial interface IUsersProfilesService
     /// Извлекает связанные логины для указанного <param ref="userId"/>.
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
-    public Task<TResponseModel<IEnumerable<UserLoginInfoModel>?>> GetUserLogins(string? userId = null);
+    public Task<TResponseModel<IEnumerable<UserLoginInfoModel>>> GetUserLogins(string? userId = null);
 
     /// <summary>
     /// Добавляет внешнюю <see cref="UserLoginInfoModel"/> к указанному <paramref name="userId"/>.

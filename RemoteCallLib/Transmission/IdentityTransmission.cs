@@ -12,6 +12,18 @@ namespace RemoteCallLib;
 public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmission
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<IEnumerable<UserLoginInfoModel>>> GetUserLogins(string userId)
+        => await rabbitClient.MqRemoteCall<TResponseModel<IEnumerable<UserLoginInfoModel>>>(GlobalStaticConstants.TransmissionQueues.GetUserLoginsReceive, userId) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> CheckUserPassword(IdentityPasswordModel req)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.CheckUserPasswordReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> DeleteUserData(DeleteUserDataRequestModel req)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.DeleteUserDataReceive, req) ?? new();
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> UserHasPassword(string userId)
         => await rabbitClient.MqRemoteCall<TResponseModel<bool?>>(GlobalStaticConstants.TransmissionQueues.UserHasPasswordReceive, userId) ?? new();
 

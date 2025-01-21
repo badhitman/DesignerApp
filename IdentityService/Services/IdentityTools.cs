@@ -13,6 +13,8 @@ using IdentityLib;
 using System.Text;
 using SharedLib;
 using Org.BouncyCastle.Ocsp;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Drawing;
 
 namespace IdentityService;
 
@@ -30,6 +32,66 @@ public class IdentityTools(
     ITelegramTransmission tgRemoteRepo,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
+    /// <inheritdoc/>
+    public async Task<TResponseModel<IEnumerable<UserLoginInfoModel>>> GetUserLogins(string userId)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        ApplicationUser? user = await userManager.FindByIdAsync(userId); ;
+        if (user is null)
+            return new() { Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = $"Пользователь #{userId} не найден" }] };
+
+        IList<UserLoginInfo> data_logins = await userManager.GetLoginsAsync(user);
+        return new()
+        {
+            Response = data_logins.Select(x => new UserLoginInfoModel(x.LoginProvider, x.ProviderKey, x.ProviderDisplayName))
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> CheckUserPassword(IdentityPasswordModel req)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
+        if (user is null)
+            return new() { Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = $"Пользователь #{req.UserId} не найден" }] };
+
+        string msg;
+        if (!await userManager.CheckPasswordAsync(user, req.Password))
+        {
+            msg = "Ошибка: Неправильный пароль. error {91A2600D-5EBF-4F79-83BE-28F6FA55301C}";
+            loggerRepo.LogError(msg);
+            return ResponseBaseModel.CreateError(msg);
+        }
+
+        return ResponseBaseModel.CreateSuccess("Пароль проверку прошёл!");
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> DeleteUserData(DeleteUserDataRequestModel req)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
+        if (user is null)
+            return new() { Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = $"Пользователь #{req.UserId} не найден" }] };
+
+        bool user_has_pass = await userManager.HasPasswordAsync(user);
+
+        if (!user_has_pass || !await userManager.CheckPasswordAsync(user, req.Password))
+            return ResponseBaseModel.CreateError("Ошибка изменения пароля. error {F268D35F-9697-4667-A4BA-6E57220A90EC}");
+
+        IdentityResult result = await userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+            return ResponseBaseModel.Create(result.Errors.Select(x => new ResultMessage() { TypeMessage = ResultTypesEnum.Error, Text = $"[{x.Code}:{x.Description}]" }));
+
+        return ResponseBaseModel.CreateSuccess("Данные пользователя удалены!");
+    }
+
     /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> UserHasPassword(string userId)
     {

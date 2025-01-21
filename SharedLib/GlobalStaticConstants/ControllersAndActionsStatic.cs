@@ -842,6 +842,11 @@ public static partial class GlobalStaticConstants
         public const string ADD_ACTION_NAME = "add";
 
         /// <summary>
+        /// Logins
+        /// </summary>
+        public const string LOGINS_ACTION_NAME = "logins";
+
+        /// <summary>
         /// Has
         /// </summary>
         public const string HAS_ACTION_NAME = "has";

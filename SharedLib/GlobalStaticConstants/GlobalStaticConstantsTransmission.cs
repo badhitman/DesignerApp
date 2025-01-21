@@ -51,6 +51,24 @@ public static partial class GlobalStaticConstants
         public readonly static string AddPasswordToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.ADD_ACTION_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}");
 
         /// <summary>
+        /// Извлекает связанные логины для указанного <param ref="userId"/>
+        /// </summary>
+        public readonly static string GetUserLoginsReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.LOGINS_ACTION_NAME}", Routes.GET_ACTION_NAME);
+        
+        /// <summary>
+        /// Возвращает флаг, указывающий, действителен ли данный password для указанного userId
+        /// </summary>
+        /// <returns>
+        /// true, если указанный password соответствует для userId, в противном случае значение false.
+        /// </returns>
+        public readonly static string CheckUserPasswordReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}", Routes.CHECK_ACTION_NAME);
+        
+        /// <summary>
+        /// Удалить Identity данные пользователя
+        /// </summary>
+        public readonly static string DeleteUserDataReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.DATA_ACTION_NAME}", Routes.DELETE_ACTION_NAME);
+        
+        /// <summary>
         /// Получает флаг, указывающий, есть ли у пользователя пароль
         /// </summary>
         public readonly static string UserHasPasswordReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.HAS_ACTION_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}");
