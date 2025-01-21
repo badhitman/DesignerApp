@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using DocumentFormat.OpenXml.Spreadsheet;
 using SharedLib;
 
 namespace RemoteCallLib;
@@ -11,6 +12,10 @@ namespace RemoteCallLib;
 /// </summary>
 public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmission
 {
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> SetTwoFactorEnabled(SetTwoFactorEnabledRequestModel req)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.SetTwoFactorEnabledReceive, req) ?? new();
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ResetAuthenticatorKey(string userId)
         => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.ResetAuthenticatorKeyReceive, userId) ?? new();

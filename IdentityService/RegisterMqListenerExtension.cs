@@ -25,6 +25,7 @@ public static class RegisterMqListenerExtension
             .RegisterMqListener<GetUserIdentityByTelegramReceive, long[], TResponseModel<UserInfoModel[]>>()
             .RegisterMqListener<GetUsersOfIdentityReceive, string[], TResponseModel<UserInfoModel[]>>()
             .RegisterMqListener<SendEmailReceive, SendEmailRequestModel, ResponseBaseModel>()
+            .RegisterMqListener<SetTwoFactorEnabledReceive, SetTwoFactorEnabledRequestModel, ResponseBaseModel>()
             .RegisterMqListener<RemoveLoginReceive, RemoveLoginRequestModel, ResponseBaseModel>()
             .RegisterMqListener<GetRoleReceive, string, TResponseModel<RoleInfoModel>>()
             .RegisterMqListener<VerifyTwoFactorTokenReceive, VerifyTwoFactorTokenRequestModel, ResponseBaseModel>()

@@ -2,19 +2,16 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Encodings.Web;
 using System.Security.Claims;
+using System.Net.Mail;
 using IdentityLib;
 using System.Text;
 using SharedLib;
-using System.Net.Mail;
-using Microsoft.EntityFrameworkCore.Storage;
-using Org.BouncyCastle.Ocsp;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Drawing;
 
 namespace IdentityService;
 
@@ -32,6 +29,27 @@ public class IdentityTools(
     ITelegramTransmission tgRemoteRepo,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> SetTwoFactorEnabled(SetTwoFactorEnabledRequestModel req)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
+        if (user is null)
+            return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
+
+        string msg;
+        IdentityResult set2faResult = await userManager.SetTwoFactorEnabledAsync(user, req.EnabledSet);
+        if (!set2faResult.Succeeded)
+        {
+            return ResponseBaseModel.CreateError("Произошла непредвиденная ошибка при отключении 2FA.");
+        }
+        msg = $"Двухфакторная аутентификация для #{req.UserId}/{user.Email} установлена в: {req.EnabledSet}";
+        loggerRepo.LogInformation(msg);
+        return ResponseBaseModel.CreateSuccess(msg);
+    }
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ResetAuthenticatorKey(string userId)
     {

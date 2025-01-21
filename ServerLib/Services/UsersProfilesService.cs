@@ -92,6 +92,7 @@ public class UsersProfilesService(
         return new() { Response = await userManager.GetTwoFactorEnabledAsync(user.ApplicationUser) };
     }
 
+    #region done
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetTwoFactorEnabled(bool enabled_set, string? userId = null)
     {
@@ -99,15 +100,7 @@ public class UsersProfilesService(
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        string msg;
-        IdentityResult set2faResult = await userManager.SetTwoFactorEnabledAsync(user.ApplicationUser, enabled_set);
-        if (!set2faResult.Succeeded)
-        {
-            return ResponseBaseModel.CreateError("Произошла непредвиденная ошибка при отключении 2FA.");
-        }
-        msg = $"Двухфакторная аутентификация для #{userId}/{user.ApplicationUser.Email} установлена в: {enabled_set}";
-        LoggerRepo.LogInformation(msg);
-        return ResponseBaseModel.CreateSuccess(msg);
+        return await IdentityRepo.SetTwoFactorEnabled(new() { UserId = user.ApplicationUser.Id, EnabledSet = enabled_set });
     }
 
     /// <inheritdoc/>
@@ -123,7 +116,6 @@ public class UsersProfilesService(
         };
     }
 
-    #region done
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ResetAuthenticatorKey(string? userId = null)
     {

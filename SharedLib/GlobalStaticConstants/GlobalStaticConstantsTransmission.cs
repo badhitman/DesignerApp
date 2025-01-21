@@ -51,12 +51,17 @@ public static partial class GlobalStaticConstants
         public readonly static string AddPasswordToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.ADD_ACTION_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}");
 
         /// <summary>
+        /// Вкл/Выкл двухфакторную аутентификацию для указанного userId
+        /// </summary>
+        public readonly static string SetTwoFactorEnabledReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.TWOFACTOR_CONTROLLER_NAME, $"{Routes.ENABLED_CONTROLLER_NAME}-{Routes.SET_ACTION_NAME}");
+        
+        /// <summary>
         /// Сбрасывает ключ аутентификации для пользователя.
         /// </summary>
         public readonly static string ResetAuthenticatorKeyReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.AUTHENTICATOR_CONTROLLER_NAME}-{Routes.KEY_CONTROLLER_NAME}", Routes.RESET_ACTION_NAME);
         
         /// <summary>
-        /// Пытается удалить предоставленную внешнюю информацию для входа из указанного <paramref name="userId"/>
+        /// Пытается удалить предоставленную внешнюю информацию для входа из указанного userId
         /// и возвращает флаг, указывающий, удалось ли удаление или нет
         /// </summary>
         public readonly static string RemoveLoginForUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.LOGIN_ACTION_NAME}", Routes.DELETE_ACTION_NAME);

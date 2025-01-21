@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTransmission
 {
     /// <summary>
+    /// Вкл/Выкл двухфакторную аутентификацию для указанного userId
+    /// </summary>
+    public Task<ResponseBaseModel> SetTwoFactorEnabled(SetTwoFactorEnabledRequestModel req);
+
+    /// <summary>
     /// Сбрасывает ключ аутентификации для пользователя.
     /// </summary>
     public Task<ResponseBaseModel> ResetAuthenticatorKey(string userId);
