@@ -852,6 +852,11 @@ public static partial class GlobalStaticConstants
         public const string COUNT_ACTION_NAME = "count";
 
         /// <summary>
+        /// Verify
+        /// </summary>
+        public const string VERIFY_ACTION_NAME = "verify";
+
+        /// <summary>
         /// Попытка
         /// </summary>
         public const string TRY_ACTION_NAME = "TRY";

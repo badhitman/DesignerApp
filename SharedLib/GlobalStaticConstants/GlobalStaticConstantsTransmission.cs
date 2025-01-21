@@ -59,6 +59,11 @@ public static partial class GlobalStaticConstants
         /// Возвращает количество кодов восстановления, действительных для пользователя
         /// </summary>
         public readonly static string CountRecoveryCodesReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.RECOVERY_CONTROLLER_NAME}-{Routes.CODES_CONTROLLER_NAME}", Routes.COUNT_ACTION_NAME);
+
+        /// <summary>
+        /// Проверяет указанную двухфакторную аутентификацию VerificationCode на соответствие UserId
+        /// </summary>
+        public readonly static string VerifyTwoFactorTokenReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.TWOFACTOR_CONTROLLER_NAME, $"{Routes.VERIFY_ACTION_NAME}-{Routes.TOKEN_CONTROLLER_NAME}");
         
         /// <summary>
         /// GenerateNewTwoFactorRecoveryCodesReceive

@@ -13,6 +13,7 @@ using SharedLib;
 using System.Net.Mail;
 using Microsoft.EntityFrameworkCore.Storage;
 using Org.BouncyCastle.Ocsp;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace IdentityService;
 
@@ -30,6 +31,24 @@ public class IdentityTools(
     ITelegramTransmission tgRemoteRepo,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> VerifyTwoFactorToken(VerifyTwoFactorTokenRequestModel req)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
+        if (user is null)
+            return new() { Messages = [new() { Text = $"Пользователь #{req.UserId} не найден", TypeMessage = ResultTypesEnum.Error }] };
+
+        bool is2faTokenValid = await userManager.VerifyTwoFactorTokenAsync(
+           user, userManager.Options.Tokens.AuthenticatorTokenProvider, req.VerificationCode);
+
+        return is2faTokenValid 
+            ? ResponseBaseModel.CreateSuccess("Токен действителен") 
+            : ResponseBaseModel.CreateError("Ошибка: код подтверждения недействителен");
+    }
+
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> CountRecoveryCodes(string userId)
     {

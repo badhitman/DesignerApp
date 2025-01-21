@@ -26,6 +26,7 @@ public static class RegisterMqListenerExtension
             .RegisterMqListener<GetUsersOfIdentityReceive, string[], TResponseModel<UserInfoModel[]>>()
             .RegisterMqListener<SendEmailReceive, SendEmailRequestModel, ResponseBaseModel>()
             .RegisterMqListener<GetRoleReceive, string, TResponseModel<RoleInfoModel>>()
+            .RegisterMqListener<VerifyTwoFactorTokenReceive, VerifyTwoFactorTokenRequestModel, ResponseBaseModel>()
             .RegisterMqListener<CountRecoveryCodesReceive, string, TResponseModel<int?>>()
             .RegisterMqListener<GenerateNewTwoFactorRecoveryCodesReceive, GenerateNewTwoFactorRecoveryCodesRequestModel, TResponseModel<IEnumerable<string>?>>()
             .RegisterMqListener<GetAuthenticatorKeyReceive, string, TResponseModel<string?>>()

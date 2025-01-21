@@ -203,23 +203,17 @@ public class UsersProfilesService(
         return ResponseBaseModel.CreateSuccess("Успешно удалено");
     }
 
+    #region done
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool?>> VerifyTwoFactorToken(string verificationCode, string? userId = null)
+    public async Task<ResponseBaseModel> VerifyTwoFactorToken(string verificationCode, string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        bool is2faTokenValid = await userManager.VerifyTwoFactorTokenAsync(
-           user.ApplicationUser, userManager.Options.Tokens.AuthenticatorTokenProvider, verificationCode);
-
-        if (!is2faTokenValid)
-            return new(ResponseBaseModel.ErrorMessage("Ошибка: код подтверждения недействителен."));
-
-        return new(ResponseBaseModel.SuccessMessage("Токен действителен"));
+        return await IdentityRepo.VerifyTwoFactorToken(new() { UserId = user.ApplicationUser.Id, VerificationCode = verificationCode });
     }
 
-    #region done
     /// <inheritdoc/>
     public async Task<TResponseModel<int?>> CountRecoveryCodes(string? userId = null)
     {

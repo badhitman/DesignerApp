@@ -91,7 +91,7 @@ public partial interface IUsersProfilesService
     /// Проверяет указанную двухфакторную аутентификацию <paramref name="token" /> на соответствие <paramref name="userId"/>.
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
-    public Task<TResponseModel<bool?>> VerifyTwoFactorToken(string token, string? userId = null);
+    public Task<ResponseBaseModel> VerifyTwoFactorToken(string token, string? userId = null);
 
     /// <summary>
     /// Возвращает количество кодов восстановления, действительных для пользователя.

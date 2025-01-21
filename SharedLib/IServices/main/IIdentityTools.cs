@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// Проверяет указанную двухфакторную аутентификацию VerificationCode на соответствие UserId
+    /// </summary>
+    public Task<ResponseBaseModel> VerifyTwoFactorToken(VerifyTwoFactorTokenRequestModel req);
+
+    /// <summary>
     /// Возвращает количество кодов восстановления, действительных для пользователя
     /// </summary>
     public Task<TResponseModel<int?>> CountRecoveryCodes(string userId);
