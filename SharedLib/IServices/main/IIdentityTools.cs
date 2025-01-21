@@ -10,11 +10,15 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// Создает (и отправляет) токен изменения адреса электронной почты для указанного пользователя.
+    /// </summary>
+    public Task<ResponseBaseModel> GenerateChangeEmailToken(GenerateChangeEmailTokenRequestModel req);
+
+    /// <summary>
     /// Генерирует коды восстановления для пользователя, что делает недействительными все предыдущие коды восстановления для пользователя.
     /// </summary>
-    /// <param name="userId">Пользователь, для которого создаются коды восстановления.</param>
     /// <returns>Новые коды восстановления для пользователя. Примечание. Возвращенное число может быть меньше, поскольку дубликаты будут удалены.</returns>
-    public Task<TResponseModel<IEnumerable<string>?>> GenerateNewTwoFactorRecoveryCodesAsync(string userId);
+    public Task<TResponseModel<IEnumerable<string>?>> GenerateNewTwoFactorRecoveryCodes(GenerateNewTwoFactorRecoveryCodesRequestModel req);
 
     /// <summary>
     /// Ключ аутентификации пользователя.

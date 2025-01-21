@@ -58,7 +58,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        UserBooleanResponseModel rest = await UsersProfilesRepo.IsEmailConfirmedAsync();
+        UserBooleanResponseModel rest = await UsersProfilesRepo.IsEmailConfirmed();
         Messages = rest.Messages;
         user = rest.UserInfo ?? throw new Exception("user info is null. error {C07C574D-9E16-4986-822E-0EFF81C1F74E}");
         email = user.Email;
@@ -75,7 +75,7 @@
             return;
         }
 
-        ResponseBaseModel rest = await UsersProfilesRepo.GenerateChangeEmailTokenAsync(Input.NewEmail, NavigationManager.ToAbsoluteUri("Account/ConfirmEmailChange").AbsoluteUri);
+        ResponseBaseModel rest = await UsersProfilesRepo.GenerateChangeEmailToken(Input.NewEmail, NavigationManager.ToAbsoluteUri("Account/ConfirmEmailChange").AbsoluteUri);
         Messages = rest.Messages;
     }
 

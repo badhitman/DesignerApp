@@ -29,7 +29,7 @@ public partial class SetPasswordPage
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        UserBooleanResponseModel hasPassword = await UsersProfilesRepo.UserHasPasswordAsync();
+        UserBooleanResponseModel hasPassword = await UsersProfilesRepo.UserHasPassword();
         Messages = hasPassword.Messages;
         if (hasPassword.Response == true || hasPassword.UserInfo is null)
         {
@@ -41,7 +41,7 @@ public partial class SetPasswordPage
     private async Task OnValidSubmitAsync()
     {
         Messages = null;
-        ResponseBaseModel rest = await UsersProfilesRepo.AddPasswordAsync(Input.NewPassword!);
+        ResponseBaseModel rest = await UsersProfilesRepo.AddPassword(Input.NewPassword!);
         Messages = rest.Messages;
         if (!rest.Success())
             return;

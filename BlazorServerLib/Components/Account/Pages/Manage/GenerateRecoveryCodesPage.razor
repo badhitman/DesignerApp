@@ -48,7 +48,7 @@ else
         AuthenticationState state = await authRepo.GetAuthenticationStateAsync();
         user = state.User.ReadCurrentUserInfo() ?? throw new Exception();
         
-        TResponseModel<bool?> isTwoFactorEnabled = await UsersProfilesRepo.GetTwoFactorEnabledAsync();
+        TResponseModel<bool?> isTwoFactorEnabled = await UsersProfilesRepo.GetTwoFactorEnabled();
         Messages.AddRange(isTwoFactorEnabled.Messages);
         if (!isTwoFactorEnabled.Success() || isTwoFactorEnabled.Response != true)
         {
@@ -60,7 +60,7 @@ else
 
     private async Task OnSubmitAsync()
     {
-        TResponseModel<IEnumerable<string>?> rc_res = await UsersProfilesRepo.GenerateNewTwoFactorRecoveryCodesAsync();
+        TResponseModel<IEnumerable<string>?> rc_res = await UsersProfilesRepo.GenerateNewTwoFactorRecoveryCodes();
         Messages = rc_res.Messages;
         recoveryCodes = rc_res.Response;
         if (!rc_res.Success() || rc_res.Response is null)

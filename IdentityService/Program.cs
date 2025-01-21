@@ -16,8 +16,14 @@ using System.Globalization;
 
 namespace IdentityService;
 
+/// <summary>
+/// Program
+/// </summary>
 public class Program
 {
+    /// <summary>
+    /// Main
+    /// </summary>
     public static void Main(string[] args)
     {
         Logger logger = LogManager.GetCurrentClassLogger();

@@ -23,7 +23,7 @@ public partial class ChangePasswordPage : ComponentBase
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        UserBooleanResponseModel rest = await UsersProfilesRepo.UserHasPasswordAsync();
+        UserBooleanResponseModel rest = await UsersProfilesRepo.UserHasPassword();
         //user = rest.UserInfo;
         Messages = rest.Messages;
         if (rest.Response != true)
@@ -35,7 +35,7 @@ public partial class ChangePasswordPage : ComponentBase
     private async Task OnValidSubmitAsync()
     {
         Messages = null;
-        ResponseBaseModel changePasswordResult = await UsersProfilesRepo.ChangePasswordAsync(Input.OldPassword, Input.NewPassword);
+        ResponseBaseModel changePasswordResult = await UsersProfilesRepo.ChangePassword(Input.OldPassword, Input.NewPassword);
         Messages = changePasswordResult.Messages;
         if (!changePasswordResult.Success())
             return;

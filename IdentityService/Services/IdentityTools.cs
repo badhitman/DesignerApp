@@ -26,7 +26,7 @@ namespace IdentityService;
 /// </summary>
 public class IdentityTools(
     IServiceScopeFactory serviceScopeFactory,
-    //IEmailSender<ApplicationUser> emailSender,
+    IEmailSender<ApplicationUser> emailSender,
     //IUserStore<ApplicationUser> userStore,
     //RoleManager<ApplicationRole> roleManager,
     //UserManager<ApplicationUser> userManager,
@@ -36,16 +36,39 @@ public class IdentityTools(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
     /// <inheritdoc/>
-    public async Task<TResponseModel<IEnumerable<string>?>> GenerateNewTwoFactorRecoveryCodesAsync(string userId)
+    public async Task<ResponseBaseModel> GenerateChangeEmailToken(GenerateChangeEmailTokenRequestModel req)
+    {
+
+        if (!MailAddress.TryCreate(req.NewEmail, out _))
+            return ResponseBaseModel.CreateError($"Адрес e-mail `{req.NewEmail}` имеет не корректный формат");
+
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
+        if (user is null)
+            return new() { Messages = [new() { Text = $"Пользователь #{req.UserId} не найден", TypeMessage = ResultTypesEnum.Error }] };
+
+        string code = await userManager.GenerateChangeEmailTokenAsync(user, req.NewEmail);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        string callbackUrl = $"{req.BaseAddress}?userId={user.Id}&email={req.NewEmail}&code={code}";
+        await emailSender.SendConfirmationLinkAsync(user, req.NewEmail, HtmlEncoder.Default.Encode(callbackUrl));
+
+        return ResponseBaseModel.CreateSuccess("Письмо с ссылкой для подтверждения изменения адреса почты отправлено на ваш E-mail. Пожалуйста, проверьте свою электронную почту.");
+
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<IEnumerable<string>?>> GenerateNewTwoFactorRecoveryCodes(GenerateNewTwoFactorRecoveryCodesRequestModel req)
     {
         using IServiceScope scope = serviceScopeFactory.CreateScope();
         using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-        ApplicationUser? user = await userManager.FindByIdAsync(userId); ;
+        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
         if (user is null)
-            return new() { Messages = [new() { Text = $"Пользователь #{userId} не найден", TypeMessage = ResultTypesEnum.Error }] };
+            return new() { Messages = [new() { Text = $"Пользователь #{req.UserId} не найден", TypeMessage = ResultTypesEnum.Error }] };
 
-        return new() { Response = await userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10) };
+        return new() { Response = await userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, req.Number) };
     }
 
     /// <inheritdoc/>

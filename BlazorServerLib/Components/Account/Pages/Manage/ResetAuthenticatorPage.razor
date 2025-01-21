@@ -29,7 +29,7 @@
 
     private async Task OnSubmitAsync()
     {
-        ResponseBaseModel rest = await UsersProfilesRepo.SetTwoFactorEnabledAsync(false);
+        ResponseBaseModel rest = await UsersProfilesRepo.SetTwoFactorEnabled(false);
         Messages = rest.Messages;
         Messages.Add(new() { TypeMessage = ResultTypesEnum.Warning, Text = "Ключ вашего приложения для аутентификации был сброшен, вам нужно будет настроить приложение для аутентификации, используя новый ключ." });
     }

@@ -44,7 +44,7 @@
     protected override async Task OnInitializedAsync()
     {
         Input ??= new();
-        UserBooleanResponseModel rest = await UsersProfilesRepo.UserHasPasswordAsync();
+        UserBooleanResponseModel rest = await UsersProfilesRepo.UserHasPassword();
         Messages = rest.Messages;
         requirePassword = rest.Response == true;
         user = rest.UserInfo;
@@ -52,12 +52,12 @@
 
     private async Task OnValidSubmitAsync()
     {
-        UserBooleanResponseModel rest = await UsersProfilesRepo.CheckUserPasswordAsync(Input.Password);
+        UserBooleanResponseModel rest = await UsersProfilesRepo.CheckUserPassword(Input.Password);
         Messages = rest.Messages;
         if (requirePassword && !rest.Success())
             return;
 
-        ResponseBaseModel result = await UsersProfilesRepo.DeleteUserDataAsync(Input.Password);
+        ResponseBaseModel result = await UsersProfilesRepo.DeleteUserData(Input.Password);
         Messages.AddRange(result.Messages);
         if (!result.Success())
         {

@@ -25,6 +25,7 @@ public class RabbitClient : IRabbitClient
     readonly ILogger<RabbitClient> loggerRepo;
 
     static Dictionary<string, object>? ResponseQueueArguments;
+    /// <inheritdoc/>
     public static readonly JsonSerializerOptions SerializerOptions = new() { ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true };
 
     /// <summary>

@@ -33,7 +33,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        TResponseModel<bool?> rest = await UsersProfilesRepo.GetTwoFactorEnabledAsync();
+        TResponseModel<bool?> rest = await UsersProfilesRepo.GetTwoFactorEnabled();
         Messages = rest.Messages;
         if (HttpMethods.IsGet(HttpContext.Request.Method) && rest.Response != true)
         {
@@ -43,7 +43,7 @@
 
     private async Task OnSubmitAsync()
     {
-        ResponseBaseModel disable2faResult = await UsersProfilesRepo.SetTwoFactorEnabledAsync(false);
+        ResponseBaseModel disable2faResult = await UsersProfilesRepo.SetTwoFactorEnabled(false);
         Messages = disable2faResult.Messages;
         if (!disable2faResult.Success())
         {

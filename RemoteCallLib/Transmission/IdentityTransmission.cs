@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using DocumentFormat.OpenXml.Spreadsheet;
 using SharedLib;
 
 namespace RemoteCallLib;
@@ -11,6 +12,14 @@ namespace RemoteCallLib;
 /// </summary>
 public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmission
 {
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> GenerateChangeEmailToken(GenerateChangeEmailTokenRequestModel req)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.GenerateChangeEmailTokenReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<IEnumerable<string>?>> GenerateNewTwoFactorRecoveryCodes(GenerateNewTwoFactorRecoveryCodesRequestModel req)
+        => await rabbitClient.MqRemoteCall<TResponseModel<IEnumerable<string>?>>(GlobalStaticConstants.TransmissionQueues.GenerateNewTwoFactorRecoveryCodesReceive, req) ?? new();
+
     /// <inheritdoc/>
     public async Task<TResponseModel<string?>> GetAuthenticatorKey(string userId)
         => await rabbitClient.MqRemoteCall<TResponseModel<string?>>(GlobalStaticConstants.TransmissionQueues.GetAuthenticatorKeyReceive, userId) ?? new();
@@ -108,6 +117,7 @@ public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmi
     public async Task<TResponseModel<UserInfoModel[]>> GetUserIdentityByTelegram(long[] ids_users)
         => await rabbitClient.MqRemoteCall<TResponseModel<UserInfoModel[]>>(GlobalStaticConstants.TransmissionQueues.GetUsersOfIdentityByTelegramIdsReceive, ids_users) ?? new();
 
+    /// <inheritdoc/>
     public async Task<TResponseModel<UserInfoModel[]>> GetUsersIdentityByTelegram(List<long> req)
         => await rabbitClient.MqRemoteCall<TResponseModel<UserInfoModel[]>>(GlobalStaticConstants.TransmissionQueues.GetUsersIdentityByTelegramReceive, req) ?? new();
 

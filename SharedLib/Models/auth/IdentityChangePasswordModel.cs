@@ -11,12 +11,12 @@ public class IdentityChangePasswordModel
     public required string UserId { get; set; }
 
     /// <summary>
-    /// CurrentPassword
+    /// Текущий пароль, который необходимо проверить перед изменением
     /// </summary>
     public required string CurrentPassword { get; set; }
 
     /// <summary>
-    /// NewPassword
+    /// Новый пароль, который необходимо установить для указанного userId.Пользователь, пароль которого должен быть установлен
     /// </summary>
     public required string NewPassword { get; set; }
 }

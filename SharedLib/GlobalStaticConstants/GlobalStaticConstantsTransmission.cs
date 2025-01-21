@@ -51,6 +51,16 @@ public static partial class GlobalStaticConstants
         public readonly static string AddPasswordToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.ADD_ACTION_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}");
 
         /// <summary>
+        /// Создает (и отправляет) токен изменения адреса электронной почты для указанного пользователя.
+        /// </summary>
+        public readonly static string GenerateChangeEmailTokenReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.CHANGE_ACTION_NAME}-{Routes.EMAIL_CONTROLLER_NAME}", $"{Routes.GENERATE_ACTION_NAME}-{Routes.TOKEN_CONTROLLER_NAME}");
+        
+        /// <summary>
+        /// GenerateNewTwoFactorRecoveryCodesReceive
+        /// </summary>
+        public readonly static string GenerateNewTwoFactorRecoveryCodesReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.TWOFACTOR_CONTROLLER_NAME, $"{Routes.GENERATE_ACTION_NAME}-{Routes.RECOVERY_CONTROLLER_NAME}-{Routes.CODES_CONTROLLER_NAME}");
+        
+        /// <summary>
         /// Ключ аутентификации пользователя.
         /// </summary>
         public readonly static string GetAuthenticatorKeyReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.AUTHENTICATOR_CONTROLLER_NAME}-{Routes.KEY_CONTROLLER_NAME}", Routes.GET_ACTION_NAME);

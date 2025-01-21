@@ -30,7 +30,7 @@ public partial class IndexPage : BlazorBusyComponentBaseAuthModel
     protected override async Task OnInitializedAsync()
     {
         await ReadCurrentUser();
-        TResponseModel<string?> username_rest = await UsersProfilesRepo.GetUserNameAsync();
+        TResponseModel<string?> username_rest = await UsersProfilesRepo.GetUserName();
         Messages.AddRange(username_rest.Messages);
         username = username_rest.Response;
 

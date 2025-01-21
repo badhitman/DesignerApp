@@ -95,7 +95,7 @@ public partial class CommerceTransmission(IRabbitClient rabbitClient) : ICommerc
     public async Task<TResponseModel<AddressOrganizationModelDB[]>> AddressesOrganizationsRead(int[] ids)
         => await rabbitClient.MqRemoteCall<TResponseModel<AddressOrganizationModelDB[]>>(GlobalStaticConstants.TransmissionQueues.AddressesOrganizationsReadCommerceReceive, ids) ?? new();
 
-    /// <inheritdoc/> int[]?, List<NomenclatureModelDB>?
+    /// <inheritdoc/>
     public async Task<TResponseModel<List<NomenclatureModelDB>>> NomenclaturesRead(TAuthRequestModel<int[]> ids)
         => await rabbitClient.MqRemoteCall<TResponseModel<List<NomenclatureModelDB>>>(GlobalStaticConstants.TransmissionQueues.NomenclaturesReadCommerceReceive, ids) ?? new();
 
@@ -119,7 +119,7 @@ public partial class CommerceTransmission(IRabbitClient rabbitClient) : ICommerc
     public async Task<TResponseModel<int>> PaymentDocumentUpdate(TAuthRequestModel<PaymentDocumentBaseModel> payment)
         => await rabbitClient.MqRemoteCall<TResponseModel<int>>(GlobalStaticConstants.TransmissionQueues.PaymentDocumentUpdateCommerceReceive, payment) ?? new();
 
-    /// <inheritdoc/> PriceRuleForOfferModelDB?, TResponseModel<int>?
+    /// <inheritdoc/>
     public async Task<TResponseModel<int>> PriceRuleUpdate(TAuthRequestModel<PriceRuleForOfferModelDB> price_rule)
         => await rabbitClient.MqRemoteCall<TResponseModel<int>>(GlobalStaticConstants.TransmissionQueues.PriceRuleUpdateCommerceReceive, price_rule) ?? new();
 

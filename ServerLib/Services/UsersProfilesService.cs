@@ -20,17 +20,16 @@ namespace ServerLib;
 /// Сервис работы с профилями пользователей
 /// </summary>
 public class UsersProfilesService(
-    IEmailSender<ApplicationUser> emailSender,
+    SignInManager<ApplicationUser> signInManager,
     UserManager<ApplicationUser> userManager,
     IIdentityTransmission IdentityRepo,
-    SignInManager<ApplicationUser> signInManager,
     IUserStore<ApplicationUser> userStore,
     IHttpContextAccessor httpContextAccessor,
     ILogger<UsersProfilesService> LoggerRepo) : IUsersProfilesService
 {
 #pragma warning restore CS9107
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SetPhoneNumberAsync(string? phoneNumber, string? userId = null)
+    public async Task<ResponseBaseModel> SetPhoneNumber(string? phoneNumber, string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -41,7 +40,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<UserBooleanResponseModel> CheckUserPasswordAsync(string password, string? userId = null)
+    public async Task<UserBooleanResponseModel> CheckUserPassword(string password, string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -63,7 +62,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> DeleteUserDataAsync(string password, string? userId = null)
+    public async Task<ResponseBaseModel> DeleteUserData(string password, string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -82,7 +81,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<UserBooleanResponseModel> UserHasPasswordAsync(string? userId = null)
+    public async Task<UserBooleanResponseModel> UserHasPassword(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -100,7 +99,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool?>> GetTwoFactorEnabledAsync(string? userId = null)
+    public async Task<TResponseModel<bool?>> GetTwoFactorEnabled(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -110,7 +109,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SetTwoFactorEnabledAsync(bool enabled_set, string? userId = null)
+    public async Task<ResponseBaseModel> SetTwoFactorEnabled(bool enabled_set, string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -128,7 +127,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<UserBooleanResponseModel> IsEmailConfirmedAsync(string? userId = null)
+    public async Task<UserBooleanResponseModel> IsEmailConfirmed(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -146,26 +145,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> GenerateChangeEmailTokenAsync(string newEmail, string baseAddress, string? userId = null)
-    {
-        if (!MailAddress.TryCreate(newEmail, out _))
-            return ResponseBaseModel.CreateError($"Адрес e-mail `{newEmail}` имеет не корректный формат");
-
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        //userId = await userManager.GetUserIdAsync(user.ApplicationUser);
-        string code = await userManager.GenerateChangeEmailTokenAsync(user.ApplicationUser, newEmail);
-        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-        string callbackUrl = $"{baseAddress}?userId={userId}&email={newEmail}&code={code}";
-        await emailSender.SendConfirmationLinkAsync(user.ApplicationUser, newEmail, HtmlEncoder.Default.Encode(callbackUrl));
-
-        return ResponseBaseModel.CreateSuccess("Письмо с ссылкой для подтверждения изменения отправлено на ваш E-mail. Пожалуйста, проверьте свою электронную почту.");
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> ResetAuthenticatorKeyAsync(string? userId = null)
+    public async Task<ResponseBaseModel> ResetAuthenticatorKey(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -179,7 +159,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<string?>> GetUserNameAsync(string? userId = null)
+    public async Task<TResponseModel<string?>> GetUserName(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -189,7 +169,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<string?>> GetPhoneNumberAsync(string? userId = null)
+    public async Task<TResponseModel<string?>> GetPhoneNumber(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -199,7 +179,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> RefreshSignInAsync(string? userId = null)
+    public async Task<ResponseBaseModel> RefreshSignIn(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -225,21 +205,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<string?>> GetPasswordHashAsync(string? userId = null)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        string? passwordHash = null;
-        if (userStore is IUserPasswordStore<ApplicationUser> userPasswordStore && httpContextAccessor.HttpContext is not null)
-            passwordHash = await userPasswordStore.GetPasswordHashAsync(user.ApplicationUser, httpContextAccessor.HttpContext.RequestAborted);
-
-        return new() { Response = passwordHash };
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> AddLoginAsync(string? userId = null)
+    public async Task<ResponseBaseModel> AddLogin(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -257,7 +223,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> RemoveLoginAsync(string loginProvider, string providerKey, string? userId = null)
+    public async Task<ResponseBaseModel> RemoveLogin(string loginProvider, string providerKey, string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -272,7 +238,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<bool?>> VerifyTwoFactorTokenAsync(string verificationCode, string? userId = null)
+    public async Task<TResponseModel<bool?>> VerifyTwoFactorToken(string verificationCode, string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -288,7 +254,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<int?>> CountRecoveryCodesAsync(string? userId = null)
+    public async Task<TResponseModel<int?>> CountRecoveryCodes(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -298,19 +264,45 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<IEnumerable<string>?>> GenerateNewTwoFactorRecoveryCodesAsync(string? userId = null)
+    public async Task<TResponseModel<string?>> GetPasswordHash(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        return new() { Response = await userManager.GenerateNewTwoFactorRecoveryCodesAsync(user.ApplicationUser, 10) };
-    }
+        string? passwordHash = null;
+        if (userStore is IUserPasswordStore<ApplicationUser> userPasswordStore && httpContextAccessor.HttpContext is not null)
+            passwordHash = await userPasswordStore.GetPasswordHashAsync(user.ApplicationUser, httpContextAccessor.HttpContext.RequestAborted);
 
+        return new() { Response = passwordHash };
+    }
 
     #region done
     /// <inheritdoc/>
-    public async Task<TResponseModel<string?>> GetAuthenticatorKeyAsync(string? userId = null)
+    public async Task<ResponseBaseModel> GenerateChangeEmailToken(string newEmail, string baseAddress, string? userId = null)
+    {
+        if (!MailAddress.TryCreate(newEmail, out _))
+            return ResponseBaseModel.CreateError($"Адрес e-mail `{newEmail}` имеет не корректный формат");
+
+        ApplicationUserResponseModel user = await GetUser(userId);
+        if (!user.Success() || user.ApplicationUser is null)
+            return new() { Messages = user.Messages };
+
+        return await IdentityRepo.GenerateChangeEmailToken(new() { BaseAddress = baseAddress, NewEmail = newEmail, UserId = user.ApplicationUser.Id });
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<IEnumerable<string>?>> GenerateNewTwoFactorRecoveryCodes(string? userId = null)
+    {
+        ApplicationUserResponseModel user = await GetUser(userId);
+        if (!user.Success() || user.ApplicationUser is null)
+            return new() { Messages = user.Messages };
+
+        return await IdentityRepo.GenerateNewTwoFactorRecoveryCodes(new() { UserId = user.ApplicationUser.Id, Number = 10 });
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<string?>> GetAuthenticatorKey(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -320,7 +312,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<string?>> GeneratePasswordResetTokenAsync(string? userId = null)
+    public async Task<TResponseModel<string?>> GeneratePasswordResetToken(string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -340,7 +332,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> ChangePasswordAsync(string currentPassword, string newPassword, string? userId = null)
+    public async Task<ResponseBaseModel> ChangePassword(string currentPassword, string newPassword, string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -355,7 +347,7 @@ public class UsersProfilesService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> AddPasswordAsync(string password, string? userId = null)
+    public async Task<ResponseBaseModel> AddPassword(string password, string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
         if (!user.Success() || user.ApplicationUser is null)
@@ -364,13 +356,13 @@ public class UsersProfilesService(
         ResponseBaseModel addPassRes = await IdentityRepo.AddPassword(new() { Password = password, UserId = user.ApplicationUser.Id });
         if (!addPassRes.Success())
             return addPassRes;
-        
+
         await signInManager.RefreshSignInAsync(user.ApplicationUser);
         return ResponseBaseModel.CreateSuccess("Пароль установлен");
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> ChangeEmailAsync(IdentityEmailTokenModel req)
+    public async Task<ResponseBaseModel> ChangeEmail(IdentityEmailTokenModel req)
     {
         ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
         if (user is null)
