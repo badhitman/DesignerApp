@@ -33,6 +33,28 @@ public class IdentityTools(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
     /// <inheritdoc/>
+    public async Task<ResponseBaseModel> GenerateOTPFor2StepVerification(string userId)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        ApplicationUser? user = await userManager.FindByIdAsync(userId); ;
+        if (user is null)
+            return new() { Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = $"Пользователь #{userId} не найден" }] };
+
+        IList<string> providers = await userManager.GetValidTwoFactorProvidersAsync(user);
+        if (!providers.Contains("Email"))
+            return ResponseBaseModel.CreateError("Invalid 2-Step Verification Provider.");
+
+        string token = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
+
+        if (!string.IsNullOrWhiteSpace(user.Email))
+            return await mailRepo.SendEmailAsync(user.Email, "Authentication 2FA token", token);
+
+        return ResponseBaseModel.CreateSuccess("Ok");
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<IEnumerable<UserLoginInfoModel>>> GetUserLogins(string userId)
     {
         using IServiceScope scope = serviceScopeFactory.CreateScope();

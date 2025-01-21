@@ -135,6 +135,16 @@ public static partial class GlobalStaticConstants
         };
 
         /// <summary>
+        /// ShowingTelegramArea
+        /// </summary>
+        public static StorageMetadataModel GlobalEnable2FA => new()
+        {
+            ApplicationName = Routes.IDENTITY_CONTROLLER_NAME,
+            PropertyName = Path.Combine(Routes.TWOFACTOR_CONTROLLER_NAME, Routes.ENABLED_CONTROLLER_NAME),
+              PrefixPropertyName = Routes.GLOBAL_CONTROLLER_NAME,
+        };
+
+        /// <summary>
         /// ShowingWappiArea
         /// </summary>
         public static StorageMetadataModel ShowingWappiArea => new()

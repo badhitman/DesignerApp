@@ -93,11 +93,28 @@ public class Program
         builder.Services.AddDbContextFactory<IdentityAppDbContext>(opt =>
             opt.UseNpgsql(connectionIdentityString));
 
-        builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+        builder.Services.AddIdentityCore<ApplicationUser>(options =>
+        {
+            options.SignIn.RequireConfirmedAccount = true;
+            
+        })//.AddUserManager<ApplicationUser>()
             .AddRoles<ApplicationRole>()
             .AddRoleManager<RoleManager<ApplicationRole>>()
             .AddEntityFrameworkStores<IdentityAppDbContext>()
+            .AddDefaultTokenProviders()
             ;
+
+        builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, AdditionalUserClaimsPrincipalFactory>();
+         
+
+        builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+}).AddIdentityCookies();
+
+    //    builder.Services.AddAuthorization(options =>
+    //options.AddPolicy("TwoFactorEnabled", x => x.RequireClaim("amr", "mfa")));
 
         Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
         builder.Services.AddLocalization(lo => lo.ResourcesPath = "Resources");
@@ -131,10 +148,10 @@ public class Program
         // Scoped
         builder.Services.AddScoped<IIdentityTools, IdentityTools>();
 
-         //builder.Services
-         //   .AddScoped<UserManager<ApplicationUser>>()
-         //   //.AddScoped<RoleManager<ApplicationUser>>()
-         //   ;
+        //builder.Services
+        //   .AddScoped<UserManager<ApplicationUser>>()
+        //   //.AddScoped<RoleManager<ApplicationUser>>()
+        //   ;
 
         #region MQ Transmission (remote methods call)
         builder.Services.AddScoped<IRabbitClient, RabbitClient>();

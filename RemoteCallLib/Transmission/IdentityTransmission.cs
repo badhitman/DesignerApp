@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using DocumentFormat.OpenXml.Drawing;
 using SharedLib;
 
 namespace RemoteCallLib;
@@ -11,6 +12,10 @@ namespace RemoteCallLib;
 /// </summary>
 public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmission
 {
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> GenerateOTPFor2StepVerification(string userId)
+        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.GenerateOTPFor2StepVerificationReceive, userId) ?? new();
+
     /// <inheritdoc/>
     public async Task<TResponseModel<IEnumerable<UserLoginInfoModel>>> GetUserLogins(string userId)
         => await rabbitClient.MqRemoteCall<TResponseModel<IEnumerable<UserLoginInfoModel>>>(GlobalStaticConstants.TransmissionQueues.GetUserLoginsReceive, userId) ?? new();

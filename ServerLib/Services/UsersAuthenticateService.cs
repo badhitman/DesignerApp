@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using IdentityLib;
 using SharedLib;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ServerLib;
 
@@ -18,6 +19,7 @@ public class UsersAuthenticateService(
     ILogger<UsersAuthenticateService> loggerRepo,
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
+    IStorageTransmission StorageTransmissionRepo,
     IIdentityTransmission identityRepo,
     IOptions<UserManageConfigModel> userManageConfig) : IUsersAuthenticateService
 {
@@ -59,7 +61,7 @@ public class UsersAuthenticateService(
             return (IdentityResultResponseModel)ResponseBaseModel.CreateError(msg);
         }
         SignInResult result = await signInManager.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
-        
+
         if (result.Succeeded)
         {
             msg = $"Пользователь с идентификатором '{user.Id}' вошел в систему с кодом восстановления.";
@@ -213,7 +215,6 @@ public class UsersAuthenticateService(
     public async Task<ResponseBaseModel> SignInAsync(string userId, bool isPersistent)
     {
         ApplicationUser? user = await userManager.FindByIdAsync(userId);
-
         if (user is null)
             return ResponseBaseModel.CreateError("Пользователь не найден");
 
@@ -228,28 +229,30 @@ public class UsersAuthenticateService(
             return new() { Messages = [new() { Text = $"Ошибка авторизации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
 
         SignInResult sr = await signInManager.PasswordSignInAsync(userEmail, password, isPersistent, lockoutOnFailure: true);
-
+        TResponseModel<bool?> globalEnable2FA = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.GlobalEnable2FA);
         IdentityResultResponseModel res = new();
-        if (!sr.Succeeded)
+        ApplicationUser? currentAppUser = await userManager.FindByEmailAsync(userEmail);
+
+        if (currentAppUser is null)
+            return (IdentityResultResponseModel)ResponseBaseModel.CreateError($"current user by email '{userEmail}' is null. error {{A19FC284-C437-4CC6-A7D2-C96FC6F6A42F}}");
+
+        if (!sr.Succeeded || globalEnable2FA.Response == true)
         {
-            if (sr.RequiresTwoFactor)
+            if (sr.RequiresTwoFactor || globalEnable2FA.Response == true)
+            {
                 res.AddError("Error: RequiresTwoFactor");
+                ResponseBaseModel otp = await identityRepo.GenerateOTPFor2StepVerification(currentAppUser.Id);
+                return new() { RequiresTwoFactor = true, Messages = res.Messages };
+            }
 
             if (sr.IsLockedOut)
                 res.AddError("Ошибка: Учетная запись пользователя заблокирована.");
-            else
-                res.AddError("Ошибка: Неверные логин/пароль (либо учётная запись неактивна).");
 
             if (res.Messages.Count == 0)
                 res.AddError("user login error {7D55A217-6074-4988-8774-74F995F70D18}");
 
             return res;
         }
-        ApplicationUser? currentAppUser = await userManager.FindByEmailAsync(userEmail);
-
-        if (currentAppUser is null)
-            return (IdentityResultResponseModel)ResponseBaseModel.CreateError($"current user by email '{userEmail}' is null. error {{A19FC284-C437-4CC6-A7D2-C96FC6F6A42F}}");
-
         ResponseBaseModel flushRes = await identityRepo.ClaimsUserFlush(currentAppUser.Id);
 
         if (flushRes.Success())
@@ -263,11 +266,16 @@ public class UsersAuthenticateService(
                 await signInManager.RefreshSignInAsync(currentAppUser);
         }
 
+        if (globalEnable2FA.Success() && globalEnable2FA.Response == true)
+        {
+            ResponseBaseModel otp = await identityRepo.GenerateOTPFor2StepVerification(currentAppUser.Id);
+        }
+
         return new()
         {
             IsLockedOut = sr.IsLockedOut,
             IsNotAllowed = sr.IsNotAllowed,
-            RequiresTwoFactor = sr.RequiresTwoFactor,
+            RequiresTwoFactor = sr.RequiresTwoFactor || globalEnable2FA.Response == true,
             Succeeded = sr.Succeeded,
         };
     }

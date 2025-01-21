@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// Генерация (и отправка на Email++) 2fa токена
+    /// </summary>
+    public Task<ResponseBaseModel> GenerateOTPFor2StepVerification(string userId);
+
+    /// <summary>
     /// Извлекает связанные логины для указанного <param ref="userId"/>
     /// </summary>
     public Task<TResponseModel<IEnumerable<UserLoginInfoModel>>> GetUserLogins(string userId);

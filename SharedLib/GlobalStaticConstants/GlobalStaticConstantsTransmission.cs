@@ -51,6 +51,11 @@ public static partial class GlobalStaticConstants
         public readonly static string AddPasswordToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.ADD_ACTION_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}");
 
         /// <summary>
+        /// Генерация (и отправка на Email++) 2fa токена
+        /// </summary>
+        public readonly static string GenerateOTPFor2StepVerificationReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.TWOFACTOR_CONTROLLER_NAME}-{Routes.AUTHORIZE_CONTROLLER_NAME}", $"{Routes.GENERATE_ACTION_NAME}-{Routes.TOKEN_CONTROLLER_NAME}");
+        
+        /// <summary>
         /// Извлекает связанные логины для указанного <param ref="userId"/>
         /// </summary>
         public readonly static string GetUserLoginsReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, $"{Routes.USER_CONTROLLER_NAME}-{Routes.LOGINS_ACTION_NAME}", Routes.GET_ACTION_NAME);

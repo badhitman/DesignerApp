@@ -19,7 +19,7 @@ public class UsersProfilesService(
     SignInManager<ApplicationUser> signInManager,
     UserManager<ApplicationUser> userManager,
     IIdentityTransmission IdentityRepo,
-    IHttpContextAccessor httpContextAccessor,
+    IHttpContextAccessor httpContextAccessor,    
     ILogger<UsersProfilesService> LoggerRepo) : IUsersProfilesService
 {
     /// <inheritdoc/>
