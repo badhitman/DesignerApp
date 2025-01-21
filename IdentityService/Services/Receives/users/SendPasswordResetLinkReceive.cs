@@ -27,6 +27,6 @@ public class SendPasswordResetLinkReceive(IIdentityTools idRepo, ILogger<AddPass
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogWarning(JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings));
-        return await idRepo.SendPasswordResetLinkAsync(req);
+        return await idRepo.SendPasswordResetLink(req);
     }
 }

@@ -9,6 +9,131 @@ namespace SharedLib;
 /// </summary>
 public interface IIdentityTools
 {
+    /// <summary>
+    /// Ключ аутентификации пользователя.
+    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
+    /// </summary>
+    public Task<TResponseModel<string?>> GetAuthenticatorKey(string userId);
+
+    /// <summary>
+    /// Создает токен сброса пароля для указанного <paramref name="userId"/>, используя настроенного поставщика токенов сброса пароля.
+    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
+    /// </summary>
+    public Task<TResponseModel<string?>> GeneratePasswordResetToken(string userId);
+
+    /// <summary>
+    /// Этот API поддерживает инфраструктуру ASP.NET Core Identity и не предназначен для использования в качестве абстракции электронной почты общего назначения.
+    /// Он должен быть реализован в приложении, чтобы инфраструктура идентификации могла отправлять электронные письма для сброса пароля.
+    /// </summary>
+    public Task<ResponseBaseModel> SendPasswordResetLink(SendPasswordResetLinkRequestModel req);
+
+    /// <summary>
+    /// Изменяет пароль пользователя после подтверждения правильности указанного currentPassword.
+    /// Если userId не указан, то команда выполняется для текущего пользователя (запрос/сессия)
+    /// </summary>
+    /// <param name="req">Текущий пароль, который необходимо проверить перед изменением.
+    /// Новый пароль, который необходимо установить для указанного userId.Пользователь, пароль которого должен быть установлен.
+    /// Если не указан, то для текущего пользователя (запрос/сессия).</param>
+    public Task<ResponseBaseModel> ChangePassword(IdentityChangePasswordModel req);
+
+    /// <summary>
+    /// Добавляет password к указанному userId, только если у пользователя еще нет пароля.
+    /// Если userId не указан, то команда выполняется для текущего пользователя (запрос/сессия)
+    /// </summary>
+    public Task<ResponseBaseModel> AddPassword(IdentityPasswordModel req);
+
+    /// <summary>
+    /// SelectUsersOfIdentity
+    /// </summary>
+    public Task<TPaginationResponseModel<UserInfoModel>> SelectUsersOfIdentity(TPaginationRequestModel<SimpleBaseRequestModel> req);
+
+    /// <summary>
+    /// Получить пользователей из Identity по их идентификаторам
+    /// </summary>
+    public Task<TResponseModel<UserInfoModel[]>> GetUsersOfIdentity(string[] req);
+
+    /// <summary>
+    /// Получить пользователей из Identity по их Email
+    /// </summary>
+    public Task<TResponseModel<UserInfoModel[]>> GetUsersIdentityByEmail(string[] req);
+
+    /// <summary>
+    /// Обновляет адрес Email, если токен действительный для пользователя.
+    /// </summary>
+    /// <param name="req">Пользователь, адрес электронной почты которого необходимо обновить.Новый адрес электронной почты.Измененный токен электронной почты, который необходимо подтвердить.</param>
+    public Task<ResponseBaseModel> ChangeEmail(IdentityEmailTokenModel req);
+
+    /// <summary>
+    /// Обновить пользователю поля: FirstName и LastName
+    /// </summary>
+    public Task<ResponseBaseModel> UpdateUserDetails(IdentityDetailsModel req);
+
+    /// <summary>
+    /// Claim: Remove
+    /// </summary>
+    public Task<ResponseBaseModel> ClaimDelete(ClaimAreaIdModel req);
+
+    /// <summary>
+    /// Claim: Update or create
+    /// </summary>
+    public Task<ResponseBaseModel> ClaimUpdateOrCreate(ClaimUpdateModel req);
+
+    /// <summary>
+    /// Get claims
+    /// </summary>
+    public Task<List<ClaimBaseModel>> GetClaims(ClaimAreaOwnerModel req);
+
+    /// <summary>
+    /// Установить блокировку пользователю
+    /// </summary>
+    public Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req);
+
+    /// <summary>
+    /// Пользователи
+    /// </summary>
+    public Task<TPaginationResponseModel<UserInfoModel>> FindUsers(FindWithOwnedRequestModel req);
+
+    /// <summary>
+    /// Сбрасывает пароль на указанный
+    /// после проверки заданного сброса пароля.
+    /// </summary>
+    public Task<ResponseBaseModel> ResetPassword(IdentityPasswordTokenModel req);
+
+    /// <summary>
+    /// FindByEmail
+    /// </summary>
+    public Task<TResponseModel<UserInfoModel>> FindByEmail(string email);
+
+    /// <summary>
+    /// Создает и отправляет токен подтверждения электронной почты для указанного пользователя.
+    /// </summary>
+    /// <remarks>
+    /// Этот API поддерживает инфраструктуру ASP.NET Core Identity и не предназначен для использования в качестве абстракции электронной почты общего назначения.
+    /// Он должен быть реализован в приложении, чтобы  Identityинфраструктура могла отправлять электронные письма с подтверждением.
+    /// </remarks>
+    public Task<ResponseBaseModel> GenerateEmailConfirmation(SimpleUserIdentityModel req);
+
+    /// <summary>
+    /// Создать пользователя (без пароля)
+    /// </summary>
+    public Task<RegistrationNewUserResponseModel> CreateNewUserEmail(string req);
+
+    /// <summary>
+    /// Создать пользователя с паролем
+    /// </summary>
+    public Task<RegistrationNewUserResponseModel> CreateNewUserWithPassword(RegisterNewUserPasswordModel req);
+
+    /// <summary>
+    /// Установить пользователю Claim`s[TelegramId, FirstName, LastName, PhoneNum]
+    /// </summary>
+    public Task<TResponseModel<bool>> ClaimsUserFlush(string user_id);
+
+    /// <summary>
+    /// Проверяет, соответствует ли токен подтверждения электронной почты указанному пользователю.
+    /// </summary>
+    /// <param name="req">Пользователь, для которого необходимо проверить токен подтверждения электронной почты.</param>
+    public Task<ResponseBaseModel> ConfirmEmail(UserCodeModel req);
+
     #region telegram
     /// <summary>
     /// Find user identity by telegram - receive
@@ -34,7 +159,7 @@ public interface IIdentityTools
     /// Telegram пользователи (сохранённые).
     /// Все пользователи, которые когда либо писали что либо в бота - сохраняются/кэшируются в БД.
     /// </summary>
-    public Task<TPaginationResponseModel<TelegramUserViewModel>> FindUsersTelegramAsync(FindRequestModel req);
+    public Task<TPaginationResponseModel<TelegramUserViewModel>> FindUsersTelegram(FindRequestModel req);
 
     /// <summary>
     /// Telegram: Подтверждение токена
@@ -89,7 +214,7 @@ public interface IIdentityTools
     /// <summary>
     /// Роли. Если указан 'OwnerId', то поиск ограничивается ролями данного пользователя
     /// </summary>
-    public Task<TPaginationResponseModel<RoleInfoModel>> FindRolesAsync(FindWithOwnedRequestModel req);
+    public Task<TPaginationResponseModel<RoleInfoModel>> FindRoles(FindWithOwnedRequestModel req);
 
     /// <summary>
     /// Создать новую роль
@@ -111,123 +236,4 @@ public interface IIdentityTools
     /// </summary>
     public Task<ResponseBaseModel> AddRoleToUser(RoleEmailModel req);
     #endregion
-
-    /// <summary>
-    /// Создает токен сброса пароля для указанного <paramref name="userId"/>, используя настроенного поставщика токенов сброса пароля.
-    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    public Task<TResponseModel<string?>> GeneratePasswordResetTokenAsync(string userId);
-
-    /// <summary>
-    /// Этот API поддерживает инфраструктуру ASP.NET Core Identity и не предназначен для использования в качестве абстракции электронной почты общего назначения.
-    /// Он должен быть реализован в приложении, чтобы инфраструктура идентификации могла отправлять электронные письма для сброса пароля.
-    /// </summary>
-    public Task<ResponseBaseModel> SendPasswordResetLinkAsync(SendPasswordResetLinkRequestModel req);
-
-    /// <summary>
-    /// Изменяет пароль пользователя после подтверждения правильности указанного currentPassword.
-    /// Если userId не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    /// <param name="req">Текущий пароль, который необходимо проверить перед изменением.
-    /// Новый пароль, который необходимо установить для указанного userId.Пользователь, пароль которого должен быть установлен.
-    /// Если не указан, то для текущего пользователя (запрос/сессия).</param>
-    public Task<ResponseBaseModel> ChangePasswordAsync(IdentityChangePasswordModel req);
-
-    /// <summary>
-    /// Добавляет password к указанному userId, только если у пользователя еще нет пароля.
-    /// Если userId не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    public Task<ResponseBaseModel> AddPasswordAsync(IdentityPasswordModel req);
-
-    /// <summary>
-    /// SelectUsersOfIdentity
-    /// </summary>
-    public Task<TPaginationResponseModel<UserInfoModel>> SelectUsersOfIdentity(TPaginationRequestModel<SimpleBaseRequestModel> req);
-
-    /// <summary>
-    /// Получить пользователей из Identity по их идентификаторам
-    /// </summary>
-    public Task<TResponseModel<UserInfoModel[]>> GetUsersOfIdentity(string[] req);
-
-    /// <summary>
-    /// Получить пользователей из Identity по их Email
-    /// </summary>
-    public Task<TResponseModel<UserInfoModel[]>> GetUsersIdentityByEmail(string[] req);
-
-    /// <summary>
-    /// Обновляет адрес Email, если токен действительный для пользователя.
-    /// </summary>
-    /// <param name="req">Пользователь, адрес электронной почты которого необходимо обновить.Новый адрес электронной почты.Измененный токен электронной почты, который необходимо подтвердить.</param>
-    public Task<ResponseBaseModel> ChangeEmailAsync(IdentityEmailTokenModel req);
-
-    /// <summary>
-    /// Обновить пользователю поля: FirstName и LastName
-    /// </summary>
-    public Task<ResponseBaseModel> UpdateUserDetails(IdentityDetailsModel req);
-
-    /// <summary>
-    /// Claim: Remove
-    /// </summary>
-    public Task<ResponseBaseModel> ClaimDelete(ClaimAreaIdModel req);
-
-    /// <summary>
-    /// Claim: Update or create
-    /// </summary>
-    public Task<ResponseBaseModel> ClaimUpdateOrCreate(ClaimUpdateModel req);
-
-    /// <summary>
-    /// Get claims
-    /// </summary>
-    public Task<List<ClaimBaseModel>> GetClaims(ClaimAreaOwnerModel req);
-
-    /// <summary>
-    /// Установить блокировку пользователю
-    /// </summary>
-    public Task<ResponseBaseModel> SetLockUser(IdentityBooleanModel req);
-
-    /// <summary>
-    /// Пользователи
-    /// </summary>
-    public Task<TPaginationResponseModel<UserInfoModel>> FindUsersAsync(FindWithOwnedRequestModel req);
-
-    /// <summary>
-    /// Сбрасывает пароль на указанный
-    /// после проверки заданного сброса пароля.
-    /// </summary>
-    public Task<ResponseBaseModel> ResetPasswordAsync(IdentityPasswordTokenModel req);
-
-    /// <summary>
-    /// FindByEmailAsync
-    /// </summary>
-    public Task<TResponseModel<UserInfoModel>> FindByEmailAsync(string email);
-
-    /// <summary>
-    /// Создает и отправляет токен подтверждения электронной почты для указанного пользователя.
-    /// </summary>
-    /// <remarks>
-    /// Этот API поддерживает инфраструктуру ASP.NET Core Identity и не предназначен для использования в качестве абстракции электронной почты общего назначения.
-    /// Он должен быть реализован в приложении, чтобы  Identityинфраструктура могла отправлять электронные письма с подтверждением.
-    /// </remarks>
-    public Task<ResponseBaseModel> GenerateEmailConfirmation(SimpleUserIdentityModel req);
-
-    /// <summary>
-    /// Создать пользователя (без пароля)
-    /// </summary>
-    public Task<RegistrationNewUserResponseModel> CreateNewUserEmailAsync(string req);
-
-    /// <summary>
-    /// Создать пользователя с паролем
-    /// </summary>
-    public Task<RegistrationNewUserResponseModel> CreateNewUserWithPasswordAsync(RegisterNewUserPasswordModel req);
-
-    /// <summary>
-    /// Установить пользователю Claim`s[TelegramId, FirstName, LastName, PhoneNum]
-    /// </summary>
-    public Task<TResponseModel<bool>> ClaimsUserFlush(string user_id);
-
-    /// <summary>
-    /// Проверяет, соответствует ли токен подтверждения электронной почты указанному пользователю.
-    /// </summary>
-    /// <param name="req">Пользователь, для которого необходимо проверить токен подтверждения электронной почты.</param>
-    public Task<ResponseBaseModel> ConfirmEmailAsync(UserCodeModel req);
 }

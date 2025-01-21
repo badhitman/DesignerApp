@@ -26,6 +26,6 @@ public class AddPasswordForUserReceive(IIdentityTools idRepo, ILogger<AddPasswor
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogWarning(JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings));
-        return await idRepo.AddPasswordAsync(req);
+        return await idRepo.AddPassword(req);
     }
 }

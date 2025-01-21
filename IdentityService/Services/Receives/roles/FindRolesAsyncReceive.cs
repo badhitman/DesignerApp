@@ -24,6 +24,6 @@ public class FindRolesAsyncReceive(IIdentityTools idRepo, ILogger<FindRolesAsync
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogWarning(JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings));
-        return await idRepo.FindRolesAsync(req);
+        return await idRepo.FindRoles(req);
     }
 }

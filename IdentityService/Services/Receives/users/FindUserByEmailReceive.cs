@@ -23,6 +23,6 @@ public class FindUserByEmailReceive(IIdentityTools idRepo)
         if (string.IsNullOrWhiteSpace(req) || !MailAddress.TryCreate(req, out _))
             throw new ArgumentNullException(nameof(req));
 
-        return await idRepo.FindByEmailAsync(req);
+        return await idRepo.FindByEmail(req);
     }
 }

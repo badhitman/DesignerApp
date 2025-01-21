@@ -24,6 +24,6 @@ public class FindUsersTelegramReceive(IIdentityTools identityRepo)
     public async Task<TPaginationResponseModel<TelegramUserViewModel>?> ResponseHandleAction(FindRequestModel? payload)
     {
         ArgumentNullException.ThrowIfNull(payload);
-        return await identityRepo.FindUsersTelegramAsync(payload);
+        return await identityRepo.FindUsersTelegram(payload);
     }
 }

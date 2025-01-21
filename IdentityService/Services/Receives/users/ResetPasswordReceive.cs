@@ -29,6 +29,6 @@ public class ResetPasswordReceive(IIdentityTools idRepo, ILogger<ResetPasswordRe
     {
         ArgumentNullException.ThrowIfNull(req);
         loggerRepo.LogWarning(JsonConvert.SerializeObject(req, GlobalStaticConstants.JsonSerializerSettings));
-        return await idRepo.ResetPasswordAsync(req);
+        return await idRepo.ResetPassword(req);
     }
 }
