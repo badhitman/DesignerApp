@@ -29,17 +29,6 @@ public class UsersProfilesService(
 {
 #pragma warning restore CS9107
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SetPhoneNumber(string? phoneNumber, string? userId = null)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        await userManager.SetPhoneNumberAsync(user.ApplicationUser, phoneNumber);
-        return ResponseBaseModel.CreateSuccess("Телефон успешно установлен");
-    }
-
-    /// <inheritdoc/>
     public async Task<UserBooleanResponseModel> CheckUserPassword(string password, string? userId = null)
     {
         ApplicationUserResponseModel user = await GetUser(userId);
@@ -166,28 +155,6 @@ public class UsersProfilesService(
             return new() { Messages = user.Messages };
 
         return new() { Response = user.ApplicationUser.UserName };
-    }
-
-    /// <inheritdoc/>
-    public async Task<TResponseModel<string?>> GetPhoneNumber(string? userId = null)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        return new() { Response = user.ApplicationUser.PhoneNumber };
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> RefreshSignIn(string? userId = null)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        await signInManager.RefreshSignInAsync(user.ApplicationUser);
-
-        return ResponseBaseModel.CreateSuccess("Вход выполнен");
     }
 
     /// <inheritdoc/>
@@ -418,6 +385,18 @@ public class UsersProfilesService(
         {
             ApplicationUser = user
         };
+    }
+
+    /// <inheritdoc/>
+    public async Task<ResponseBaseModel> RefreshSignIn(string? userId = null)
+    {
+        ApplicationUserResponseModel user = await GetUser(userId);
+        if (!user.Success() || user.ApplicationUser is null)
+            return new() { Messages = user.Messages };
+
+        await signInManager.RefreshSignInAsync(user.ApplicationUser);
+
+        return ResponseBaseModel.CreateSuccess("Вход выполнен");
     }
     #endregion
 }

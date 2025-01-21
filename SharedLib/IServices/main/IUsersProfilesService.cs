@@ -69,25 +69,6 @@ public partial interface IUsersProfilesService
     public Task<TResponseModel<string?>> GetUserName(string? userId = null);
 
     /// <summary>
-    /// Получает номер телефона, если таковой имеется, для указанного <paramref name="userId"/>.
-    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    public Task<TResponseModel<string?>> GetPhoneNumber(string? userId = null);
-
-    /// <summary>
-    /// Устанавливает номер телефона для указанного <paramref name="userId"/>.
-    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    public Task<ResponseBaseModel> SetPhoneNumber(string? phoneNumber, string? userId = null);
-
-    /// <summary>
-    /// Выполняет вход в указанный <paramref name="userId"/>, сохраняя при этом существующие свойства
-    /// AuthenticationProperties текущего вошедшего пользователя, например RememberMe.
-    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    public Task<ResponseBaseModel> RefreshSignIn(string? userId = null);
-
-    /// <summary>
     /// Извлекает связанные логины для указанного <param ref="userId"/>.
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
     /// </summary>
@@ -150,8 +131,6 @@ public partial interface IUsersProfilesService
     /// </summary>
     public Task<ResponseBaseModel> TryAddRolesToUser(IEnumerable<string> addRoles, string? userId = null);
 
-
-    #region done
     /// <summary>
     /// Изменяет пароль пользователя после подтверждения правильности указанного <paramref name="currentPassword"/>.
     /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
@@ -172,5 +151,11 @@ public partial interface IUsersProfilesService
     /// </summary>
     /// <param name="req">Пользователь, адрес электронной почты которого необходимо обновить.Новый адрес электронной почты.Измененный токен электронной почты, который необходимо подтвердить.</param>
     public Task<ResponseBaseModel> ChangeEmail(IdentityEmailTokenModel req);
-    #endregion
+
+    /// <summary>
+    /// Выполняет вход в указанный <paramref name="userId"/>, сохраняя при этом существующие свойства
+    /// AuthenticationProperties текущего вошедшего пользователя, например RememberMe.
+    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
+    /// </summary>
+    public Task<ResponseBaseModel> RefreshSignIn(string? userId = null);
 }
