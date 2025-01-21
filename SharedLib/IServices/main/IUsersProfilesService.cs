@@ -139,11 +139,4 @@ public partial interface IUsersProfilesService
     /// </summary>
     /// <param name="req">Пользователь, адрес электронной почты которого необходимо обновить.Новый адрес электронной почты.Измененный токен электронной почты, который необходимо подтвердить.</param>
     public Task<ResponseBaseModel> ChangeEmail(IdentityEmailTokenModel req);
-
-    /// <summary>
-    /// Выполняет вход в указанный <paramref name="userId"/>, сохраняя при этом существующие свойства
-    /// AuthenticationProperties текущего вошедшего пользователя, например RememberMe.
-    /// Если <paramref name="userId"/> не указан, то команда выполняется для текущего пользователя (запрос/сессия)
-    /// </summary>
-    public Task<ResponseBaseModel> RefreshSignIn(string? userId = null);
 }

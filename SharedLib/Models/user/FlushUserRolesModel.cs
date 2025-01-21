@@ -17,5 +17,5 @@ public class FlushUserRolesModel
     /// <summary>
     /// Роли, которые нужно назначить пользователю. Если null, то пользователь лишится всех ролей
     /// </summary>
-    public required string[] SetRoles { get; set; }
+    public required List<string> SetRoles { get; set; }
 }

@@ -251,15 +251,15 @@ public class UsersProfilesService(
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> ChangeEmail(IdentityEmailTokenModel req)
     {
-        ApplicationUser? user = await userManager.FindByIdAsync(req.UserId); ;
-        if (user is null)
+        ApplicationUserResponseModel user = await GetUser(req.UserId); ;
+        if (!user.Success() || user.ApplicationUser is null)
             return ResponseBaseModel.CreateError($"Пользователь #{req.UserId} не найден");
 
         ResponseBaseModel changeRes = await IdentityRepo.ChangeEmailAsync(req);
         if (!changeRes.Success())
             return changeRes;
 
-        await signInManager.RefreshSignInAsync(user);
+        await signInManager.RefreshSignInAsync(user.ApplicationUser);
         return ResponseBaseModel.CreateSuccess("Благодарим вас за подтверждение изменения адреса электронной почты.");
     }
 
@@ -305,17 +305,5 @@ public class UsersProfilesService(
         {
             ApplicationUser = user
         };
-    }
-
-    /// <inheritdoc/>
-    public async Task<ResponseBaseModel> RefreshSignIn(string? userId = null)
-    {
-        ApplicationUserResponseModel user = await GetUser(userId);
-        if (!user.Success() || user.ApplicationUser is null)
-            return new() { Messages = user.Messages };
-
-        await signInManager.RefreshSignInAsync(user.ApplicationUser);
-
-        return ResponseBaseModel.CreateSuccess("Вход выполнен");
     }
 }

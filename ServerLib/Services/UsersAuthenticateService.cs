@@ -16,10 +16,8 @@ namespace ServerLib;
 /// </summary>
 public class UsersAuthenticateService(
     ILogger<UsersAuthenticateService> loggerRepo,
-    IUsersProfilesService usersProfilesRepo,
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
-    // IHttpContextAccessor httpContextAccessor,
     IIdentityTransmission identityRepo,
     IOptions<UserManageConfigModel> userManageConfig) : IUsersAuthenticateService
 {
@@ -61,16 +59,16 @@ public class UsersAuthenticateService(
             return (IdentityResultResponseModel)ResponseBaseModel.CreateError(msg);
         }
         SignInResult result = await signInManager.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
-        string userId = await userManager.GetUserIdAsync(user);
+        
         if (result.Succeeded)
         {
-            msg = $"Пользователь с идентификатором '{userId}' вошел в систему с кодом восстановления.";
+            msg = $"Пользователь с идентификатором '{user.Id}' вошел в систему с кодом восстановления.";
             loggerRepo.LogInformation(msg);
             return new() { };
         }
         else if (result.IsLockedOut)
         {
-            msg = $"Учетная запись пользователя #'{userId}' заблокирована.";
+            msg = $"Учетная запись пользователя #'{user.Id}' заблокирована.";
             loggerRepo.LogError(msg);
             return new()
             {
@@ -83,7 +81,7 @@ public class UsersAuthenticateService(
         }
         else
         {
-            msg = $"Для пользователя с идентификатором введен неверный код восстановления. '{userId}'";
+            msg = $"Для пользователя с идентификатором введен неверный код восстановления. '{user.Id}'";
             loggerRepo.LogWarning(msg);
             return (IdentityResultResponseModel)ResponseBaseModel.CreateError(msg);
         }
@@ -260,7 +258,7 @@ public class UsersAuthenticateService(
         FlushUserRolesModel? user_flush = userManageConfig.Value.UpdatesUsersRoles?.FirstOrDefault(x => x.EmailUser.Equals(userEmail, StringComparison.OrdinalIgnoreCase));
         if (user_flush is not null)
         {
-            ResponseBaseModel add_res = await usersProfilesRepo.TryAddRolesToUser(user_flush.SetRoles, currentAppUser.Id);
+            ResponseBaseModel add_res = await identityRepo.TryAddRolesToUser(new() { RolesNames = user_flush.SetRoles, UserId = currentAppUser.Id });
             if (add_res.Success())
                 await signInManager.RefreshSignInAsync(currentAppUser);
         }
