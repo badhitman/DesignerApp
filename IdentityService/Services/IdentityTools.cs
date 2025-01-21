@@ -12,6 +12,7 @@ using System.Net.Mail;
 using IdentityLib;
 using System.Text;
 using SharedLib;
+using Org.BouncyCastle.Ocsp;
 
 namespace IdentityService;
 
@@ -29,6 +30,19 @@ public class IdentityTools(
     ITelegramTransmission tgRemoteRepo,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
+    /// <inheritdoc/>
+    public async Task<TResponseModel<bool?>> GetTwoFactorEnabled(string userId)
+    {
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
+        using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        ApplicationUser? user = await userManager.FindByIdAsync(userId); ;
+        if (user is null)
+            return new() { Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = $"Пользователь #{userId} не найден" }] };
+
+        return new() { Response = await userManager.GetTwoFactorEnabledAsync(user) };
+    }
+
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetTwoFactorEnabled(SetTwoFactorEnabledRequestModel req)
     {

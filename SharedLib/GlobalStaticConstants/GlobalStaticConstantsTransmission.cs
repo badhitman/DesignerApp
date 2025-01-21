@@ -51,6 +51,11 @@ public static partial class GlobalStaticConstants
         public readonly static string AddPasswordToUserReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.USER_CONTROLLER_NAME, $"{Routes.ADD_ACTION_NAME}-{Routes.PASSWORD_CONTROLLER_NAME}");
 
         /// <summary>
+        /// Включена ли для указанного userId двухфакторная аутентификация
+        /// </summary>
+        public readonly static string GetTwoFactorEnabledReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.TWOFACTOR_CONTROLLER_NAME, $"{Routes.ENABLED_CONTROLLER_NAME}-{Routes.GET_ACTION_NAME}");
+        
+        /// <summary>
         /// Вкл/Выкл двухфакторную аутентификацию для указанного userId
         /// </summary>
         public readonly static string SetTwoFactorEnabledReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.IDENTITY_CONTROLLER_NAME, Routes.TWOFACTOR_CONTROLLER_NAME, $"{Routes.ENABLED_CONTROLLER_NAME}-{Routes.SET_ACTION_NAME}");

@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTransmission
 {
     /// <summary>
+    /// Включена ли для указанного <paramref name="userId"/> двухфакторная аутентификация.
+    /// </summary>
+    public Task<TResponseModel<bool?>> GetTwoFactorEnabled(string userId);
+
+    /// <summary>
     /// Вкл/Выкл двухфакторную аутентификацию для указанного userId
     /// </summary>
     public Task<ResponseBaseModel> SetTwoFactorEnabled(SetTwoFactorEnabledRequestModel req);

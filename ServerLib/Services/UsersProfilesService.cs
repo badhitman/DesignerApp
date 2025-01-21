@@ -82,6 +82,7 @@ public class UsersProfilesService(
         };
     }
 
+    #region done
     /// <inheritdoc/>
     public async Task<TResponseModel<bool?>> GetTwoFactorEnabled(string? userId = null)
     {
@@ -89,10 +90,9 @@ public class UsersProfilesService(
         if (!user.Success() || user.ApplicationUser is null)
             return new() { Messages = user.Messages };
 
-        return new() { Response = await userManager.GetTwoFactorEnabledAsync(user.ApplicationUser) };
+        return await IdentityRepo.GetTwoFactorEnabled(user.ApplicationUser.Id);
     }
 
-    #region done
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> SetTwoFactorEnabled(bool enabled_set, string? userId = null)
     {
