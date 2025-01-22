@@ -133,6 +133,7 @@ note for DbPostgreLib "Если используется другая СУБД, 
 #### [IdentityService](https://github.com/badhitman/DesignerApp/tree/main/IdentityService)
 - Управление пользователями: регистрация, авторизация и т.д.
 - Управление ролями (правами) пользователей
+- Режим 2FA для всех пользователей сразу.
 
 #### [HelpdeskService](https://github.com/badhitman/DesignerApp/tree/main/HelpdeskService) 
 - Система документооборота со своим собственным контекстом: `HelpdeskContext`.

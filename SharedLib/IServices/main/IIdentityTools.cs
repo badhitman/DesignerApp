@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IIdentityTools
 {
     /// <summary>
+    /// Проверка 2FA токена
+    /// </summary>
+    public Task<TResponseModel<string>> CheckToken2FA(CheckToken2FARequestModel req);
+
+    /// <summary>
     /// Чтение 2fa токена (из кеша)
     /// </summary>
     public Task<TResponseModel<string>> ReadToken2FA(string userId);

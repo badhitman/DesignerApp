@@ -35,6 +35,27 @@ public class IdentityTools(
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<string>> CheckToken2FA(CheckToken2FARequestModel req)
+    {
+        MemCachePrefixModel pref = new(GlobalStaticConstants.Routes.TWOFACTOR_CONTROLLER_NAME, GlobalStaticConstants.Routes.ALIAS_CONTROLLER_NAME);
+        string? userId = await memCache.GetStringValueAsync(pref, req.UserAlias);
+        if (string.IsNullOrWhiteSpace(userId))
+            return new() { Messages = [new() { Text = "Алиас пользователя отсутствует!", TypeMessage = ResultTypesEnum.Error }] };
+
+        await memCache.RemoveAsync(pref, req.UserAlias);
+
+        string? token = await memCache.GetStringValueAsync(new MemCachePrefixModel(GlobalStaticConstants.Routes.TWOFACTOR_CONTROLLER_NAME, GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME), userId);
+        if (string.IsNullOrWhiteSpace(token))
+            return new() { Messages = [new() { Text = "Токен 2FA отсутствует!", TypeMessage = ResultTypesEnum.Error }] };
+
+        if (!req.Token.Equals(token))
+            return new() { Messages = [new() { Text = "Токен не верный!", TypeMessage = ResultTypesEnum.Error }] };
+
+        await memCache.RemoveAsync(new MemCachePrefixModel(GlobalStaticConstants.Routes.TWOFACTOR_CONTROLLER_NAME, GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME), userId);
+        return new() { Response = userId, Messages = [new() { Text = "Токен верный", TypeMessage = ResultTypesEnum.Success }] };
+    }
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<string>> ReadToken2FA(string userId)
     {
         return new() { Response = await memCache.GetStringValueAsync(new MemCachePrefixModel(GlobalStaticConstants.Routes.TWOFACTOR_CONTROLLER_NAME, GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME), userId) };
@@ -57,11 +78,11 @@ public class IdentityTools(
         string token = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
 
         if (!string.IsNullOrWhiteSpace(user.Email))
-            return (TResponseModel<string>)await mailRepo.SendEmailAsync(user.Email, "Authentication 2FA token", token);
+            await mailRepo.SendEmailAsync(user.Email, "Authentication 2FA token", token);
 
         await memCache.SetStringAsync(new MemCachePrefixModel(GlobalStaticConstants.Routes.TWOFACTOR_CONTROLLER_NAME, GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME), userId, token, TimeSpan.FromMinutes(5));
-        
-        string aliasToken = Guid.NewGuid().ToString().Replace("-","").Replace("{", "").Replace("}", "");
+
+        string aliasToken = Guid.NewGuid().ToString().Replace("-", "").Replace("{", "").Replace("}", "");
         await memCache.SetStringAsync(new MemCachePrefixModel(GlobalStaticConstants.Routes.TWOFACTOR_CONTROLLER_NAME, GlobalStaticConstants.Routes.ALIAS_CONTROLLER_NAME), aliasToken, userId, TimeSpan.FromMinutes(5));
 
         return new() { Response = aliasToken };

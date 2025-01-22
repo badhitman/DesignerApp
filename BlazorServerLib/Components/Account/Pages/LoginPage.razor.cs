@@ -62,14 +62,14 @@ public partial class LoginPage(IUsersAuthenticateService UserAuthManage, Navigat
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
         }
-        if (!string.IsNullOrWhiteSpace(TwoFactorCode))
+        if (!string.IsNullOrWhiteSpace(TwoFactorCode) && !string.IsNullOrWhiteSpace(UserAlias))
             await Login2FA();
     }
 
     /// <summary>
     /// LoginUser
     /// </summary>
-    public async Task LoginUser()
+    public async Task OnValidSubmit()
     {
         result = await UserAuthManage.PasswordSignIn(Input.Email, Input.Password, Input.RememberMe);
         Messages.AddRange(result.Messages);
@@ -84,11 +84,11 @@ public partial class LoginPage(IUsersAuthenticateService UserAuthManage, Navigat
 
     private async Task Login2FA()
     {
-        if (string.IsNullOrWhiteSpace(TwoFactorCode))
+        if (string.IsNullOrWhiteSpace(TwoFactorCode) || string.IsNullOrWhiteSpace(UserAlias))
             return;
 
         string authenticatorCode = TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
-        IdentityResultResponseModel result = await AuthRepo.TwoFactorAuthenticatorSignIn(authenticatorCode, true, Input.RememberMe);
+        IdentityResultResponseModel result = await AuthRepo.TwoFactorAuthenticatorSignIn(authenticatorCode, true, Input.RememberMe, UserAlias);
 
         if (result.Succeeded == true)
         {

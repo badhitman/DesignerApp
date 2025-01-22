@@ -2,7 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Spreadsheet;
 using SharedLib;
 
 namespace RemoteCallLib;
@@ -12,6 +12,10 @@ namespace RemoteCallLib;
 /// </summary>
 public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmission
 {
+    /// <inheritdoc/>
+    public async Task<TResponseModel<string>> CheckToken2FA(CheckToken2FARequestModel req)
+        => await rabbitClient.MqRemoteCall<TResponseModel<string>>(GlobalStaticConstants.TransmissionQueues.CheckToken2FAReceive, req) ?? new();
+
     /// <inheritdoc/>
     public async Task<TResponseModel<string>> ReadToken2FA(string userId)
         => await rabbitClient.MqRemoteCall<TResponseModel<string>>(GlobalStaticConstants.TransmissionQueues.ReadToken2FAReceive, userId) ?? new();

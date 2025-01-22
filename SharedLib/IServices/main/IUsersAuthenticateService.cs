@@ -15,7 +15,8 @@ public interface IUsersAuthenticateService
     /// <param name="code">Код двухфакторной аутентификации для проверки.</param>
     /// <param name="isPersistent">Флаг, указывающий, должен ли файл cookie для входа сохраняться после закрытия браузера.</param>
     /// <param name="rememberClient">Флаг, указывающий, следует ли запомнить текущий браузер, подавляя все дальнейшие запросы двухфакторной аутентификации.</param>
-    public Task<IdentityResultResponseModel> TwoFactorAuthenticatorSignIn(string code, bool isPersistent, bool rememberClient);
+    /// <param name="userAlias">User alias</param>
+    public Task<IdentityResultResponseModel> TwoFactorAuthenticatorSignIn(string code, bool isPersistent, bool rememberClient, string? userAlias = null);
 
     /// <summary>
     /// Войти в учётную запись пользователя

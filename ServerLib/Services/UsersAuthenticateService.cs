@@ -27,19 +27,39 @@ public class UsersAuthenticateService(
     UserManageConfigModel UserConfMan => userManageConfig.Value;
 
     /// <inheritdoc/>
-    public async Task<IdentityResultResponseModel> TwoFactorAuthenticatorSignIn(string code, bool isPersistent, bool rememberClient)
+    public async Task<IdentityResultResponseModel> TwoFactorAuthenticatorSignIn(string code, bool isPersistent, bool rememberClient, string? userAlias = null)
     {
-        ApplicationUser? Init2fa = await signInManager.GetTwoFactorAuthenticationUserAsync();
-
         string authenticatorCode = code.Replace(" ", string.Empty).Replace("-", string.Empty);
-        SignInResult result = await signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, isPersistent, rememberClient);
+
+        if (await signInManager.GetTwoFactorAuthenticationUserAsync() is not null)
+        {
+            SignInResult result = await signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, isPersistent, rememberClient);
+
+            return new()
+            {
+                IsLockedOut = result.IsLockedOut,
+                IsNotAllowed = result.IsNotAllowed,
+                RequiresTwoFactor = result.RequiresTwoFactor,
+                Succeeded = result.Succeeded,
+            };
+        }
+        else if (!string.IsNullOrWhiteSpace(userAlias))
+        {
+            TResponseModel<string> checkToken = await identityRepo.CheckToken2FA(new() { Token = authenticatorCode, UserAlias = userAlias });
+            if (checkToken.Success() && !string.IsNullOrWhiteSpace(checkToken.Response))
+            {
+                await SignIn(checkToken.Response, isPersistent);
+                return new()
+                {
+                    Succeeded = true,
+                    Messages = [new() { TypeMessage = ResultTypesEnum.Success, Text = "Проверка пройдена успешно" }]
+                };
+            }
+        }
 
         return new()
         {
-            IsLockedOut = result.IsLockedOut,
-            IsNotAllowed = result.IsNotAllowed,
-            RequiresTwoFactor = result.RequiresTwoFactor,
-            Succeeded = result.Succeeded,
+            Messages = [new() { TypeMessage = ResultTypesEnum.Error, Text = "Ошибка" }]
         };
     }
 
