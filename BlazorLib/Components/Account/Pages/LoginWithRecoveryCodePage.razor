@@ -21,7 +21,7 @@
                 <label for="recovery-code" class="form-label">Код восстановления</label>
                 <ValidationMessage For="() => Input.RecoveryCode" class="text-danger" />
             </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Авторизоваться</button>
+            <button type="submit" class="btn btn-lg btn-primary">Авторизоваться</button>
         </EditForm>
     </div>
 </div>
@@ -37,7 +37,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        TResponseModel<UserInfoModel?> user = await UsersAuthRepo.GetTwoFactorAuthenticationUserAsync();
+        TResponseModel<UserInfoModel?> user = await UsersAuthRepo.GetTwoFactorAuthenticationUser();
         Messages = user.Messages;
         if (user.Response is null)
             throw new InvalidOperationException("Невозможно загрузить пользователя двухфакторной аутентификации.");
@@ -47,7 +47,7 @@
     {
         Messages = null;
         string recoveryCode = Input.RecoveryCode.Replace(" ", string.Empty);
-        IdentityResultResponseModel result = await UsersAuthRepo.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
+        IdentityResultResponseModel result = await UsersAuthRepo.TwoFactorRecoveryCodeSignIn(recoveryCode);
         Messages = result.Messages;
 
         if (result.Success())

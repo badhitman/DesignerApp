@@ -89,6 +89,14 @@ public class Program
             .Configure<SmtpConfigModel>(builder.Configuration.GetSection("SmtpConfig"))
             ;
 
+        builder.Services.AddOptions();
+        builder.Services.AddMemoryCache();
+        builder.Services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = builder.Configuration.GetConnectionString($"RedisConnectionString{_modePrefix}");
+        });
+        builder.Services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
+
         string connectionIdentityString = builder.Configuration.GetConnectionString($"IdentityConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'IdentityConnection{_modePrefix}' not found.");
         builder.Services.AddDbContextFactory<IdentityAppDbContext>(opt =>
             opt.UseNpgsql(connectionIdentityString));

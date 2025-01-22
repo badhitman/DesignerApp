@@ -10,9 +10,14 @@ namespace SharedLib;
 public interface IIdentityTransmission
 {
     /// <summary>
+    /// Чтение 2fa токена (из кеша)
+    /// </summary>
+    public Task<TResponseModel<string>> ReadToken2FA(string userId);
+
+    /// <summary>
     /// Генерация (и отправка на Email++) 2fa токена
     /// </summary>
-    public Task<ResponseBaseModel> GenerateOTPFor2StepVerification(string userId);
+    public Task<TResponseModel<string>> GenerateToken2FA(string userId);
 
     /// <summary>
     /// Извлекает связанные логины для указанного <param ref="userId"/>

@@ -62,7 +62,7 @@ public class PublicController(ITelegramTransmission tgRepo, IIdentityTransmissio
             if (uc.Response is null)
                 return NotFound(ResponseBaseModel.CreateError("Пользователь не найден"));
 
-            await uaRepo.SignInAsync(uc.Response.UserIdentityId, false);
+            await uaRepo.SignIn(uc.Response.UserIdentityId, false);
             return Ok(uc);
         }
 

@@ -15,6 +15,7 @@ using SharedLib;
 using Org.BouncyCastle.Ocsp;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Drawing;
+using Newtonsoft.Json.Linq;
 
 namespace IdentityService;
 
@@ -27,13 +28,20 @@ public class IdentityTools(
     //IUserStore<ApplicationUser> userStore,
     //RoleManager<ApplicationRole> roleManager,
     //UserManager<ApplicationUser> userManager,
+    IManualCustomCacheService memCache,
     IMailProviderService mailRepo,
     ILogger<IdentityTools> loggerRepo,
     ITelegramTransmission tgRemoteRepo,
     IDbContextFactory<IdentityAppDbContext> identityDbFactory) : IIdentityTools
 {
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> GenerateOTPFor2StepVerification(string userId)
+    public async Task<TResponseModel<string>> ReadToken2FA(string userId)
+    {
+        return new() { Response = await memCache.GetStringValueAsync(new MemCachePrefixModel(GlobalStaticConstants.Routes.TWOFACTOR_CONTROLLER_NAME, GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME), userId) };
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<string>> GenerateToken2FA(string userId)
     {
         using IServiceScope scope = serviceScopeFactory.CreateScope();
         using UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
@@ -44,14 +52,19 @@ public class IdentityTools(
 
         IList<string> providers = await userManager.GetValidTwoFactorProvidersAsync(user);
         if (!providers.Contains("Email"))
-            return ResponseBaseModel.CreateError("Invalid 2-Step Verification Provider.");
+            return (TResponseModel<string>)ResponseBaseModel.CreateError("Invalid 2-Step Verification Provider.");
 
         string token = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
 
         if (!string.IsNullOrWhiteSpace(user.Email))
-            return await mailRepo.SendEmailAsync(user.Email, "Authentication 2FA token", token);
+            return (TResponseModel<string>)await mailRepo.SendEmailAsync(user.Email, "Authentication 2FA token", token);
 
-        return ResponseBaseModel.CreateSuccess("Ok");
+        await memCache.SetStringAsync(new MemCachePrefixModel(GlobalStaticConstants.Routes.TWOFACTOR_CONTROLLER_NAME, GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME), userId, token, TimeSpan.FromMinutes(5));
+        
+        string aliasToken = Guid.NewGuid().ToString().Replace("-","").Replace("{", "").Replace("}", "");
+        await memCache.SetStringAsync(new MemCachePrefixModel(GlobalStaticConstants.Routes.TWOFACTOR_CONTROLLER_NAME, GlobalStaticConstants.Routes.ALIAS_CONTROLLER_NAME), aliasToken, userId, TimeSpan.FromMinutes(5));
+
+        return new() { Response = aliasToken };
     }
 
     /// <inheritdoc/>

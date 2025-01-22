@@ -13,8 +13,12 @@ namespace RemoteCallLib;
 public class IdentityTransmission(IRabbitClient rabbitClient) : IIdentityTransmission
 {
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> GenerateOTPFor2StepVerification(string userId)
-        => await rabbitClient.MqRemoteCall<ResponseBaseModel>(GlobalStaticConstants.TransmissionQueues.GenerateOTPFor2StepVerificationReceive, userId) ?? new();
+    public async Task<TResponseModel<string>> ReadToken2FA(string userId)
+        => await rabbitClient.MqRemoteCall<TResponseModel<string>>(GlobalStaticConstants.TransmissionQueues.ReadToken2FAReceive, userId) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<string>> GenerateToken2FA(string userId)
+        => await rabbitClient.MqRemoteCall<TResponseModel<string>>(GlobalStaticConstants.TransmissionQueues.GenerateToken2FAReceive, userId) ?? new();
 
     /// <inheritdoc/>
     public async Task<TResponseModel<IEnumerable<UserLoginInfoModel>>> GetUserLogins(string userId)

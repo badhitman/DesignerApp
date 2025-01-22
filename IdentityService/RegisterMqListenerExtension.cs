@@ -18,14 +18,15 @@ public static class RegisterMqListenerExtension
     /// RegisterMqListeners
     /// </summary>
     public static IServiceCollection IdentityRegisterMqListeners(this IServiceCollection services)
-    {
+    {//ReadToken2FAReceive
         return services
             .RegisterMqListener<ClaimsUserFlushReceive, string, TResponseModel<bool>>()
             .RegisterMqListener<GetUsersIdentityByEmailReceive, string[], TResponseModel<UserInfoModel[]>>()
             .RegisterMqListener<GetUserIdentityByTelegramReceive, long[], TResponseModel<UserInfoModel[]>>()
             .RegisterMqListener<GetUsersOfIdentityReceive, string[], TResponseModel<UserInfoModel[]>>()
             .RegisterMqListener<SendEmailReceive, SendEmailRequestModel, ResponseBaseModel>()
-            .RegisterMqListener<GenerateOTPFor2StepVerificationReceive, string, ResponseBaseModel>()
+            .RegisterMqListener<ReadToken2FAReceive, string, TResponseModel<string>>()
+            .RegisterMqListener<GenerateOTPFor2StepVerificationReceive, string, TResponseModel<string>>()
             .RegisterMqListener<GetUserLoginsReceive, string, TResponseModel<IEnumerable<UserLoginInfoModel>>>()
             .RegisterMqListener<CheckUserPasswordReceive, IdentityPasswordModel, ResponseBaseModel>()
             .RegisterMqListener<AddPasswordForUserReceive, IdentityPasswordModel, ResponseBaseModel>()

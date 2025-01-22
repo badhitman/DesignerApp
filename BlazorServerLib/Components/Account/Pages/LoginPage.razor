@@ -3,10 +3,6 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 
-@inject IUsersAuthenticateService UserAuthManage
-@inject NavigationManager NavigationManager
-@inject IdentityRedirectManager RedirectManager
-
 <PageTitle>Вход</PageTitle>
 
 <h2>Вход</h2>
@@ -15,41 +11,48 @@
     <div class="col-md-4">
         <section>
             <StatusMessage Messages="@result?.Messages" />
-            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
-                <DataAnnotationsValidator />
-                <hr />
-                <ValidationSummary class="text-danger" role="alert" />
-                <div class="form-floating mb-3">
-                    <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label for="email" class="form-label">Email</label>
-                    <ValidationMessage For="() => Input.Email" class="text-danger" />
-                </div>
-                <div class="form-floating mb-3">
-                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label for="password" class="form-label">Password</label>
-                    <ValidationMessage For="() => Input.Password" class="text-danger" />
-                </div>
-                <div class="checkbox mb-3">
-                    <label class="form-label">
-                        <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
-                        Запомнить меня
-                    </label>
-                </div>
-                <div>
-                    <button type="submit" class="w-100 btn btn-lg btn-primary">Вход</button>
-                </div>
-                <div class="mt-4">
-                    <p>
-                        <a href="Account/ForgotPassword">Забыли пароль?</a>
-                    </p>
-                    <p>
-                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Зарегистрируйтесь как новый пользователь</a>
-                    </p>
-                    <p>
-                        <a href="Account/ResendEmailConfirmation">Повторно отправить подтверждение по электронной почте</a>
-                    </p>
-                </div>
-            </EditForm>
+            @if (result?.RequiresTwoFactor == true)
+            {
+                <LoginWith2faComponent RememberMe="Input.RememberMe" RememberMachine ReturnUrl="@ReturnUrl" UserAlias="@result.UserId" />
+            }
+            else
+            {
+                <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+                    <DataAnnotationsValidator />
+                    <hr />
+                    <ValidationSummary class="text-danger" role="alert" />
+                    <div class="form-floating mb-3">
+                        <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                        <label for="email" class="form-label">Email</label>
+                        <ValidationMessage For="() => Input.Email" class="text-danger" />
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                        <label for="password" class="form-label">Password</label>
+                        <ValidationMessage For="() => Input.Password" class="text-danger" />
+                    </div>
+                    <div class="checkbox mb-3">
+                        <label class="form-label">
+                            <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
+                            Запомнить меня
+                        </label>
+                    </div>
+                    <div>
+                        <button type="submit" class="w-100 btn btn-lg btn-primary">Вход</button>
+                    </div>
+                    <div class="mt-4">
+                        <p>
+                            <a href="Account/ForgotPassword">Забыли пароль?</a>
+                        </p>
+                        <p>
+                            <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Зарегистрируйтесь как новый пользователь</a>
+                        </p>
+                        <p>
+                            <a href="Account/ResendEmailConfirmation">Повторно отправить подтверждение по электронной почте</a>
+                        </p>
+                    </div>
+                </EditForm>
+            }
         </section>
     </div>
 

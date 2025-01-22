@@ -45,7 +45,7 @@ public partial class DeletePersonalDataPage : BlazorBusyComponentBaseAuthModel
             throw new InvalidOperationException("Произошла непредвиденная ошибка при удалении пользователя.");
         }
 
-        await UserAuthRepo.SignOutAsync();
+        await UserAuthRepo.SignOut();
         RedirectManager.RedirectToCurrentPage();
     }
 }

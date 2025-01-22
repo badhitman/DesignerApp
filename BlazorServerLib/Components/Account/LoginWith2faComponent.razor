@@ -1,0 +1,29 @@
+﻿@inherits BlazorBusyComponentBaseModel
+
+<h1>Двухфакторная аутентификация</h1>
+<hr />
+
+<p>Вам отправлен код подтверждения на Email. Введите код из сообщения ниже.</p>
+<div class="row">
+    <div class="col-md-4">
+        <form>
+            <input type="hidden" name="RememberMe" value="@RememberMe" />
+            <input type="hidden" name="ReturnUrl" value="@ReturnUrl" />
+            <input type="hidden" name="UserAlias" value="@UserAlias" />
+
+            <div class="form-floating mb-3">
+                <input type="text" name="TwoFactorCode" class="form-control" autocomplete="off" />
+                <label for="two-factor-code" class="form-label">Код подтверждения</label>
+            </div>
+            <div class="checkbox mb-3">
+                <label for="remember-machine" class="form-label">
+                    <input type="checkbox" @bind-value="RememberMachine" />
+                    Запомнить этот браузер
+                </label>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-lg btn-primary">Авторизоваться</button>
+            </div>
+        </form>
+    </div>
+</div>

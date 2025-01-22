@@ -5,31 +5,31 @@
 namespace SharedLib;
 
 /// <summary>
-/// Represents the result of a sign-in operation.
+/// Представляет результат операции входа.
 /// </summary>
 public class IdentityResultResponseModel : ResponseBaseModel
 {
     /// <summary>
-    /// Returns a flag indication whether the sign-in was successful.
+    /// Возвращает флаг, указывающий, был ли вход успешным.
     /// </summary>
-    /// <value>True if the sign-in was successful, otherwise false.</value>
+    /// <value>True, если вход прошел успешно, в противном случае — false.</value>
     public bool? Succeeded { get; set; }
 
     /// <summary>
-    /// Returns a flag indication whether the user attempting to sign-in is locked out.
+    /// Возвращает флаг, указывающий, заблокирован ли пользователь, пытающийся войти в систему.
     /// </summary>
-    /// <value>True if the user attempting to sign-in is locked out, otherwise false.</value>
+    /// <value>True, если пользователь, пытающийся войти в систему, заблокирован, в противном случае — false.</value>
     public bool? IsLockedOut { get; set; }
 
     /// <summary>
-    /// Returns a flag indication whether the user attempting to sign-in is not allowed to sign-in.
+    /// Возвращает флаг, указывающий, разрешено ли пользователю, пытающемуся войти в систему, войти в систему.
     /// </summary>
-    /// <value>True if the user attempting to sign-in is not allowed to sign-in, otherwise false.</value>
+    /// <value>True, если пользователю, пытающемуся войти в систему, не разрешен вход, в противном случае — false.</value>
     public bool? IsNotAllowed { get; set; }
 
     /// <summary>
-    /// Returns a flag indication whether the user attempting to sign-in requires two factor authentication.
+    /// Возвращает флаг, указывающий, требует ли пользователь, пытающийся войти в систему, двухфакторную аутентификацию.
     /// </summary>
-    /// <value>True if the user attempting to sign-in requires two factor authentication, otherwise false.</value>
+    /// <value>Значение true, если пользователю, пытающемуся войти в систему, требуется двухфакторная аутентификация, в противном случае — значение false.</value>
     public bool? RequiresTwoFactor { get; set; }
 }

@@ -660,6 +660,11 @@ public static partial class GlobalStaticConstants
         public const string TOKEN_CONTROLLER_NAME = "token";
 
         /// <summary>
+        /// Alias
+        /// </summary>
+        public const string ALIAS_CONTROLLER_NAME = "alias";
+
+        /// <summary>
         /// Constructor
         /// </summary>
         public const string CONSTRUCTOR_CONTROLLER_NAME = "constructor";

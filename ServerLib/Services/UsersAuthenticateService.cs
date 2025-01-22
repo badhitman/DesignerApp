@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using IdentityLib;
 using SharedLib;
-using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Http;
 
 namespace ServerLib;
 
@@ -21,12 +21,30 @@ public class UsersAuthenticateService(
     SignInManager<ApplicationUser> signInManager,
     IStorageTransmission StorageTransmissionRepo,
     IIdentityTransmission identityRepo,
+    IHttpContextAccessor httpContextAccessor,
     IOptions<UserManageConfigModel> userManageConfig) : IUsersAuthenticateService
 {
     UserManageConfigModel UserConfMan => userManageConfig.Value;
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<UserInfoModel?>> GetTwoFactorAuthenticationUserAsync()
+    public async Task<IdentityResultResponseModel> TwoFactorAuthenticatorSignIn(string code, bool isPersistent, bool rememberClient)
+    {
+        ApplicationUser? Init2fa = await signInManager.GetTwoFactorAuthenticationUserAsync();
+
+        string authenticatorCode = code.Replace(" ", string.Empty).Replace("-", string.Empty);
+        SignInResult result = await signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, isPersistent, rememberClient);
+
+        return new()
+        {
+            IsLockedOut = result.IsLockedOut,
+            IsNotAllowed = result.IsNotAllowed,
+            RequiresTwoFactor = result.RequiresTwoFactor,
+            Succeeded = result.Succeeded,
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<UserInfoModel?>> GetTwoFactorAuthenticationUser()
     {
         ApplicationUser? au = await signInManager.GetTwoFactorAuthenticationUserAsync();
         if (au is null)
@@ -50,7 +68,7 @@ public class UsersAuthenticateService(
     }
 
     /// <inheritdoc/>
-    public async Task<IdentityResultResponseModel> TwoFactorRecoveryCodeSignInAsync(string recoveryCode)
+    public async Task<IdentityResultResponseModel> TwoFactorRecoveryCodeSignIn(string recoveryCode)
     {
         string msg;
         ApplicationUser? user = await signInManager.GetTwoFactorAuthenticationUserAsync();
@@ -90,7 +108,7 @@ public class UsersAuthenticateService(
     }
 
     /// <inheritdoc/>
-    public async Task<UserLoginInfoResponseModel> GetExternalLoginInfoAsync(string? expectedXsrf = null)
+    public async Task<UserLoginInfoResponseModel> GetExternalLoginInfo(string? expectedXsrf = null)
     {
         ExternalLoginInfo? info = await signInManager.GetExternalLoginInfoAsync(expectedXsrf);
 
@@ -103,7 +121,7 @@ public class UsersAuthenticateService(
     }
 
     /// <inheritdoc/>
-    public async Task<ExternalLoginSignInResponseModel> ExternalLoginSignInAsync(string loginProvider, string providerKey, string? identityName, bool isPersistent = false, bool bypassTwoFactor = true)
+    public async Task<ExternalLoginSignInResponseModel> ExternalLoginSignIn(string loginProvider, string providerKey, string? identityName, bool isPersistent = false, bool bypassTwoFactor = true)
     {
         // Sign in the user with this external login provider if the user already has a login.
         SignInResult result = await signInManager.ExternalLoginSignInAsync(
@@ -147,7 +165,7 @@ public class UsersAuthenticateService(
     }
 
     /// <inheritdoc/>
-    public async Task<RegistrationNewUserResponseModel> RegisterNewUserAsync(RegisterNewUserPasswordModel req)
+    public async Task<RegistrationNewUserResponseModel> RegisterNewUser(RegisterNewUserPasswordModel req)
     {
         if (!UserConfMan.UserRegistrationIsAllowed(req.Email))
             return new() { Messages = [new() { Text = $"Ошибка регистрации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
@@ -168,7 +186,7 @@ public class UsersAuthenticateService(
     }
 
     /// <inheritdoc/>
-    public async Task<RegistrationNewUserResponseModel> ExternalRegisterNewUserAsync(string userEmail, string baseAddress)
+    public async Task<RegistrationNewUserResponseModel> ExternalRegisterNewUser(string userEmail, string baseAddress)
     {
         ExternalLoginInfo? externalLoginInfo = await signInManager.GetExternalLoginInfoAsync();
         if (externalLoginInfo == null)
@@ -212,7 +230,7 @@ public class UsersAuthenticateService(
     }
 
     /// <inheritdoc/>
-    public async Task<ResponseBaseModel> SignInAsync(string userId, bool isPersistent)
+    public async Task<ResponseBaseModel> SignIn(string userId, bool isPersistent)
     {
         ApplicationUser? user = await userManager.FindByIdAsync(userId);
         if (user is null)
@@ -223,26 +241,39 @@ public class UsersAuthenticateService(
     }
 
     /// <inheritdoc/>
-    public async Task<IdentityResultResponseModel> PasswordSignInAsync(string userEmail, string password, bool isPersistent)
+    public async Task<SignInResultResponseModel> PasswordSignIn(string userEmail, string password, bool isPersistent)
     {
         if (!UserConfMan.UserAuthorizationIsAllowed(userEmail))
             return new() { Messages = [new() { Text = $"Ошибка авторизации {UserConfMan.DenyAuthorization?.Message}", TypeMessage = ResultTypesEnum.Error }] };
 
-        SignInResult sr = await signInManager.PasswordSignInAsync(userEmail, password, isPersistent, lockoutOnFailure: true);
-        TResponseModel<bool?> globalEnable2FA = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.GlobalEnable2FA);
-        IdentityResultResponseModel res = new();
+        SignInResultResponseModel res = new();
         ApplicationUser? currentAppUser = await userManager.FindByEmailAsync(userEmail);
-
         if (currentAppUser is null)
-            return (IdentityResultResponseModel)ResponseBaseModel.CreateError($"current user by email '{userEmail}' is null. error {{A19FC284-C437-4CC6-A7D2-C96FC6F6A42F}}");
+            return (SignInResultResponseModel)ResponseBaseModel.CreateError($"current user by email '{userEmail}' is null. error {{A19FC284-C437-4CC6-A7D2-C96FC6F6A42F}}");
 
-        if (!sr.Succeeded || globalEnable2FA.Response == true)
+        TResponseModel<bool?> globalEnable2FA = await StorageTransmissionRepo.ReadParameter<bool?>(GlobalStaticConstants.CloudStorageMetadata.GlobalEnable2FA);
+        if (globalEnable2FA.Response == true)
         {
-            if (sr.RequiresTwoFactor || globalEnable2FA.Response == true)
+            ResponseBaseModel chkUserPass = await identityRepo.CheckUserPassword(new() { Password = password, UserId = currentAppUser.Id });
+
+            if (!chkUserPass.Success())
+                return new() { Messages = chkUserPass.Messages };
+
+            TResponseModel<string> otp = await identityRepo.GenerateToken2FA(currentAppUser.Id);
+            res.RequiresTwoFactor = true;
+            res.UserId = otp.Response;
+            return res;
+        }
+
+        SignInResult sr = await signInManager.PasswordSignInAsync(userEmail, password, isPersistent, lockoutOnFailure: true);
+
+        if (!sr.Succeeded)
+        {
+            if (sr.RequiresTwoFactor)
             {
                 res.AddError("Error: RequiresTwoFactor");
-                ResponseBaseModel otp = await identityRepo.GenerateOTPFor2StepVerification(currentAppUser.Id);
-                return new() { RequiresTwoFactor = true, Messages = res.Messages };
+                TResponseModel<string> otp = await identityRepo.GenerateToken2FA(currentAppUser.Id);
+                return new() { RequiresTwoFactor = true, Messages = res.Messages, UserId = otp.Response };
             }
 
             if (sr.IsLockedOut)
@@ -253,6 +284,7 @@ public class UsersAuthenticateService(
 
             return res;
         }
+
         ResponseBaseModel flushRes = await identityRepo.ClaimsUserFlush(currentAppUser.Id);
 
         if (flushRes.Success())
@@ -266,21 +298,20 @@ public class UsersAuthenticateService(
                 await signInManager.RefreshSignInAsync(currentAppUser);
         }
 
-        if (globalEnable2FA.Success() && globalEnable2FA.Response == true)
-        {
-            ResponseBaseModel otp = await identityRepo.GenerateOTPFor2StepVerification(currentAppUser.Id);
-        }
-
         return new()
         {
             IsLockedOut = sr.IsLockedOut,
             IsNotAllowed = sr.IsNotAllowed,
-            RequiresTwoFactor = sr.RequiresTwoFactor || globalEnable2FA.Response == true,
+            RequiresTwoFactor = sr.RequiresTwoFactor,
             Succeeded = sr.Succeeded,
+            UserId = currentAppUser.Id,
         };
     }
 
     /// <inheritdoc/>
-    public async Task SignOutAsync()
-        => await signInManager.SignOutAsync();
+    public async Task SignOut()
+    {
+        if (httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated == true)
+            await signInManager.SignOutAsync();
+    }
 }

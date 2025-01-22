@@ -59,7 +59,7 @@
     public async Task RegisterUser(EditContext editContext)
     {
         identityErrors = null;
-        RegistrationNewUserResponseModel result = await UserAuthRepo.RegisterNewUserAsync(new()
+        RegistrationNewUserResponseModel result = await UserAuthRepo.RegisterNewUser(new()
             {
                 Email = Input.Email,
                 Password = Input.Password,

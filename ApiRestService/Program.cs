@@ -101,9 +101,6 @@ builder.Services.AddSingleton<IManualCustomCacheService, ManualCustomCacheServic
 builder.Services.AddTransient<UnhandledExceptionAttribute>();
 builder.Services.AddAuthorization();
 
-//MongoConfigModel _jo = builder.Configuration.GetSection("MongoDB").Get<MongoConfigModel>() ?? throw new Exception("Отсутствует конфигурация MonoDB");
-//builder.Services.AddSingleton(new MongoClient(_jo.ToString()).GetDatabase(_jo.FilesSystemName));
-
 RestApiConfigBaseModel restConf = builder.Configuration.GetSection("ApiAccess").Get<RestApiConfigBaseModel>() ?? throw new Exception("Отсутствует конфигурация ApiAccess");
 
 // Add services to the container.
