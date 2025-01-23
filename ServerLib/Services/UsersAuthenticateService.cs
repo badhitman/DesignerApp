@@ -48,6 +48,38 @@ public class UsersAuthenticateService(
             TResponseModel<string> checkToken = await identityRepo.CheckToken2FA(new() { Token = authenticatorCode, UserAlias = userAlias });
             if (checkToken.Success() && !string.IsNullOrWhiteSpace(checkToken.Response))
             {
+                ApplicationUser? user = await userManager.FindByIdAsync(checkToken.Response);
+                if (user is null)
+                {
+                    return new()
+                    {
+                        Succeeded = false,
+                        Messages = [new() { Text = $"Пользователь {checkToken.Response} не найден", TypeMessage = ResultTypesEnum.Error }]
+                    };
+                }
+
+                bool _isLockedOut = default!, isEmailConfirmed = default!;
+                await Task.WhenAll([
+                    Task.Run(async () => { _isLockedOut = await userManager.IsLockedOutAsync(user); }), 
+                    Task.Run(async () => { isEmailConfirmed = await userManager.IsEmailConfirmedAsync(user); })
+                ]);
+
+                if (_isLockedOut)
+                    return new()
+                    {
+                        IsLockedOut = true,
+                        Succeeded = false,
+                        Messages = [new() { Text = "Пользователь заблокирован", TypeMessage = ResultTypesEnum.Error }]
+                    };
+
+                if (!isEmailConfirmed)
+                    return new()
+                    {
+                        IsNotAllowed = true,
+                        Succeeded = false,
+                        Messages = [new() { Text = "Email пользователя не подтверждён", TypeMessage = ResultTypesEnum.Error }]
+                    };
+
                 await SignIn(checkToken.Response, isPersistent);
                 return new()
                 {
