@@ -4,24 +4,24 @@ IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(ar
 
 IResourceBuilder<RedisResource> cache = builder.AddRedis("cache")
     .WithImageTag("latest")
-    .WithLifetime(ContainerLifetime.Persistent)
+    //.WithLifetime(ContainerLifetime.Persistent)
     .WithClearCommand()
     .WithBindMount("VolumeMount.AppHost-redis-data", "/data");
 
 IResourceBuilder<MongoDBServerResource> mongo = builder.AddMongoDB("mongo")
     .WithImageTag("latest")
-    .WithLifetime(ContainerLifetime.Persistent)
+    //.WithLifetime(ContainerLifetime.Persistent)
     .WithBindMount("VolumeMount.AppHost-mongo-data", "/data/db");
 
 IResourceBuilder<RabbitMQServerResource> rabbit = builder.AddRabbitMQ("rabbit")
-    .WithImageTag("latest")
-    .WithLifetime(ContainerLifetime.Persistent)
+    //.WithImageTag("latest")
+    //.WithLifetime(ContainerLifetime.Persistent)
     .WithManagementPlugin()
     .WithBindMount("VolumeMount.AppHost-rabbit-data", "/var/lib/rabbitmq");
 
 IResourceBuilder<PostgresServerResource> postgress = builder.AddPostgres("postgress")
     .WithImageTag("latest")
-    .WithLifetime(ContainerLifetime.Persistent)
+    //.WithLifetime(ContainerLifetime.Persistent)
     .WithPgAdmin()
     .WithPgWeb()
     .WithBindMount("VolumeMount.AppHost-postgress-data", "/var/lib/postgresql/data");
