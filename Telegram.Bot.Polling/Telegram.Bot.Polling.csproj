@@ -29,6 +29,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\DBContextLibs\DbPostgreLib\DbPostgreLib.csproj" />
+		<ProjectReference Include="..\DesignerApp.ServiceDefaults\DesignerApp.ServiceDefaults.csproj" />
 		<ProjectReference Include="..\RemoteCallLib\RemoteCallLib.csproj" />
 	</ItemGroup>
 </Project>

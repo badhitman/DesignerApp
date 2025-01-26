@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0" />
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsAspireHost>true</IsAspireHost>
+		<UserSecretsId>d3e3ff85-6538-49dd-9b17-37187beac77e</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Aspire.Hosting.AppHost" Version="9.0.0" />
+		<PackageReference Include="Aspire.Hosting.MongoDB" Version="9.0.0" />
+		<PackageReference Include="Aspire.Hosting.PostgreSQL" Version="9.0.0" />
+		<PackageReference Include="Aspire.Hosting.RabbitMQ" Version="9.0.0" />
+		<PackageReference Include="Aspire.Hosting.Redis" Version="9.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ApiRestService\ApiRestService.csproj" />
+		<ProjectReference Include="..\BlankBlazorApp\BlankBlazorApp\BlankBlazorApp.csproj" />
+		<ProjectReference Include="..\CommerceService\CommerceService.csproj" />
+		<ProjectReference Include="..\ConstructorService\ConstructorService.csproj" />
+		<ProjectReference Include="..\HelpdeskService\HelpdeskService.csproj" />
+		<ProjectReference Include="..\IdentityService\IdentityService.csproj" />
+		<ProjectReference Include="..\StorageService\StorageService.csproj" />
+		<ProjectReference Include="..\Telegram.Bot.Polling\Telegram.Bot.Polling.csproj" />
+	</ItemGroup>
+
+
+
+</Project>

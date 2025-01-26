@@ -1,4 +1,4 @@
-## Blazor NET.9 + Telegram Bot + СЭД
+## Blazor NET.9, Telegram Bot, Aspire
 
 - **Blazor NET.9**[^4] + **TelegramBot**[^5]: подойдёт как стартовый кейс web решения с поддержкой **Telegram бота**. Поддержка [автоматической авторизации](#автоматическая-авторизация-в-telegram-webapp) в Telegram WebApp.
 - Связь между службами через RabbitMQ[^1] в режиме `запрос-ответ`: при отправке сообщения в очередь, отправитель дожидается ответ (в границах таймаута) и возвращает результат вызывающему. При использовании вызова такой команды удалённого сервиса проходит так, как если бы это был обычный `await` запрос к базе данных или rest/api. Вместе с тем есть возможность отправить команду в режиме "отправил и забыл".
@@ -8,8 +8,9 @@
 - Интерфейс rest API (swagger) для внешних информационных систем (план обмена для [commerce](https://github.com/badhitman/DesignerApp/blob/main/CommerceService/INTEGRATION.md)).
 - ui пакеты: [MudBlazor 7](https://github.com/MudBlazor/MudBlazor/) и два WYSIWYG: [CKEditor](https://ckeditor.com/) + [TinyMCE](https://www.tiny.cloud). Важно: **CKEditor** не поддерживает вставку картинок, а **TinyMCE** имеет такую поддержу (в т.ч. локальное хранение файлов в MongoDB)
 - Win/Android [клиент доступа к Rest/Api](https://github.com/badhitman/DesignerApp?tab=readme-ov-file#tools-maui-app)
+- .NET Aspire (оркестрация): набор инструментов, наблюдения за микро-сервисами. ![aspire main](./img/aspire-main.png)
 
-Зависимости решения между проектами (в формате [Mermaid](https://mermaid.js.org)):
+- Зависимости решения между проектами (в формате [Mermaid](https://mermaid.js.org)):
 
 ```mermaid
 ---
