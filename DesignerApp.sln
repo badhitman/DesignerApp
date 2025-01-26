@@ -143,6 +143,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mmd", "mmd", "{F23783DE-35E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService", "IdentityService\IdentityService.csproj", "{A44C1002-FB5D-4626-B3B3-7E3D50A97E38}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesignerApp.AppHost", "DesignerApp.AppHost\DesignerApp.AppHost.csproj", "{D1A9DC55-90EF-4B01-AE96-189C19ADE9B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesignerApp.ServiceDefaults", "DesignerApp.ServiceDefaults\DesignerApp.ServiceDefaults.csproj", "{D2DBA6AF-E491-4715-B154-907BCCA05066}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -239,6 +243,14 @@ Global
 		{A44C1002-FB5D-4626-B3B3-7E3D50A97E38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A44C1002-FB5D-4626-B3B3-7E3D50A97E38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A44C1002-FB5D-4626-B3B3-7E3D50A97E38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1A9DC55-90EF-4B01-AE96-189C19ADE9B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1A9DC55-90EF-4B01-AE96-189C19ADE9B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1A9DC55-90EF-4B01-AE96-189C19ADE9B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1A9DC55-90EF-4B01-AE96-189C19ADE9B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2DBA6AF-E491-4715-B154-907BCCA05066}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2DBA6AF-E491-4715-B154-907BCCA05066}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2DBA6AF-E491-4715-B154-907BCCA05066}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2DBA6AF-E491-4715-B154-907BCCA05066}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -16,6 +16,8 @@ using NLog;
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
 builder
     .Logging
     .ClearProviders()
@@ -157,6 +159,8 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddSwaggerGenNewtonsoftSupport();
 
 WebApplication app = builder.Build();
+
+app.MapDefaultEndpoints();
 app.UseStaticFiles();
 app.UseSwagger();
 app.UseSwaggerUI(options =>
