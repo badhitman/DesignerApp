@@ -24,6 +24,12 @@ public partial class MessagesTelegramComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public int ChatId { get; set; }
 
+    /// <summary>
+    /// Отображение колонки чата назначения
+    /// </summary>
+    [Parameter]
+    public bool ShowDestinationChat { get; set; }
+
 
     private string _searchStringQuery = "";
     private string SearchStringQuery

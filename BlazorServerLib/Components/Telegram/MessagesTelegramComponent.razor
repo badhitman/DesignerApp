@@ -16,10 +16,14 @@
     </ToolBarContent>
     <HeaderContent>
         <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortLabel="@(nameof(MessageTelegramModelDB.CreatedAtUtc))" T="MessageTelegramModelDB">Дата</MudTableSortLabel></MudTh>
-        <MudTh>Автор</MudTh>
-        <MudTh>Примечание</MudTh>
-        <MudTh>Текст</MudTh>
-        <MudTh>Файлы</MudTh>
+        <MudTh>From</MudTh>
+        @if (ShowDestinationChat)
+        {
+            <MudTh>To</MudTh>
+        }
+        <MudTh>Caption</MudTh>
+        <MudTh>Text</MudTh>
+        <MudTh>Files</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Создан">
@@ -27,8 +31,30 @@
                 @context.CreatedAtUtc.GetCustomTime().ToString("d", CultureInfo.GetCultureInfo("ru-RU")) <sup>@context.CreatedAtUtc.GetCustomTime().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup>
             </span>
         </MudTd>
-        <MudTd DataLabel="Автор">@context.From!.Username</MudTd>
-        <MudTd DataLabel="Примечание">
+        <MudTd DataLabel="From">
+            @if (context.From is null || context.From.IsBot || context.From.Id == ChatId)
+            {
+                <span>@context.From!.GetName()</span>
+            }
+            else
+            {
+                <a href="/telegram-bot/chat-page/@context.From.Id">@context.From!.GetName()</a>
+            }
+        </MudTd>
+        @if (ShowDestinationChat)
+        {
+            <MudTd DataLabel="To">
+                @if (context.Chat is null || context.Chat.IsForum == true || context.Chat.Id == ChatId)
+                {
+                    <span>@context.Chat?.ToString()</span>
+                }
+                else
+                {
+                    <a href="/telegram-bot/chat-page/@context.Chat?.Id">@context.Chat?.ToString()</a>
+                }
+            </MudTd>
+        }
+        <MudTd DataLabel="Caption">
             @context.Caption
             @if (context.Contact is not null)
             {
@@ -40,8 +66,8 @@
                 </span>
             }
         </MudTd>
-        <MudTd DataLabel="Текст">@context.Text</MudTd>
-        <MudTd DataLabel="Файлы">
+        <MudTd DataLabel="Text">@context.Text</MudTd>
+        <MudTd DataLabel="Files">
             <FilesForMessageComponent Message="context" />
         </MudTd>
     </RowTemplate>

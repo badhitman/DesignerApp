@@ -257,9 +257,6 @@ public class TelegramBotService(ILogger<TelegramBotService> _logger,
                  join joinAudio in context.Audios on msg.DocumentId equals joinAudio.MessageId into getAudio
                  from audio in getAudio.DefaultIfEmpty()
 
-                 join joinPhoto in context.PhotosMessages on msg.DocumentId equals joinPhoto.MessageId into getPhoto
-                 from photo in getPhoto.DefaultIfEmpty()
-
                  join joinVoice in context.Voices on msg.DocumentId equals joinVoice.MessageId into getVoice
                  from voice in getVoice.DefaultIfEmpty()
 
@@ -272,9 +269,21 @@ public class TelegramBotService(ILogger<TelegramBotService> _logger,
                  join joinForward in context.Users on msg.ForwardFromId equals joinForward.UserTelegramId into getForward
                  from forward in getForward.DefaultIfEmpty()
 
-                 select new { msg, document, audio, photo, voice, video, sender, forward }).ToListAsync();
+                 join joinChat in context.Chats on msg.ChatId equals joinChat.Id into getChat
+                 from chat in getChat.DefaultIfEmpty()
 
-            dbData.ForEach(r => r.msg.ForwardFrom = r.forward);
+                 select new { msg, document, audio, voice, video, sender, forward, chat }).ToListAsync();
+
+            dbData.ForEach(r =>
+            {
+                r.msg.ForwardFrom = r.forward;
+                r.msg.Chat = r.chat;
+                r.msg.From = r.sender;
+                r.msg.Document = r.document;
+                r.msg.Voice = r.voice;  
+                r.msg.Video = r.video;  
+                r.msg.Audio = r.audio;
+            });
 
             return dbData.Select(x => x.msg).ToList();
         }

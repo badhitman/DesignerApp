@@ -10,6 +10,12 @@
         <TelegramChatsTableComponent />
     </MudTabPanel>
     <MudTabPanel Text="Сообщения">
-        <MessagesTelegramComponent ChatId="0" />
+        <MessagesTelegramComponent ChatId="0" ShowDestinationChat="true" />
+    </MudTabPanel>
+    <MudTabPanel Text="Состояние">
+        <ErrorMessageTelegramBotComponent />
+        <p class="form-text">
+            Ошибки отправки сообщений ботом регистрируются. Если клиент удалит/заблокирует бота, тогда его попытки отправить сообщение будут завершаться ошибкой.
+        </p>
     </MudTabPanel>
 </MudTabs>

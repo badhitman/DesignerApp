@@ -33,7 +33,6 @@ public class UserTelegramModelDB
     [JsonProperty(Required = Required.Always)]
     public bool IsBot { get; set; }
 
-
     /// <summary>
     /// User's or bot’s first name
     /// </summary>
@@ -101,4 +100,24 @@ public class UserTelegramModelDB
     /// ChatsJoins
     /// </summary>
     public List<JoinUserChatModelDB>? ChatsJoins { get; set; }
+
+
+    /// <summary>
+    /// GetName
+    /// </summary>
+    /// <returns></returns>
+    public string GetName()
+    {
+        string name = $"'{FirstName}";
+
+        if (!string.IsNullOrWhiteSpace(LastName))
+            name += $" {LastName.Trim()}'";
+        else
+            name += "'";
+
+        if (!string.IsNullOrWhiteSpace(Username))
+            name += $" @{Username.Trim()}";
+
+        return $"{name}{(IsBot ? " [is bot]" : "")}";
+    }
 }

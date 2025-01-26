@@ -22,7 +22,14 @@
         </MudTd>
         <MudTd DataLabel="Type">@context.ExceptionTypeName</MudTd>
         <MudTd DataLabel="Code">@context.ErrorCode</MudTd>
-        <MudTd DataLabel="Message">@context.Message</MudTd>
+        <MudTd DataLabel="Message">
+            <code>[pm:@(context.ParseModeName ?? "null")]</code>
+            <p class="mb-1">@context.Message</p>
+            @if (!string.IsNullOrWhiteSpace(context.SignFrom))
+            {
+                <i>(sign:@context.SignFrom)</i>
+            }
+        </MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Данные отсутствуют</MudText>
