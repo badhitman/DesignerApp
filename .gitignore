@@ -16,6 +16,9 @@
 # Mono auto generated files
 mono_crash.*
 
+# Aspire mounth`s
+VolumeMount.AppHost*
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

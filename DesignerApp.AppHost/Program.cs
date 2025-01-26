@@ -1,11 +1,30 @@
 using DesignerApp.AppHost;
 
-var builder = DistributedApplication.CreateBuilder(args);
+IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 
-IResourceBuilder<RedisResource> cache = builder.AddRedis("cache").WithImageTag("latest").WithClearCommand();
-IResourceBuilder<MongoDBServerResource> mongo = builder.AddMongoDB("mongo").WithImageTag("latest");
-IResourceBuilder<RabbitMQServerResource> rabbit = builder.AddRabbitMQ("rabbit").WithImageTag("latest");
-var postgress = builder.AddPostgres("postgress").WithImageTag("latest");
+IResourceBuilder<RedisResource> cache = builder.AddRedis("cache")
+    .WithImageTag("latest")
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithClearCommand()
+    .WithBindMount("VolumeMount.AppHost-redis-data", "/data");
+
+IResourceBuilder<MongoDBServerResource> mongo = builder.AddMongoDB("mongo")
+    .WithImageTag("latest")
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithBindMount("VolumeMount.AppHost-mongo-data", "/data/db");
+
+IResourceBuilder<RabbitMQServerResource> rabbit = builder.AddRabbitMQ("rabbit")
+    .WithImageTag("latest")
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithManagementPlugin()
+    .WithBindMount("VolumeMount.AppHost-rabbit-data", "/var/lib/rabbitmq");
+
+IResourceBuilder<PostgresServerResource> postgress = builder.AddPostgres("postgress")
+    .WithImageTag("latest")
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithPgAdmin()
+    .WithPgWeb()
+    .WithBindMount("VolumeMount.AppHost-postgress-data", "/var/lib/postgresql/data");
 
 
 IResourceBuilder<ProjectResource> apirestservice = builder.AddProject<Projects.ApiRestService>("apirestservice");
