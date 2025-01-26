@@ -38,12 +38,12 @@ public class UserTelegramModelDB
     /// User's or bot’s first name
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public string FirstName { get; set; } = default!;
+    public required string FirstName { get; set; }
     /// <summary>
     /// User's or bot’s first name
     /// </summary>
     [JsonProperty(Required = Required.Always)]
-    public string NormalizedFirstNameUpper { get; set; } = default!;
+    public required string NormalizedFirstNameUpper { get; set; }
 
 
     /// <summary>

@@ -1,7 +1,15 @@
-﻿@page "/help-desk/chats"
+﻿@page "/telegram-bot"
 @using BlazorWebLib.Components.Telegram
+@using MudBlazor
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [Authorize(Roles = $"{GlobalStaticConstants.Roles.HelpDeskTelegramBotChatsManage},{GlobalStaticConstants.Roles.Admin}")]
 
-<ChatsTableComponent />
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabPanel Text="Чаты">
+        <TelegramChatsTableComponent />
+    </MudTabPanel>
+    <MudTabPanel Text="Сообщения">
+        <MessagesTelegramComponent ChatId="0" />
+    </MudTabPanel>
+</MudTabs>

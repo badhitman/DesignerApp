@@ -74,7 +74,7 @@ public interface ITelegramTransmission
     /// <summary>
     /// Получить сообщения чата Telegram
     /// </summary>
-    public Task<TPaginationResponseModel<MessageTelegramModelDB>> MessagesListTelegram(TPaginationRequestModel<SearchMessagesChatModel> req);
+    public Task<TPaginationResponseModel<MessageTelegramModelDB>> MessagesTelegramSelect(TPaginationRequestModel<SearchMessagesChatModel> req);
 
     /// <summary>
     /// Получить данные файла

@@ -10,18 +10,15 @@ using SharedLib;
 namespace BlazorWebLib.Components.Telegram;
 
 /// <summary>
-/// ChatsTableComponent
+/// TelegramChatsTableComponent
 /// </summary>
-public partial class ChatsTableComponent : BlazorBusyComponentBaseAuthModel
+public partial class TelegramChatsTableComponent : BlazorBusyComponentBaseAuthModel
 {
     [Inject]
     ITelegramTransmission TgRepo { get; set; } = default!;
 
     [Inject]
     ISnackbar SnackBarRepo { get; set; } = default!;
-
-    [Inject]
-    IWebTransmission WebRepo { get; set; } = default!;
 
     [Inject]
     IIdentityTransmission IdentityRepo { get; set; } = default!;

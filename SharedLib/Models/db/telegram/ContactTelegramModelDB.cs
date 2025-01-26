@@ -20,12 +20,12 @@ public class ContactTelegramModelDB
     /// <summary>
     /// Contact's phone number
     /// </summary>
-    public string PhoneNumber { get; set; } = default!;
+    public required string PhoneNumber { get; set; }
 
     /// <summary>
     /// Contact's first name
     /// </summary>
-    public string FirstName { get; set; } = default!;
+    public required string FirstName { get; set; }
 
     /// <summary>
     /// Optional. Contact's last name

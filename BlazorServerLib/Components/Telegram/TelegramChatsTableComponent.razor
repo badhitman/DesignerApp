@@ -14,8 +14,16 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Чаты TelegramBot`а</MudText>
         <MudSpacer />
-        <MudTextField title="без учёта регистра = регистро-независимый поиск" T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Поиск по: Title, Username, FirstName, LastName" Adornment="Adornment.Start" Immediate="true"
-                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        <MudTextField 
+            title="без учёта регистра = регистро-независимый поиск" 
+            T="string" 
+            ValueChanged="@(s => OnSearch(s))" 
+            Placeholder="Поиск по: Title, Username, FirstName, LastName" 
+            Adornment="Adornment.Start" 
+            Immediate="true"
+            AdornmentIcon="@Icons.Material.Filled.Search" 
+            IconSize="Size.Medium" 
+            Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
         <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortLabel="@(nameof(ChatTelegramModelDB.LastUpdateUtc))" T="ChatTelegramModelDB">Updated</MudTableSortLabel></MudTh>
@@ -28,7 +36,7 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="@(nameof(ChatTelegramModelDB.LastUpdateUtc))">
-            <a href="@($"/helpdesk/telegram-chat-page/{context.Id}")">@context.LastUpdateUtc.GetCustomTime().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))<sup>@context.LastUpdateUtc.GetCustomTime().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup></a>
+            <a href="@($"/telegram-bot/chat-page/{context.Id}")">@context.LastUpdateUtc.GetCustomTime().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))<sup>@context.LastUpdateUtc.GetCustomTime().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup></a>
         </MudTd>
         <MudTd DataLabel="Title">@context.Title</MudTd>
         <MudTd DataLabel="Type">@context.Type.DescriptionInfo()</MudTd>

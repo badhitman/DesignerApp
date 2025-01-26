@@ -1,4 +1,4 @@
-﻿@page "/helpdesk/telegram-chat-page/{ChatId:int}"
+﻿@page "/telegram-bot/chat-page/{ChatId:int}"
 @attribute [Authorize(Roles = $"{GlobalStaticConstants.Roles.Admin},{GlobalStaticConstants.Roles.HelpDeskTelegramBotManager},{GlobalStaticConstants.Roles.HelpDeskTelegramBotUnit}")]
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))

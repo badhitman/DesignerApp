@@ -165,6 +165,8 @@ public class TelegramBotService(ILogger<TelegramBotService> _logger,
             await context.AddAsync(new ErrorSendingMessageTelegramBotModelDB()
             {
                 ChatId = message.DestinationChatId,
+                CreatedAtUtc = DateTime.UtcNow,
+                SourceMessageId = message.SourceMessageId,
                 Message = ex.Message,
                 ExceptionTypeName = ex.GetType().FullName,
                 ErrorCode = errorCode,
@@ -233,9 +235,10 @@ public class TelegramBotService(ILogger<TelegramBotService> _logger,
             req.PageSize = 5;
 
         using TelegramBotContext context = await tgDbFactory.CreateDbContextAsync();
-        IQueryable<MessageTelegramModelDB> q = context
-            .Messages
-            .Where(x => x.ChatId == req.Payload.ChatId);
+        IQueryable<MessageTelegramModelDB> q = context.Messages.AsQueryable();
+
+        if (req.Payload.ChatId != 0)
+            q = q.Where(x => x.ChatId == req.Payload.ChatId);
 
         if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
         {
@@ -243,15 +246,37 @@ public class TelegramBotService(ILogger<TelegramBotService> _logger,
             q = q.Where(x => (x.NormalizedTextUpper != null && x.NormalizedTextUpper.Contains(req.Payload.SearchQuery)) || (x.NormalizedCaptionUpper != null && x.NormalizedCaptionUpper.Contains(req.Payload.SearchQuery)));
         }
 
-        IIncludableQueryable<MessageTelegramModelDB, UserTelegramModelDB?> Include(IQueryable<MessageTelegramModelDB> query)
+        async Task<List<MessageTelegramModelDB>> Include(IQueryable<MessageTelegramModelDB> query)
         {
-            return query.Include(x => x.Audio)
-            .Include(x => x.Document)
-            .Include(x => x.Photo)
-            .Include(x => x.Voice)
-            .Include(x => x.Video)
-            .Include(x => x.From)
-            ;
+            var dbData = await
+                (from msg in query
+
+                 join joinDoc in context.Documents on msg.DocumentId equals joinDoc.MessageId into getDoc
+                 from document in getDoc.DefaultIfEmpty()
+
+                 join joinAudio in context.Audios on msg.DocumentId equals joinAudio.MessageId into getAudio
+                 from audio in getAudio.DefaultIfEmpty()
+
+                 join joinPhoto in context.PhotosMessages on msg.DocumentId equals joinPhoto.MessageId into getPhoto
+                 from photo in getPhoto.DefaultIfEmpty()
+
+                 join joinVoice in context.Voices on msg.DocumentId equals joinVoice.MessageId into getVoice
+                 from voice in getVoice.DefaultIfEmpty()
+
+                 join joinVideo in context.Videos on msg.DocumentId equals joinVideo.MessageId into getVideo
+                 from video in getVideo.DefaultIfEmpty()
+
+                 join joinSender in context.Users on msg.FromId equals joinSender.Id into getSender
+                 from sender in getSender.DefaultIfEmpty()
+
+                 join joinForward in context.Users on msg.ForwardFromId equals joinForward.UserTelegramId into getForward
+                 from forward in getForward.DefaultIfEmpty()
+
+                 select new { msg, document, audio, photo, voice, video, sender, forward }).ToListAsync();
+
+            dbData.ForEach(r => r.msg.ForwardFrom = r.forward);
+
+            return dbData.Select(x => x.msg).ToList();
         }
 
         IQueryable<MessageTelegramModelDB> TakePart(IQueryable<MessageTelegramModelDB> q, VerticalDirectionsEnum direct)
@@ -268,7 +293,7 @@ public class TelegramBotService(ILogger<TelegramBotService> _logger,
             SortBy = req.SortBy,
             SortingDirection = req.SortingDirection,
             TotalRowsCount = await q.CountAsync(),
-            Response = await Include(TakePart(q, req.SortingDirection)).ToListAsync()
+            Response = await Include(TakePart(q, req.SortingDirection))
         };
     }
 
@@ -299,12 +324,13 @@ public class TelegramBotService(ILogger<TelegramBotService> _logger,
             : new InlineKeyboardMarkup(message.ReplyKeyboard
             .Select(x => x.Select(y => InlineKeyboardButton.WithCallbackData(y.Title, y.Data))));
         Message sender_msg;
+        MessageTelegramModelDB msg_db;
         try
         {
             string msg_text = string.IsNullOrWhiteSpace(message.From)
             ? message.Message
                 : $"{message.Message}\n--- {message.From.Trim()}";
-            MessageTelegramModelDB msg_db;
+
             if (message.Files is not null && message.Files.Count != 0)
             {
                 if (message.Files.Count == 1)
@@ -314,13 +340,12 @@ public class TelegramBotService(ILogger<TelegramBotService> _logger,
                     if (GlobalTools.IsImageFile(file.Name))
                     {
                         sender_msg = await _botClient.SendPhoto(
-                                                            chatId: message.UserTelegramId,
-                                                            photo: InputFile.FromStream(new MemoryStream(file.Data), file.Name),
-
-                                                            caption: msg_text,
-                        replyMarkup: replyKB,
-                                                            parseMode: parse_mode,
-                                                            replyParameters: message.ReplyToMessageId!.Value);
+                            chatId: message.UserTelegramId,
+                            photo: InputFile.FromStream(new MemoryStream(file.Data), file.Name),
+                            caption: msg_text,
+                            replyMarkup: replyKB,
+                            parseMode: parse_mode,
+                            replyParameters: message.ReplyToMessageId!.Value);
                     }
                     else
                     {
@@ -371,7 +396,6 @@ public class TelegramBotService(ILogger<TelegramBotService> _logger,
                     DatabaseId = msg_db.Id,
                     TelegramId = sender_msg.MessageId
                 };
-
             }
         }
         catch (Exception ex)
@@ -383,9 +407,19 @@ public class TelegramBotService(ILogger<TelegramBotService> _logger,
             else if (ex is RequestException _re)
                 errorCode = (int?)_re.HttpStatusCode;
 
+            //sender_msg = new()
+            //{
+            //  Type =  MessageType.,
+            //};
+            //msg_db = await storeTgRepo.StoreMessage(sender_msg);
+
             await context.AddAsync(new ErrorSendingMessageTelegramBotModelDB()
             {
                 ChatId = message.UserTelegramId,
+                CreatedAtUtc = DateTime.UtcNow,
+                ReplyToMessageId = message.ReplyToMessageId,
+                ParseModeName = message.ParseModeName,
+                SignFrom = message.From,
                 Message = $"{ex.Message}\n\n{JsonConvert.SerializeObject(message)}",
                 ExceptionTypeName = ex.GetType().FullName,
                 ErrorCode = errorCode
