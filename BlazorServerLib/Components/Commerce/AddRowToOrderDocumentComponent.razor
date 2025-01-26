@@ -16,7 +16,9 @@ else
                 <optgroup label="@opt_g.Key!.Name">
                     @foreach (OfferModelDB opt in opt_g)
                     {
-                        <option disabled="@(!ForceAdding && RegistersCache.Where(x => x.OfferId == opt.Id).Sum(x => x.Quantity) == 0)" value="@opt.Id">@($"{opt.GetName()}{(ShowPriceOffers ? $" ({(opt.Price / opt.Multiplicity).ToString(CultureInfo.CreateSpecificCulture("ru-RU"))} руб.за {opt.Nomenclature?.BaseUnit.DescriptionInfo()})" : "")}{(ShowRegistersOffersQuantity ? $"   /   {GetOfferQuantity(opt)} {opt.OfferUnit.DescriptionInfo()}" : "")}")</option>
+                        List<OfferAvailabilityModelDB> snap = RegistersCache.Where(x => x.OfferId == opt.Id).ToList();
+                        decimal _sum = snap.Sum(x => x.Quantity);
+                        <option disabled="@(!ForceAdding && _sum == 0)" value="@opt.Id">@($"{opt.GetName()}{(ShowPriceOffers ? $" ({(opt.Price / opt.Multiplicity).ToString(CultureInfo.CreateSpecificCulture("ru-RU"))} руб.за {opt.Nomenclature?.BaseUnit.DescriptionInfo()})" : "")}{(ShowRegistersOffersQuantity ? $"   /   {GetOfferQuantity(opt)} {opt.OfferUnit.DescriptionInfo()}" : "")}")</option>
                     }
                 </optgroup>
             }

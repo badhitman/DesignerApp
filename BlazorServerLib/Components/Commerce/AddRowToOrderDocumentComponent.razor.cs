@@ -164,7 +164,7 @@ public partial class AddRowToOrderDocumentComponent : BlazorRegistersComponent
         {
             if (cacheId != SelectedOfferId && SelectedOffer is not null && !ForceAdding)
             {
-                await CacheRegistersUpdate(offers:[SelectedOffer.Id], goods: [], WarehouseId, true);
+                await CacheRegistersUpdate(offers: OffersNodes.SelectMany(x => x.Select(y => y.Id)).ToArray(), goods: [], WarehouseId, true);
                 cacheId = SelectedOfferId;
                 StateHasChanged();
             }
