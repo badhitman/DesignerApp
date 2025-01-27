@@ -25,13 +25,13 @@ namespace DesignerApp.AppHost
             IResourceBuilder<RedisResource> builder,
             ExecuteCommandContext context)
         {
-            var connectionString = await builder.Resource.GetConnectionStringAsync() ??
+            string connectionString = await builder.Resource.GetConnectionStringAsync() ??
                 throw new InvalidOperationException(
                     $"Unable to get the '{context.ResourceName}' connection string.");
 
             await using var connection = ConnectionMultiplexer.Connect(connectionString);
 
-            var database = connection.GetDatabase();
+            IDatabase database = connection.GetDatabase();
 
             await database.ExecuteAsync("FLUSHALL");
 
@@ -41,7 +41,7 @@ namespace DesignerApp.AppHost
         private static ResourceCommandState OnUpdateResourceState(
             UpdateCommandStateContext context)
         {
-            var logger = context.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            ILogger<Program> logger = context.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
             if (logger.IsEnabled(LogLevel.Information))
             {

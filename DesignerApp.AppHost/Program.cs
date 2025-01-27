@@ -5,11 +5,12 @@ IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(ar
 IResourceBuilder<RedisResource> cache = builder.AddRedis("cache")
     .WithImageTag("latest")
     //.WithLifetime(ContainerLifetime.Persistent)
-    .WithClearCommand()
+    .WithClearCommand()    
     .WithBindMount("VolumeMount.AppHost-redis-data", "/data");
 
 IResourceBuilder<MongoDBServerResource> mongo = builder.AddMongoDB("mongo")
     .WithImageTag("latest")
+    .WithMongoExpress()
     //.WithLifetime(ContainerLifetime.Persistent)
     .WithBindMount("VolumeMount.AppHost-mongo-data", "/data/db");
 
@@ -36,6 +37,7 @@ IResourceBuilder<ProjectResource> storageservice = builder.AddProject<Projects.S
 IResourceBuilder<ProjectResource> telegramBot = builder.AddProject<Projects.Telegram_Bot_Polling>("telegram-bot-polling");
 
 builder.AddProject<Projects.BlankBlazorApp>("blankblazorapp")
+    //.WithHttpEndpoint(port: 5066)
     .WithExternalHttpEndpoints()
 
     .WithReference(cache)
