@@ -1,11 +1,57 @@
 using DesignerApp.AppHost;
+using Microsoft.Extensions.Configuration;
+using SharedLib;
 
 IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
+
+string _modePrefix = Environment.GetEnvironmentVariable(nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)) ?? "";
+if (!string.IsNullOrWhiteSpace(_modePrefix))
+    GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
+
+string curr_dir = Directory.GetCurrentDirectory();
+builder.Configuration.SetBasePath(curr_dir);
+string path_load = Path.Combine(curr_dir, "appsettings.json");
+if (Path.Exists(path_load))
+    builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+
+string _environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? builder.Environment.EnvironmentName;
+path_load = Path.Combine(curr_dir, $"appsettings.{_environmentName}.json");
+if (Path.Exists(path_load))
+    builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+
+
+// Secrets
+void ReadSecrets(string dirName)
+{
+    string secretPath = Path.Combine("..", dirName);
+    DirectoryInfo di = new(secretPath);
+    for (int i = 0; i < 5 && !di.Exists; i++)
+    {
+        secretPath = Path.Combine("..", secretPath);
+        di = new(secretPath);
+    }
+
+    if (Directory.Exists(secretPath))
+    {
+        foreach (string secret in Directory.GetFiles(secretPath, $"*.json"))
+        {
+            path_load = Path.GetFullPath(secret);
+            builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+        }
+    }
+}
+
+ReadSecrets("secrets");
+if (!string.IsNullOrWhiteSpace(_modePrefix))
+    ReadSecrets($"secrets{_modePrefix}");
+
+builder.Configuration.AddEnvironmentVariables();
+builder.Configuration.AddCommandLine(args);
 
 IResourceBuilder<RedisResource> cache = builder.AddRedis("cache")
     .WithImageTag("latest")
     //.WithLifetime(ContainerLifetime.Persistent)
-    .WithClearCommand()    
+    .WithClearCommand()
     .WithBindMount("VolumeMount.AppHost-redis-data", "/data");
 
 IResourceBuilder<MongoDBServerResource> mongo = builder.AddMongoDB("mongo")
@@ -27,16 +73,18 @@ IResourceBuilder<PostgresServerResource> postgress = builder.AddPostgres("postgr
     .WithPgWeb()
     .WithBindMount("VolumeMount.AppHost-postgress-data", "/var/lib/postgresql/data");
 
+IResourceBuilder<ParameterResource> envWithAspire = builder.AddParameter("WithAspire");
 
-IResourceBuilder<ProjectResource> apirestservice = builder.AddProject<Projects.ApiRestService>("apirestservice");
-IResourceBuilder<ProjectResource> commerceservice = builder.AddProject<Projects.CommerceService>("commerceservice");
-IResourceBuilder<ProjectResource> constructorservice = builder.AddProject<Projects.ConstructorService>("constructorservice");
-IResourceBuilder<ProjectResource> helpdeskservice = builder.AddProject<Projects.HelpdeskService>("helpdeskservice");
-IResourceBuilder<ProjectResource> identityservice = builder.AddProject<Projects.IdentityService>("identityservice");
-IResourceBuilder<ProjectResource> storageservice = builder.AddProject<Projects.StorageService>("storageservice");
-IResourceBuilder<ProjectResource> telegramBot = builder.AddProject<Projects.Telegram_Bot_Polling>("telegram-bot-polling");
+IResourceBuilder<ProjectResource> apirestservice = builder.AddProject<Projects.ApiRestService>("apirestservice").WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
+IResourceBuilder<ProjectResource> commerceservice = builder.AddProject<Projects.CommerceService>("commerceservice").WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
+IResourceBuilder<ProjectResource> constructorservice = builder.AddProject<Projects.ConstructorService>("constructorservice").WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
+IResourceBuilder<ProjectResource> helpdeskservice = builder.AddProject<Projects.HelpdeskService>("helpdeskservice").WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
+IResourceBuilder<ProjectResource> identityservice = builder.AddProject<Projects.IdentityService>("identityservice").WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
+IResourceBuilder<ProjectResource> storageservice = builder.AddProject<Projects.StorageService>("storageservice").WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
+IResourceBuilder<ProjectResource> telegramBot = builder.AddProject<Projects.Telegram_Bot_Polling>("telegram-bot-polling").WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
 
 builder.AddProject<Projects.BlankBlazorApp>("blankblazorapp")
+    .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire)
     //.WithHttpEndpoint(port: 5066)
     .WithExternalHttpEndpoints()
 
