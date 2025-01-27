@@ -13,6 +13,11 @@ using NLog;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
+using OpenTelemetry;
+using System.Diagnostics.Metrics;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
+using Microsoft.Extensions.Options;
 
 namespace IdentityService;
 
@@ -33,8 +38,13 @@ public class Program
         builder.AddServiceDefaults();
 
         // NLog: Setup NLog for Dependency injection
-        builder.Logging.ClearProviders();
-        builder.Logging.AddNLog();
+        builder.Logging
+            .ClearProviders()
+            .AddNLog()
+            .AddOpenTelemetry(logging =>
+            {
+                logging.IncludeFormattedMessage = true; logging.IncludeScopes = true;
+            });
 
         string _environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Other";
         logger.Warn($"init main: {_environmentName}");
@@ -106,7 +116,7 @@ public class Program
         builder.Services.AddIdentityCore<ApplicationUser>(options =>
         {
             options.SignIn.RequireConfirmedAccount = true;
-            
+
         })//.AddUserManager<ApplicationUser>()
             .AddRoles<ApplicationRole>()
             .AddRoleManager<RoleManager<ApplicationRole>>()
@@ -115,7 +125,7 @@ public class Program
             ;
 
         builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, AdditionalUserClaimsPrincipalFactory>();
-         
+
 
         builder.Services.AddAuthentication(options =>
 {
@@ -123,8 +133,8 @@ public class Program
     options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 }).AddIdentityCookies();
 
-    //    builder.Services.AddAuthorization(options =>
-    //options.AddPolicy("TwoFactorEnabled", x => x.RequireClaim("amr", "mfa")));
+        //    builder.Services.AddAuthorization(options =>
+        //options.AddPolicy("TwoFactorEnabled", x => x.RequireClaim("amr", "mfa")));
 
         Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
         builder.Services.AddLocalization(lo => lo.ResourcesPath = "Resources");
@@ -164,7 +174,11 @@ public class Program
         //   ;
 
         #region MQ Transmission (remote methods call)
-        builder.Services.AddScoped<IRabbitClient, RabbitClient>();
+        string appName = typeof(Program).Assembly.GetName().Name ?? "AssemblyName";
+        builder.Services.AddSingleton<IRabbitClient>(x =>
+            new RabbitClient(x.GetRequiredService<IOptions<RabbitMQConfigModel>>(),
+                        x.GetRequiredService<ILogger<RabbitClient>>(),
+                        appName));
 
         builder.Services
             .AddScoped<ITelegramTransmission, TelegramTransmission>()
@@ -175,6 +189,29 @@ public class Program
 
         builder.Services.IdentityRegisterMqListeners();
         #endregion
+                
+        // Custom metrics for the application
+        Meter greeterMeter = new($"OTel.{appName}", "1.0.0");
+        OpenTelemetryBuilder otel = builder.Services.AddOpenTelemetry();
+
+        // Add Metrics for ASP.NET Core and our custom metrics and export via OTLP
+        otel.WithMetrics(metrics =>
+        {
+            // Metrics provider from OpenTelemetry
+            metrics.AddAspNetCoreInstrumentation();
+            //Our custom metrics
+            metrics.AddMeter(greeterMeter.Name);
+            // Metrics provides by ASP.NET Core in .NET 8
+            metrics.AddMeter("Microsoft.AspNetCore.Hosting");
+        });
+
+        // Add Tracing for ASP.NET Core and our custom ActivitySource and export via OTLP
+        otel.WithTracing(tracing =>
+        {
+            tracing.AddAspNetCoreInstrumentation();
+            tracing.AddHttpClientInstrumentation();
+            tracing.AddSource($"OTel.{appName}");
+        });
 
         builder.Services.AddMemoryCache();
         builder.Services.AddStackExchangeRedisCache(options =>

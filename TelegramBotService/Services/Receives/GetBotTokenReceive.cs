@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Options;
 using RemoteCallLib;
 using SharedLib;
+using TelegramBotService;
 
 namespace Transmission.Receives.telegram;
 

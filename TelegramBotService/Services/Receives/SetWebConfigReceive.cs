@@ -5,7 +5,6 @@
 using Newtonsoft.Json;
 using RemoteCallLib;
 using SharedLib;
-using System.Linq;
 
 namespace Transmission.Receives.telegram;
 

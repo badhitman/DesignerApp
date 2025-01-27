@@ -5,7 +5,7 @@
 using Transmission.Receives.telegram;
 using SharedLib;
 
-namespace Telegram.Bot.Services;
+namespace TelegramBotService;
 
 /// <summary>
 /// MQ listen

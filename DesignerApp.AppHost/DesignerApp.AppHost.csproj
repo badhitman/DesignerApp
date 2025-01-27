@@ -28,7 +28,7 @@
 		<ProjectReference Include="..\IdentityService\IdentityService.csproj" />
 		<ProjectReference Include="..\SharedLib\SharedLib.csproj" IsAspireProjectResource="false" />
 		<ProjectReference Include="..\StorageService\StorageService.csproj" />
-		<ProjectReference Include="..\Telegram.Bot.Polling\Telegram.Bot.Polling.csproj" />
+		<ProjectReference Include="..\TelegramBotService\TelegramBotService.csproj" />
 	</ItemGroup>
 
 

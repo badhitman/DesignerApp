@@ -9,6 +9,11 @@ using NLog;
 using HelpdeskService;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Hosting;
+using OpenTelemetry;
+using System.Diagnostics.Metrics;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
+using Microsoft.Extensions.DependencyInjection;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -19,6 +24,10 @@ builder.ConfigureLogging((lc, lb) =>
 {
     lb.ClearProviders();
     lb.AddNLog();
+    lb.AddOpenTelemetry(logging => {
+            logging.IncludeFormattedMessage = true;
+            logging.IncludeScopes = true;
+    });
 });
 builder.UseNLog();
 string _environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Other";
@@ -91,7 +100,7 @@ builder.ConfigureServices((context, services) =>
         options.Configuration = context.Configuration.GetConnectionString($"RedisConnectionString{_modePrefix}");
         // options.InstanceName = "app.";
     });
-
+    
     services.AddOptions();
     services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
     string connectionIdentityString = context.Configuration.GetConnectionString($"HelpdeskConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'HelpdeskConnection{_modePrefix}' not found.");
@@ -107,7 +116,11 @@ builder.ConfigureServices((context, services) =>
     services.AddMemoryCache();
 
     #region MQ Transmission (remote methods call)
-    services.AddScoped<IRabbitClient, RabbitClient>();
+    string appName = typeof(Program).Assembly.GetName().Name ?? "AssemblyName";
+    services.AddSingleton<IRabbitClient>(x =>
+        new RabbitClient(x.GetRequiredService<IOptions<RabbitMQConfigModel>>(),
+                    x.GetRequiredService<ILogger<RabbitClient>>(),
+                    appName));
     //
     services.AddScoped<IHelpdeskTransmission, HelpdeskTransmission>()
     .AddScoped<IWebTransmission, WebTransmission>()
@@ -121,6 +134,29 @@ builder.ConfigureServices((context, services) =>
     services.HelpdeskRegisterMqListeners();
     //  
     #endregion
+    
+    // Custom metrics for the application
+    Meter greeterMeter = new($"OTel.{appName}", "1.0.0");
+    OpenTelemetryBuilder otel = services.AddOpenTelemetry();
+
+    // Add Metrics for ASP.NET Core and our custom metrics and export via OTLP
+    otel.WithMetrics(metrics =>
+    {
+        // Metrics provider from OpenTelemetry
+        metrics.AddAspNetCoreInstrumentation();
+        //Our custom metrics
+        metrics.AddMeter(greeterMeter.Name);
+        // Metrics provides by ASP.NET Core in .NET 8
+        metrics.AddMeter("Microsoft.AspNetCore.Hosting");
+    });
+
+    // Add Tracing for ASP.NET Core and our custom ActivitySource and export via OTLP
+    otel.WithTracing(tracing =>
+    {
+        tracing.AddSource($"OTel.{appName}");
+        tracing.AddAspNetCoreInstrumentation();
+        tracing.AddHttpClientInstrumentation();
+    });
 });
 
 IHost app = builder.Build();

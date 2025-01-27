@@ -17,7 +17,7 @@
 title: Структура (зависимости) проектов в решении
 ---
 classDiagram
-note for DbPostgreLib "Если используется другая СУБД, тогда указатели  от [ServerLib] [Telegram.Bot.Polling], [HelpdeskService] и [RemoteCallLib] должны ссылаться на соответсвующую библиотеку: [DbPostgreLib] или [DbMySQLLib]"
+note for DbPostgreLib "Если используется другая СУБД, тогда указатели  от [ServerLib] [TelegramBotService], [HelpdeskService] и [RemoteCallLib] должны ссылаться на соответсвующую библиотеку: [DbPostgreLib] или [DbMySQLLib]"
     SharedLib <|-- CodegeneratorLib
     SharedLib <|-- IdentityLib
     SharedLib <|-- DbLayerLib
@@ -38,8 +38,8 @@ note for DbPostgreLib "Если используется другая СУБД, 
 	BlazorWebLib  <|-- BlankBlazorApp
 	ServerLib  <|-- BlankBlazorApp
 	IdentityService  <|-- BlankBlazorApp
-    RemoteCallLib <|-- Telegram_Bot_Polling
-	DbPostgreLib <|-- Telegram_Bot_Polling
+    RemoteCallLib <|-- TelegramBotService
+	DbPostgreLib <|-- TelegramBotService
     RemoteCallLib <|-- StorageService
     RemoteCallLib <|-- ConstructorService
     RemoteCallLib <|-- HelpdeskService
@@ -93,7 +93,7 @@ note for DbPostgreLib "Если используется другая СУБД, 
     class ConstructorService{
         @Микросервис - ВебКонструктор/ВебФормы
     }
-    class Telegram_Bot_Polling["Telegram.Bot.Polling"]{
+    class TelegramBotService["TelegramBotService"]{
         @Микросервис - TelegramBot/Wappi
     }
     class HelpdeskService{
@@ -118,7 +118,7 @@ note for DbPostgreLib "Если используется другая СУБД, 
 В случае использования Aspire, следует запустить только хост-оркестратор. Для автономного запуска собственные микро сервисы запускаются в виде служб, а вспомогательные службы RabbitMQ, Redis, MongoDB и PostgreSQL запускаются пакетно в [docker-compose.yml](./devops/docker-compose.yml). Пример того как может быть настроено в VS:
 ![пример состава и порядка запуска проектов](./img/csproj-set-demo.png)
 
-#### [Telegram.Bot.Polling](https://github.com/badhitman/DesignerApp/tree/main/Telegram.Bot.Polling) 
+#### [TelegramBotService](https://github.com/badhitman/DesignerApp/tree/main/TelegramBotService) 
 - Сохраняет все входящие сообщения и позволяет в последствии работать с чатами другим сервисам.
 - В оригинальном исполнении `Worker Service`[^5].
 - Ответы на входящие Telegram сообщения обрабатывает реализация интерфейса `ITelegramDialogService`[^7]. Пользователям можно индивидуально устанавливать имя автоответчика[^2]. Это касается как простых текстовых `Message`, так и `CallbackQuery`.
@@ -204,7 +204,7 @@ else
 
 В папке секретов `secrets` предполагается наличие следующих настроек (одним *.json файлом или разными это не важно. загрузятся все *.json файлы из папки секретов):
 
-- RabbitMQ подключение потребуется для всех четырёх служб (**Telegram.Bot.Polling** и **BlazorWebApp**):
+- RabbitMQ подключение потребуется для всех четырёх служб (**TelegramBotService** и **BlazorWebApp**):
 ```json
 {
   "RabbitMQConfig": {
@@ -243,7 +243,7 @@ else
 ```
 Используется для хранения файлов (вложения в документы и т.п.)
 
-- Токен **TelegramBot** нужен только для соответствующей службы `Telegram.Bot.Polling`:
+- Токен **TelegramBot** нужен только для соответствующей службы `TelegramBotService`:
 ```json
 {
   "BotConfiguration": {
@@ -298,18 +298,18 @@ Windows/Android [утилита для удалённого взаимодейс
 
 [^1]: Подробнее про реализацию MQ транспорта можно узнать [тут](https://github.com/badhitman/DesignerApp/tree/main/RemoteCallLib).
 
-[^2]: Имя обработчика ответов храниться в [контексте пользователя](https://github.com/badhitman/DesignerApp/blob/main/SharedLib/Models/TelegramUserBaseModelDb.cs#L45). Подробнее [тут](https://github.com/badhitman/DesignerApp/tree/main/Telegram.Bot.Polling#telegrambot-%D0%B4%D0%B8%D0%B0%D0%BB%D0%BE%D0%B3%D0%B8)
+[^2]: Имя обработчика ответов храниться в [контексте пользователя](https://github.com/badhitman/DesignerApp/blob/main/SharedLib/Models/TelegramUserBaseModelDb.cs#L45). Подробнее [тут](https://github.com/badhitman/DesignerApp/tree/main/TelegramBotService#telegrambot-%D0%B4%D0%B8%D0%B0%D0%BB%D0%BE%D0%B3%D0%B8)
 
 [^4]: Стандартная ASP служба [Blazor WebApp](https://github.com/badhitman/DesignerApp/tree/main/BlankBlazorApp/BlankBlazorApp). За основу взята [эта работа](https://github.com/dotnet/blazor-samples/tree/175634ec31942b181f211008e8841c26e91f33e5/8.0/BlazorWebAssemblyStandaloneWithIdentity).
 
-[^5]: WorkerService служба [Telegram.Bot.Polling](https://github.com/badhitman/DesignerApp/tree/main/Telegram.Bot.Polling) сделана на основе [Telegram.Bot.Examples.Polling](https://github.com/TelegramBots/Telegram.Bot.Examples/tree/d7dd05e12ae97c5949804b465a8a87e3f894c3f2/Telegram.Bot.Examples.Polling).
+[^5]: WorkerService служба [TelegramBotService](https://github.com/badhitman/DesignerApp/tree/main/TelegramBotService) сделана на основе [Telegram.Bot.Examples.Polling](https://github.com/TelegramBots/Telegram.Bot.Examples/tree/d7dd05e12ae97c5949804b465a8a87e3f894c3f2/Telegram.Bot.Examples.Polling).
 
 [^6]: Про переключение контекста между разными СУБД можно узнать [тут](https://github.com/badhitman/DesignerApp/tree/main/DBContextLibs).
 
-[^7]: Свой обработчик ответа на входящее сообщение Telegram реализуется через [интерфейс](https://github.com/badhitman/DesignerApp/blob/main/SharedLib/IServices/ITelegramDialogService.cs) и [регистрации его в **Program.cs**](https://github.com/badhitman/DesignerApp/blob/main/Telegram.Bot.Polling/Program.cs#L84) службы **TelegramBot**.
+[^7]: Свой обработчик ответа на входящее сообщение Telegram реализуется через [интерфейс](https://github.com/badhitman/DesignerApp/blob/main/SharedLib/IServices/ITelegramDialogService.cs) и [регистрации его в **Program.cs**](https://github.com/badhitman/DesignerApp/blob/main/TelegramBotService/Program.cs#L84) службы **TelegramBot**.
 
-[^8]: Служба Telegram бота для каждого входящего сообщения [проверяет статус пользователя через вызов удалённой команды](https://github.com/badhitman/DesignerApp/blob/main/Telegram.Bot.Polling/Services/UpdateHandler.cs#L53), которую в данном случае обрабатывает Web сервер Blzaor.
+[^8]: Служба Telegram бота для каждого входящего сообщения [проверяет статус пользователя через вызов удалённой команды](https://github.com/badhitman/DesignerApp/blob/main/TelegramBotService/Services/UpdateHandler.cs#L53), которую в данном случае обрабатывает Web сервер Blzaor.
 
-[^9]: [Бот ищет по имени нужного обработчика. Если не находит, то использует базовый](https://github.com/badhitman/DesignerApp/blob/main/Telegram.Bot.Polling/Services/UpdateHandler.cs#L131).
+[^9]: [Бот ищет по имени нужного обработчика. Если не находит, то использует базовый](https://github.com/badhitman/DesignerApp/blob/main/TelegramBotService/Services/UpdateHandler.cs#L131).
 
 [^10]: МетаФайлы поддерживают контроль доступа. По умолчанию файлы доступны публично по ссылке, но можно установить ограничения на чтение. Правила доступа позволяют разрешать доступ персонально пользователям или по ассоциации с документом. В случае доступа по ассоциации с документом проверяется упоминание пользователя в документе (должен быть среди подписчиков или являться автором|исполнителем). Кроме того можно создать токен доступа (guid) для файла, по которому можно получить доступ вне всяких ограничений передав его get/query параметром в строке URL.

@@ -1,11 +1,12 @@
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Exceptions;
-using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using SharedLib;
+using Telegram.Bot;
+using Telegram.Bot.Polling;
 
-namespace Telegram.Bot.Services;
+namespace TelegramBotService;
 
 /// <summary>
 /// Processes <see cref="Update"/>s and errors.

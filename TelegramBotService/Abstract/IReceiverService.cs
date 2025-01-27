@@ -1,4 +1,4 @@
-namespace Telegram.Bot.Abstract;
+namespace TelegramBotService;
 
 /// <summary>
 /// A marker interface for Update Receiver service

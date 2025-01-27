@@ -1,6 +1,7 @@
+using Telegram.Bot;
 using Telegram.Bot.Polling;
 
-namespace Telegram.Bot.Abstract;
+namespace TelegramBotService;
 
 /// <summary>
 /// An abstract class to compose Receiver Service and Update Handler classes
@@ -38,7 +39,7 @@ public abstract class ReceiverServiceBase<TUpdateHandler> : IReceiverService
              DropPendingUpdates = true,
         };
 
-        Types.User me = await _botClient.GetMe(stoppingToken);
+        Telegram.Bot.Types.User me = await _botClient.GetMe(stoppingToken);
         _logger.LogInformation("Start receiving updates for {BotName}", me.Username ?? "My Awesome Bot");
 
         // Start receiving updates

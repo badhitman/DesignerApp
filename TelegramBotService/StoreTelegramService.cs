@@ -8,7 +8,7 @@ using Telegram.Bot.Types;
 using SharedLib;
 using DbcLib;
 
-namespace Telegram.Bot.Services;
+namespace TelegramBotService;
 
 /// <summary>
 /// Сохранение в базу данных данных Telegram

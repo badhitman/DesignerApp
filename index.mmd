@@ -2,7 +2,7 @@
 title: Структура (зависимости) проектов в решении
 ---
 classDiagram
-note for DbPostgreLib "Если используется другая СУБД, тогда указатели  от [ServerLib] [Telegram.Bot.Polling], [HelpdeskService] и [RemoteCallLib] должны ссылаться на соответсвующую библиотеку: [DbPostgreLib] или [DbMySQLLib]"
+note for DbPostgreLib "Если используется другая СУБД, тогда указатели  от [ServerLib] [TelegramBotService], [HelpdeskService] и [RemoteCallLib] должны ссылаться на соответсвующую библиотеку: [DbPostgreLib] или [DbMySQLLib]"
     SharedLib <|-- CodegeneratorLib
     SharedLib <|-- IdentityLib
     SharedLib <|-- DbLayerLib
@@ -23,8 +23,8 @@ note for DbPostgreLib "Если используется другая СУБД, тогда указатели  от [Serve
 	BlazorWebLib  <|-- BlankBlazorApp
 	ServerLib  <|-- BlankBlazorApp
 	IdentityService  <|-- BlankBlazorApp
-    RemoteCallLib <|-- Telegram_Bot_Polling
-	DbPostgreLib <|-- Telegram_Bot_Polling
+    RemoteCallLib <|-- TelegramBotService
+	DbPostgreLib <|-- TelegramBotService
     RemoteCallLib <|-- StorageService
     RemoteCallLib <|-- ConstructorService
     RemoteCallLib <|-- HelpdeskService
@@ -78,7 +78,7 @@ note for DbPostgreLib "Если используется другая СУБД, тогда указатели  от [Serve
     class ConstructorService{
         @Микросервис - ВебКонструктор/ВебФормы
     }
-    class Telegram_Bot_Polling["Telegram.Bot.Polling"]{
+    class TelegramBotService["TelegramBotService"]{
         @Микросервис - TelegramBot/Wappi
     }
     class HelpdeskService{

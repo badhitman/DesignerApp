@@ -19,8 +19,6 @@ path_load = Path.Combine(curr_dir, $"appsettings.{_environmentName}.json");
 if (Path.Exists(path_load))
     builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
 
-
-// Secrets
 void ReadSecrets(string dirName)
 {
     string secretPath = Path.Combine("..", dirName);
@@ -41,7 +39,7 @@ void ReadSecrets(string dirName)
     }
 }
 
-ReadSecrets("secrets");
+ReadSecrets($"secrets-{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}");
 if (!string.IsNullOrWhiteSpace(_modePrefix))
     ReadSecrets($"secrets{_modePrefix}");
 
@@ -75,13 +73,96 @@ IResourceBuilder<PostgresServerResource> postgress = builder.AddPostgres("postgr
 
 IResourceBuilder<ParameterResource> envWithAspire = builder.AddParameter("WithAspire");
 
-IResourceBuilder<ProjectResource> apirestservice = builder.AddProject<Projects.ApiRestService>("apirestservice").WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
-IResourceBuilder<ProjectResource> commerceservice = builder.AddProject<Projects.CommerceService>("commerceservice").WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
-IResourceBuilder<ProjectResource> constructorservice = builder.AddProject<Projects.ConstructorService>("constructorservice").WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
-IResourceBuilder<ProjectResource> helpdeskservice = builder.AddProject<Projects.HelpdeskService>("helpdeskservice").WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
-IResourceBuilder<ProjectResource> identityservice = builder.AddProject<Projects.IdentityService>("identityservice").WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
-IResourceBuilder<ProjectResource> storageservice = builder.AddProject<Projects.StorageService>("storageservice").WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
-IResourceBuilder<ProjectResource> telegramBot = builder.AddProject<Projects.Telegram_Bot_Polling>("telegram-bot-polling").WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
+IResourceBuilder<ProjectResource> apirestservice = builder.AddProject<Projects.ApiRestService>("apirestservice")
+
+    .WithReference(cache)
+    .WaitFor(cache)
+    .WithReference(mongo)
+    .WaitFor(mongo)
+    .WithReference(rabbit)
+    .WaitFor(rabbit)
+    .WithReference(postgress)
+    .WaitFor(postgress)
+
+    .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
+
+IResourceBuilder<ProjectResource> commerceservice = builder.AddProject<Projects.CommerceService>("commerceservice")
+
+    .WithReference(cache)
+    .WaitFor(cache)
+    .WithReference(mongo)
+    .WaitFor(mongo)
+    .WithReference(rabbit)
+    .WaitFor(rabbit)
+    .WithReference(postgress)
+    .WaitFor(postgress)
+
+    .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
+
+IResourceBuilder<ProjectResource> constructorservice = builder.AddProject<Projects.ConstructorService>("constructorservice")
+
+    .WithReference(cache)
+    .WaitFor(cache)
+    .WithReference(mongo)
+    .WaitFor(mongo)
+    .WithReference(rabbit)
+    .WaitFor(rabbit)
+    .WithReference(postgress)
+    .WaitFor(postgress)
+
+    .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
+
+IResourceBuilder<ProjectResource> helpdeskservice = builder.AddProject<Projects.HelpdeskService>("helpdeskservice")
+
+    .WithReference(cache)
+    .WaitFor(cache)
+    .WithReference(mongo)
+    .WaitFor(mongo)
+    .WithReference(rabbit)
+    .WaitFor(rabbit)
+    .WithReference(postgress)
+    .WaitFor(postgress)
+
+    .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
+
+IResourceBuilder<ProjectResource> identityservice = builder.AddProject<Projects.IdentityService>("identityservice")
+
+    .WithReference(cache)
+    .WaitFor(cache)
+    .WithReference(mongo)
+    .WaitFor(mongo)
+    .WithReference(rabbit)
+    .WaitFor(rabbit)
+    .WithReference(postgress)
+    .WaitFor(postgress)
+
+    .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
+
+IResourceBuilder<ProjectResource> storageservice = builder.AddProject<Projects.StorageService>("storageservice")
+
+    .WithReference(cache)
+    .WaitFor(cache)
+    .WithReference(mongo)
+    .WaitFor(mongo)
+    .WithReference(rabbit)
+    .WaitFor(rabbit)
+    .WithReference(postgress)
+    .WaitFor(postgress)
+
+    .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
+
+IResourceBuilder<ProjectResource> telegramBot = builder.AddProject<Projects.TelegramBotService>("telegrambotpolling")
+
+    .WithReference(cache)
+    .WaitFor(cache)
+    .WithReference(mongo)
+    .WaitFor(mongo)
+    .WithReference(rabbit)
+    .WaitFor(rabbit)
+    .WithReference(postgress)
+    .WaitFor(postgress)
+
+    .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
 
 builder.AddProject<Projects.BlankBlazorApp>("blankblazorapp")
     .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire)
@@ -114,8 +195,3 @@ builder.AddProject<Projects.BlankBlazorApp>("blankblazorapp")
 ;
 
 builder.Build().Run();
-/*
- builder.AddProject<Projects.Store>("store")
-       .WithExternalHttpEndpoints()
-       .WithReference(apirestservice);
- */

@@ -3,7 +3,6 @@
 ////////////////////////////////////////////////
 
 using RemoteCallLib;
-using Telegram.Bot;
 using SharedLib;
 
 namespace Transmission.Receives.telegram;

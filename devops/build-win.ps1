@@ -11,5 +11,5 @@ dotnet publish -c Debug --output C:/Users/User/Documents/publish/StorageService 
 dotnet publish -c Debug --output C:/Users/User/Documents/publish/ApiRestService C:/Users/User/source/repos/DesignerApp/ApiRestService/ApiRestService.csproj
 dotnet publish -c Debug --output C:/Users/User/Documents/publish/HelpdeskService C:/Users/User/source/repos/DesignerApp/HelpdeskService/HelpdeskService.csproj
 dotnet publish -c Debug --output C:/Users/User/Documents/publish/ConstructorService C:/Users/User/source/repos/DesignerApp/ConstructorService/ConstructorService.csproj
-dotnet publish -c Debug --output C:/Users/User/Documents/publish/Telegram.Bot.Polling C:/Users/User/source/repos/DesignerApp/Telegram.Bot.Polling/Telegram.Bot.Polling.csproj
+dotnet publish -c Debug --output C:/Users/User/Documents/publish/TelegramBotService C:/Users/User/source/repos/DesignerApp/TelegramBotService/TelegramBotService.csproj
 dotnet publish -c Debug --output C:/Users/User/Documents/publish/BlankBlazorApp C:/Users/User/source/repos/DesignerApp/BlankBlazorApp/BlankBlazorApp/BlankBlazorApp.csproj

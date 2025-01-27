@@ -14,8 +14,8 @@ Update-Database -Context HelpdeskContext -Project DbMySQLLib -StartupProject Hel
 ```
 
 ```
-Add-Migration TelegramBotContext001 -Context TelegramBotContext -Project DbMySQLLib -StartupProject Telegram.Bot.Polling
-Update-Database -Context TelegramBotContext -Project DbMySQLLib -StartupProject Telegram.Bot.Polling
+Add-Migration TelegramBotContext001 -Context TelegramBotContext -Project DbMySQLLib -StartupProject TelegramBotService
+Update-Database -Context TelegramBotContext -Project DbMySQLLib -StartupProject TelegramBotService
 ```
 
 ```

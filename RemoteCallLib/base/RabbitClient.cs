@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System.Text;
 using SharedLib;
+using System.Diagnostics.Metrics;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace RemoteCallLib;
 
@@ -24,6 +26,8 @@ public class RabbitClient : IRabbitClient
     readonly ConnectionFactory factory;
     readonly ILogger<RabbitClient> loggerRepo;
 
+    readonly string AppName;
+
     static Dictionary<string, object>? ResponseQueueArguments;
     /// <inheritdoc/>
     public static readonly JsonSerializerOptions SerializerOptions = new() { ReferenceHandler = ReferenceHandler.IgnoreCycles, WriteIndented = true };
@@ -31,8 +35,9 @@ public class RabbitClient : IRabbitClient
     /// <summary>
     /// Удалённый вызов команд (RabbitMq client)
     /// </summary>
-    public RabbitClient(IOptions<RabbitMQConfigModel> rabbitConf, ILogger<RabbitClient> _loggerRepo)
+    public RabbitClient(IOptions<RabbitMQConfigModel> rabbitConf, ILogger<RabbitClient> _loggerRepo, string appName)
     {
+        AppName = appName;
         loggerRepo = _loggerRepo;
         RabbitConfigRepo = rabbitConf.Value;
         ResponseQueueArguments ??= new()
@@ -53,7 +58,23 @@ public class RabbitClient : IRabbitClient
     /// <inheritdoc/>
     public Task<T?> MqRemoteCall<T>(string queue, object? request = null, bool waitResponse = true)
     {
+        // Custom ActivitySource for the application
+        ActivitySource greeterActivitySource = new($"OTel.{AppName}");
+        // Create a new Activity scoped to the method
+        using Activity? activity = greeterActivitySource.StartActivity($"OTel.{queue}");
+
+        Meter greeterMeter = new($"OTel.{AppName}", "1.0.0");
+        Counter<int> countGreetings = greeterMeter.CreateCounter<int>("greetings.count", description: "Counts the number of greetings");
+
+        // Increment the custom counter
+        countGreetings.Add(1);
+                
+        activity?.Start();
+
         string response_topic = waitResponse ? $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}{queue}_{Guid.NewGuid()}" : "";
+        
+        // Add a tag to the Activity
+        activity?.SetTag(nameof(response_topic), response_topic);
 
         using IConnection _connection = factory.CreateConnection(); ;
         using IModel _channel = _connection.CreateModel();
@@ -78,6 +99,9 @@ public class RabbitClient : IRabbitClient
             string msg;
             consumer.Received -= MessageReceivedEvent;
             string content = Encoding.UTF8.GetString(e.Body.ToArray());
+
+            // Add a tag to the Activity
+            activity?.SetTag(nameof(content), content);
 
             try
             {
@@ -121,7 +145,7 @@ public class RabbitClient : IRabbitClient
                 Console.WriteLine(ex);
             }
         }
-
+        activity?.Stop();
         _channel!.QueueDeclare(queue: queue,
                       durable: true,
                       exclusive: false,

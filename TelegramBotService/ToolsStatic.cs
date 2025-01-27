@@ -5,7 +5,7 @@
 using SharedLib;
 using Telegram.Bot.Types;
 
-namespace Telegram.Bot.Polling;
+namespace TelegramBotService;
 
 /// <summary>
 /// Tools

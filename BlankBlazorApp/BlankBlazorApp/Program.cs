@@ -15,6 +15,12 @@ using DbcLib;
 using NLog;
 using BlazorWebLib;
 using BlankBlazorApp;
+using OpenTelemetry.Metrics;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using OpenTelemetry.Trace;
+using OpenTelemetry;
+using Microsoft.Extensions.Options;
 #if !DEBUG
 using System.Reflection;
 #endif
@@ -25,7 +31,12 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 // NLog: Setup NLog for Dependency injection
-builder.Logging.ClearProviders();
+builder.Logging.ClearProviders()
+    .AddOpenTelemetry(logging =>
+{
+    logging.IncludeFormattedMessage = true;
+    logging.IncludeScopes = true;
+});
 builder.Host.UseNLog();
 string _environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? builder.Environment.EnvironmentName;
 logger.Warn($"init main: {_environmentName}");
@@ -194,7 +205,11 @@ builder.Services.AddScoped<IUsersAuthenticateService, UsersAuthenticateService>(
     ;
 
 #region MQ Transmission (remote methods call)
-builder.Services.AddScoped<IRabbitClient, RabbitClient>();
+string appName = typeof(Program).Assembly.GetName().Name ?? "AssemblyName";
+builder.Services.AddSingleton<IRabbitClient>(x =>
+    new RabbitClient(x.GetRequiredService<IOptions<RabbitMQConfigModel>>(),
+                x.GetRequiredService<ILogger<RabbitClient>>(),
+                appName));
 //
 builder.Services
     .AddScoped<ICommerceTransmission, CommerceTransmission>()
@@ -207,6 +222,30 @@ builder.Services
 //
 builder.Services.WebAppRegisterMqListeners();
 #endregion
+
+// Custom metrics for the application
+Meter greeterMeter = new($"OTel.{appName}", "1.0.0");
+OpenTelemetryBuilder otel = builder.Services.AddOpenTelemetry();
+
+// Add Metrics for ASP.NET Core and our custom metrics and export via OTLP
+otel.WithMetrics(metrics =>
+{
+    // Metrics provider from OpenTelemetry
+    metrics.AddAspNetCoreInstrumentation();
+    //Our custom metrics
+    metrics.AddMeter(greeterMeter.Name);
+    // Metrics provides by ASP.NET Core in .NET 8
+    metrics.AddMeter("Microsoft.AspNetCore.Hosting");
+    metrics.AddMeter("Microsoft.AspNetCore.Server.Kestrel");
+});
+
+// Add Tracing for ASP.NET Core and our custom ActivitySource and export via OTLP
+otel.WithTracing(tracing =>
+{
+    tracing.AddAspNetCoreInstrumentation();
+    tracing.AddSource($"OTel.{appName}");
+    tracing.AddHttpClientInstrumentation();
+});
 
 WebApplication app = builder.Build();
 

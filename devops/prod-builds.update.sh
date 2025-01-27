@@ -6,7 +6,7 @@ cp -r /srv/git/builds/StorageService /srv/services/StorageService
 cp -r /srv/git/builds/CommerceService /srv/services/CommerceService
 cp -r /srv/git/builds/HelpdeskService /srv/services/HelpdeskService
 cp -r /srv/git/builds/ConstructorService /srv/services/ConstructorService
-cp -r /srv/git/builds/Telegram.Bot.Polling /srv/services/Telegram.Bot.Polling
+cp -r /srv/git/builds/TelegramBotService /srv/services/TelegramBotService
 cp -r /srv/git/builds/BlankBlazorApp /srv/services/BlankBlazorApp
 cp -r /srv/git/builds/IdentityService /srv/services/IdentityService
 chown -R www-data:www-data /srv/services

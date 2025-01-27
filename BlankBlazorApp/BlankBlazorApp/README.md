@@ -59,14 +59,14 @@ public long TelegramId { get; set; }
 
 ![img](../../img/tg-join-success.png)
 
-#### Синхронизация настроек между службами BlazorWebApp и Telegram.Bot.Polling.
+#### Синхронизация настроек между службами BlazorWebApp и TelegramBotService.
 При каждом запуске каждой из служб происходит попытка синхронизации настроек `WebConfigModel`. В `BlazorWebApp` они существуют как типовая опция IOptions<WebConfigModel>
 ```c#
 builder.Services.Configure<WebConfigModel>(builder.Configuration.GetSection("WebConfig"));
 ```
-, а в службе `Telegram.Bot.Polling` этот объект существует в виде Singleton объекта
+, а в службе `TelegramBotService` этот объект существует в виде Singleton объекта
 ```c#
 services.AddSingleton<WebConfigModel>();
 ```
 
-Дело в том, что сама `Telegram.Bot.Polling` не конфигурирует эти параметры, а запрашивает их при старте от `BlazorWebApp`. В свою очередь `BlazorWebApp` при запуске отправляет эти конфиги в сторону `Telegram.Bot.Polling`. В конечном итоге обеспечивается своевременная актуализация этих настроек, которые конфигурируются в одном месте на стороне `BlazorWebApp` службы, а вторая служба их получает так или иначе. В этих настройках в частности передаётся адрес сайта Web части и срок действия токена привязки Telegram аккаунта к учётной записи сайта.
+Дело в том, что сама `TelegramBotService` не конфигурирует эти параметры, а запрашивает их при старте от `BlazorWebApp`. В свою очередь `BlazorWebApp` при запуске отправляет эти конфиги в сторону `TelegramBotService`. В конечном итоге обеспечивается своевременная актуализация этих настроек, которые конфигурируются в одном месте на стороне `BlazorWebApp` службы, а вторая служба их получает так или иначе. В этих настройках в частности передаётся адрес сайта Web части и срок действия токена привязки Telegram аккаунта к учётной записи сайта.

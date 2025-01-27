@@ -1,6 +1,4 @@
-using Telegram.Bot.Abstract;
-
-namespace Telegram.Bot.Services;
+namespace TelegramBotService;
 
 /// <summary>
 /// Compose Polling and ReceiverService implementations

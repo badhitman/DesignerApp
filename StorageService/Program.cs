@@ -9,6 +9,10 @@ using SharedLib;
 using NLog.Web;
 using DbcLib;
 using NLog;
+using OpenTelemetry;
+using System.Diagnostics.Metrics;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
 
 // Early init of NLog to allow startup and exception logging, before host is built
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -18,8 +22,12 @@ IHostBuilder builder = Host.CreateDefaultBuilder(args);
 // NLog: Setup NLog for Dependency injection
 builder.ConfigureLogging((lc, lb) =>
 {
-    lb.ClearProviders();
-    lb.AddNLog();
+    lb.ClearProviders()
+    .AddNLog()
+    .AddOpenTelemetry(logging =>
+    {
+        logging.IncludeFormattedMessage = true; logging.IncludeScopes = true;
+    });
 });
 builder.UseNLog();
 string _environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Other";
@@ -101,7 +109,13 @@ builder.ConfigureServices((context, services) =>
     .AddScoped<ICommerceTransmission, CommerceTransmission>();
 
     #region MQ Transmission (remote methods call)
-    services.AddScoped<IRabbitClient, RabbitClient>()
+    string appName = typeof(Program).Assembly.GetName().Name ?? "AssemblyName";
+    services.AddSingleton<IRabbitClient>(x =>
+        new RabbitClient(x.GetRequiredService<IOptions<RabbitMQConfigModel>>(),
+                    x.GetRequiredService<ILogger<RabbitClient>>(),
+                    appName));
+
+    services
     .AddScoped<IWebTransmission, WebTransmission>()
     .AddScoped<ITelegramTransmission, TelegramTransmission>()
     .AddScoped<ISerializeStorage, StorageServiceImpl>()
@@ -111,7 +125,29 @@ builder.ConfigureServices((context, services) =>
     services.StorageRegisterMqListeners();
     //
     #endregion
+    
+    // Custom metrics for the application
+    Meter greeterMeter = new($"OTel.{appName}", "1.0.0");
+    OpenTelemetryBuilder otel = services.AddOpenTelemetry();
 
+    // Add Metrics for ASP.NET Core and our custom metrics and export via OTLP
+    otel.WithMetrics(metrics =>
+    {
+        // Metrics provider from OpenTelemetry
+        metrics.AddAspNetCoreInstrumentation();
+        //Our custom metrics
+        metrics.AddMeter(greeterMeter.Name);
+        // Metrics provides by ASP.NET Core in .NET 8
+        metrics.AddMeter("Microsoft.AspNetCore.Hosting");
+    });
+
+    // Add Tracing for ASP.NET Core and our custom ActivitySource and export via OTLP
+    otel.WithTracing(tracing =>
+    {
+        tracing.AddAspNetCoreInstrumentation();
+        tracing.AddHttpClientInstrumentation();
+        tracing.AddSource($"OTel.{appName}");
+    });
 });
 
 IHost app = builder.Build();

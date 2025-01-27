@@ -2,10 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore;
 using RemoteCallLib;
 using SharedLib;
-using DbcLib;
 
 namespace Transmission.Receives.telegram;
 

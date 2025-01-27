@@ -2,23 +2,22 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.EntityFrameworkCore.Query;
 using Telegram.Bot.Types.ReplyMarkups;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Exceptions;
-using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
+using Telegram.Bot;
 
-namespace Telegram.Bot.Services;
+namespace TelegramBotService;
 
 /// <summary>
 /// TelegramBotService
 /// </summary>
-public class TelegramBotService(ILogger<TelegramBotService> _logger,
+public class TelegramBotServiceImplement(ILogger<TelegramBotServiceImplement> _logger,
     ITelegramBotClient _botClient,
     IDbContextFactory<TelegramBotContext> tgDbFactory,
     IIdentityTransmission IdentityRepo,
@@ -209,7 +208,7 @@ public class TelegramBotService(ILogger<TelegramBotService> _logger,
         TResponseModel<byte[]> res = new();
         try
         {
-            Types.File fileTg = await _botClient.GetFile(fileId);
+            Telegram.Bot.Types.File fileTg = await _botClient.GetFile(fileId);
             MemoryStream ms = new();
 
             if (string.IsNullOrWhiteSpace(fileTg.FilePath))

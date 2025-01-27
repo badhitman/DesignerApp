@@ -1,6 +1,6 @@
-using Telegram.Bot.Abstract;
+using Telegram.Bot;
 
-namespace Telegram.Bot.Services;
+namespace TelegramBotService;
 
 /// <summary>
 /// Compose Receiver and UpdateHandler implementation

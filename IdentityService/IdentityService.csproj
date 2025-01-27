@@ -18,16 +18,23 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\DesignerApp.ServiceDefaults\DesignerApp.ServiceDefaults.csproj" />
-	  <ProjectReference Include="..\ServerLib\ServerLib.csproj" />
+		<ProjectReference Include="..\DesignerApp.ServiceDefaults\DesignerApp.ServiceDefaults.csproj" />
+		<ProjectReference Include="..\ServerLib\ServerLib.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Update="appsettings.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-	  </Content>
+		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0" />
+		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.9.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="appsettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="nlog.config" CopyToOutputDirectory="Always" />
