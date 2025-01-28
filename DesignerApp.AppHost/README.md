@@ -21,7 +21,7 @@
 ### Шаблоны - файл(ы) секретов
 
 Строки подключения (СУБД + Redis):
-```
+```json
 {
   "ConnectionStrings": {
     "RedisConnectionString": "localhost,defaultDatabase=0",
@@ -38,7 +38,7 @@
 ```
 
 SMTP - отправка email:
-```
+```json
 {
   "SmtpConfig": {
     "PublicName": "yuour title name",
@@ -53,7 +53,7 @@ SMTP - отправка email:
 ```
 
 MongoDB - файловое хранилище:
-```
+```json
 {
   "MongoDBConfig": {
     "Sheme": "mongodb",
@@ -66,7 +66,7 @@ MongoDB - файловое хранилище:
 ```
 
 RabbitMQ - транспорт:
-```
+```json
 {
 	"RabbitMQConfig": {
 		"UserName": "debug",
@@ -77,7 +77,7 @@ RabbitMQ - транспорт:
 ```
 
 TelegramBot токен:
-```
+```json
 {
   "BotConfiguration": {
     "BotToken": "111777000:xxxyyyxxxyyyxxxyyy"
