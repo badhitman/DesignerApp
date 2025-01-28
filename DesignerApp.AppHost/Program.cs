@@ -1,5 +1,5 @@
-using DesignerApp.AppHost;
 using Microsoft.Extensions.Configuration;
+using DesignerApp.AppHost;
 using SharedLib;
 
 IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
@@ -46,6 +46,12 @@ if (!string.IsNullOrWhiteSpace(_modePrefix))
 builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddCommandLine(args);
 
+IResourceBuilder<RabbitMQServerResource> rabbit = builder.AddRabbitMQ("rabbit")
+    //.WithImageTag("latest")
+    //.WithLifetime(ContainerLifetime.Persistent)
+    .WithManagementPlugin()
+    .WithBindMount("VolumeMount.AppHost-rabbit-data", "/var/lib/rabbitmq");
+
 IResourceBuilder<RedisResource> cache = builder.AddRedis("cache")
     .WithImageTag("latest")
     //.WithLifetime(ContainerLifetime.Persistent)
@@ -58,12 +64,6 @@ IResourceBuilder<MongoDBServerResource> mongo = builder.AddMongoDB("mongo")
     //.WithLifetime(ContainerLifetime.Persistent)
     .WithBindMount("VolumeMount.AppHost-mongo-data", "/data/db");
 
-IResourceBuilder<RabbitMQServerResource> rabbit = builder.AddRabbitMQ("rabbit")
-    //.WithImageTag("latest")
-    //.WithLifetime(ContainerLifetime.Persistent)
-    .WithManagementPlugin()
-    .WithBindMount("VolumeMount.AppHost-rabbit-data", "/var/lib/rabbitmq");
-
 IResourceBuilder<PostgresServerResource> postgress = builder.AddPostgres("postgress")
     .WithImageTag("latest")
     //.WithLifetime(ContainerLifetime.Persistent)
@@ -74,7 +74,6 @@ IResourceBuilder<PostgresServerResource> postgress = builder.AddPostgres("postgr
 IResourceBuilder<ParameterResource> envWithAspire = builder.AddParameter("WithAspire");
 
 IResourceBuilder<ProjectResource> apirestservice = builder.AddProject<Projects.ApiRestService>("apirestservice")
-
     .WithReference(cache)
     .WaitFor(cache)
     .WithReference(mongo)
@@ -87,7 +86,6 @@ IResourceBuilder<ProjectResource> apirestservice = builder.AddProject<Projects.A
     .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
 
 IResourceBuilder<ProjectResource> commerceservice = builder.AddProject<Projects.CommerceService>("commerceservice")
-
     .WithReference(cache)
     .WaitFor(cache)
     .WithReference(mongo)
@@ -100,7 +98,6 @@ IResourceBuilder<ProjectResource> commerceservice = builder.AddProject<Projects.
     .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
 
 IResourceBuilder<ProjectResource> constructorservice = builder.AddProject<Projects.ConstructorService>("constructorservice")
-
     .WithReference(cache)
     .WaitFor(cache)
     .WithReference(mongo)
@@ -113,7 +110,6 @@ IResourceBuilder<ProjectResource> constructorservice = builder.AddProject<Projec
     .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
 
 IResourceBuilder<ProjectResource> helpdeskservice = builder.AddProject<Projects.HelpdeskService>("helpdeskservice")
-
     .WithReference(cache)
     .WaitFor(cache)
     .WithReference(mongo)
@@ -126,7 +122,6 @@ IResourceBuilder<ProjectResource> helpdeskservice = builder.AddProject<Projects.
     .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
 
 IResourceBuilder<ProjectResource> identityservice = builder.AddProject<Projects.IdentityService>("identityservice")
-
     .WithReference(cache)
     .WaitFor(cache)
     .WithReference(mongo)
@@ -139,7 +134,6 @@ IResourceBuilder<ProjectResource> identityservice = builder.AddProject<Projects.
     .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
 
 IResourceBuilder<ProjectResource> storageservice = builder.AddProject<Projects.StorageService>("storageservice")
-
     .WithReference(cache)
     .WaitFor(cache)
     .WithReference(mongo)
@@ -152,7 +146,6 @@ IResourceBuilder<ProjectResource> storageservice = builder.AddProject<Projects.S
     .WithEnvironment("ASPIRE_ORCHESTRATION", envWithAspire);
 
 IResourceBuilder<ProjectResource> telegramBot = builder.AddProject<Projects.TelegramBotService>("telegrambotpolling")
-
     .WithReference(cache)
     .WaitFor(cache)
     .WithReference(mongo)

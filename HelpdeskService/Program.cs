@@ -15,96 +15,96 @@ using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using Microsoft.Extensions.DependencyInjection;
 
-// Early init of NLog to allow startup and exception logging, before host is built
-Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-IHostBuilder builder = Host.CreateDefaultBuilder(args);
-
-// NLog: Setup NLog for Dependency injection
-builder.ConfigureLogging((lc, lb) =>
+/// <summary>
+/// Program
+/// </summary>
+public class Program
 {
-    lb.ClearProviders();
-    lb.AddNLog();
-    lb.AddOpenTelemetry(logging => {
-            logging.IncludeFormattedMessage = true;
-            logging.IncludeScopes = true;
-    });
-});
-builder.UseNLog();
-string _environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Other";
-logger.Warn($"init main: {_environmentName}");
-string _modePrefix = Environment.GetEnvironmentVariable(nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)) ?? "";
-if (!string.IsNullOrWhiteSpace(_modePrefix))
-    GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
-
-string curr_dir = Directory.GetCurrentDirectory();
-string path_load;
-
-builder.ConfigureHostConfiguration(configHost =>
-{
-    configHost.SetBasePath(curr_dir);
-    path_load = Path.Combine(curr_dir, "appsettings.json");
-    if (Path.Exists(path_load))
-        configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
-    else
-        logger.Warn($"отсутствует: {path_load}");
-
-    path_load = Path.Combine(curr_dir, $"appsettings.{_environmentName}.json");
-    if (Path.Exists(path_load))
-        configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
-    else
-        logger.Warn($"отсутствует: {path_load}");
-
-    // Secrets
-    void ReadSecrets(string dirName)
+    /// <summary>
+    /// Main
+    /// </summary>
+    public static async Task Main(string[] args)
     {
-        string secretPath = Path.Combine("..", dirName);
-        DirectoryInfo di = new(secretPath);
-        for (int i = 0; i < 5 && !di.Exists; i++)
-        {
-            logger.Warn($"файл секретов не найден (продолжение следует...): {di.FullName}");
-            secretPath = Path.Combine("..", secretPath);
-            di = new(secretPath);
-        }
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+        Logger logger = LogManager.GetCurrentClassLogger();
+        builder.AddServiceDefaults();
 
-        if (Directory.Exists(di.FullName))
-        {
-            foreach (string secret in Directory.GetFiles(secretPath, $"*.json"))
+        // NLog: Setup NLog for Dependency injection
+        builder.Logging
+            .ClearProviders()
+            .AddNLog()
+            .AddOpenTelemetry(logging =>
             {
-                path_load = Path.GetFullPath(secret);
-                logger.Warn($"!secret load: {path_load}");
-                configHost.AddJsonFile(path_load, optional: true, reloadOnChange: true);
-            }
-        }
+                logging.IncludeFormattedMessage = true; logging.IncludeScopes = true;
+            });
+
+        string _environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Other";
+        logger.Warn($"init main: {_environmentName}");
+        string _modePrefix = Environment.GetEnvironmentVariable(nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)) ?? "";
+        if (!string.IsNullOrWhiteSpace(_modePrefix))
+            GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
+        string curr_dir = Directory.GetCurrentDirectory();
+
+
+        builder.Configuration.SetBasePath(curr_dir);
+        string path_load = Path.Combine(curr_dir, "appsettings.json");
+        if (Path.Exists(path_load))
+            builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+
+        path_load = Path.Combine(curr_dir, $"appsettings.{_environmentName}.json");
+        if (Path.Exists(path_load))
+            builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
         else
-            logger.Warn($"Секреты `{dirName}` не найдены (совсем)");
-    }
+            logger.Warn($"отсутствует: {path_load}");
 
-    ReadSecrets("secrets");
-    if (!string.IsNullOrWhiteSpace(_modePrefix))
-        ReadSecrets($"secrets{_modePrefix}");
+        // Secrets
+        void ReadSecrets(string dirName)
+        {
+            string secretPath = Path.Combine("..", dirName);
+            DirectoryInfo di = new(secretPath);
+            for (int i = 0; i < 5 && !di.Exists; i++)
+            {
+                logger.Warn($"файл секретов не найден (продолжение следует...): {di.FullName}");
+                secretPath = Path.Combine("..", secretPath);
+                di = new(secretPath);
+            }
 
-    configHost.AddEnvironmentVariables();
-    configHost.AddCommandLine(args);
-});
+            if (Directory.Exists(secretPath))
+            {
+                foreach (string secret in Directory.GetFiles(secretPath, $"*.json"))
+                {
+                    path_load = Path.GetFullPath(secret);
+                    logger.Warn($"!secret load: {path_load}");
+                    builder.Configuration.AddJsonFile(path_load, optional: true, reloadOnChange: true);
+                }
+            }
+            else
+                logger.Warn($"Секреты `{dirName}` не найдены (совсем)");
+        }
+        ReadSecrets("secrets");
+        if (!string.IsNullOrWhiteSpace(_modePrefix))
+            ReadSecrets($"secrets{_modePrefix}");
 
-builder.ConfigureServices((context, services) =>
-{
-    services
-    .Configure<RabbitMQConfigModel>(context.Configuration.GetSection("RabbitMQConfig"))
-    .Configure<HelpdeskConfigModel>(context.Configuration.GetSection("HelpdeskConfig"))
+        builder.Configuration.AddEnvironmentVariables();
+        builder.Configuration.AddCommandLine(args);
+
+
+        builder.Services
+        .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
+    .Configure<HelpdeskConfigModel>(builder.Configuration.GetSection("HelpdeskConfig"))
     ;
 
-    services.AddScoped<IArticlesService, ArticlesService>();
-    services.AddStackExchangeRedisCache(options =>
+        builder.Services.AddScoped<IArticlesService, ArticlesService>();
+        builder.Services.AddStackExchangeRedisCache(options =>
     {
-        options.Configuration = context.Configuration.GetConnectionString($"RedisConnectionString{_modePrefix}");
+        options.Configuration = builder.Configuration.GetConnectionString($"RedisConnectionString{_modePrefix}");
         // options.InstanceName = "app.";
     });
-    
-    services.AddOptions();
-    services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
-    string connectionIdentityString = context.Configuration.GetConnectionString($"HelpdeskConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'HelpdeskConnection{_modePrefix}' not found.");
-    services.AddDbContextFactory<HelpdeskContext>(opt =>
+
+        builder.Services.AddOptions();
+        builder.Services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
+        string connectionIdentityString = builder.Configuration.GetConnectionString($"HelpdeskConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'HelpdeskConnection{_modePrefix}' not found.");
+        builder.Services.AddDbContextFactory<HelpdeskContext>(opt =>
     {
         opt.UseNpgsql(connectionIdentityString);
 
@@ -113,16 +113,16 @@ builder.ConfigureServices((context, services) =>
 #endif
     });
 
-    services.AddMemoryCache();
+        builder.Services.AddMemoryCache();
 
-    #region MQ Transmission (remote methods call)
-    string appName = typeof(Program).Assembly.GetName().Name ?? "AssemblyName";
-    services.AddSingleton<IRabbitClient>(x =>
+        #region MQ Transmission (remote methods call)
+        string appName = typeof(Program).Assembly.GetName().Name ?? "AssemblyName";
+        builder.Services.AddSingleton<IRabbitClient>(x =>
         new RabbitClient(x.GetRequiredService<IOptions<RabbitMQConfigModel>>(),
                     x.GetRequiredService<ILogger<RabbitClient>>(),
                     appName));
-    //
-    services.AddScoped<IHelpdeskTransmission, HelpdeskTransmission>()
+        //
+        builder.Services.AddScoped<IHelpdeskTransmission, HelpdeskTransmission>()
     .AddScoped<IWebTransmission, WebTransmission>()
     .AddScoped<ITelegramTransmission, TelegramTransmission>()
     .AddScoped<ICommerceTransmission, CommerceTransmission>()
@@ -130,54 +130,53 @@ builder.ConfigureServices((context, services) =>
     .AddScoped<IStorageTransmission, StorageTransmission>()
     .AddScoped<IIdentityTransmission, IdentityTransmission>()
     ;
-    // 
-    services.HelpdeskRegisterMqListeners();
-    //  
-    #endregion
-    
-    // Custom metrics for the application
-    Meter greeterMeter = new($"OTel.{appName}", "1.0.0");
-    OpenTelemetryBuilder otel = services.AddOpenTelemetry();
+        // 
+        builder.Services.HelpdeskRegisterMqListeners();
+        //  
+        #endregion
 
-    // Add Metrics for ASP.NET Core and our custom metrics and export via OTLP
-    otel.WithMetrics(metrics =>
-    {
-        // Metrics provider from OpenTelemetry
-        metrics.AddAspNetCoreInstrumentation();
-        //Our custom metrics
-        metrics.AddMeter(greeterMeter.Name);
-        // Metrics provides by ASP.NET Core in .NET 8
-        metrics.AddMeter("Microsoft.AspNetCore.Hosting");
-    });
+        // Custom metrics for the application
+        Meter greeterMeter = new($"OTel.{appName}", "1.0.0");
+        OpenTelemetryBuilder otel = builder.Services.AddOpenTelemetry();
 
-    // Add Tracing for ASP.NET Core and our custom ActivitySource and export via OTLP
-    otel.WithTracing(tracing =>
-    {
-        tracing.AddSource($"OTel.{appName}");
-        tracing.AddAspNetCoreInstrumentation();
-        tracing.AddHttpClientInstrumentation();
-    });
-});
+        // Add Metrics for ASP.NET Core and our custom metrics and export via OTLP
+        otel.WithMetrics(metrics =>
+        {
+            // Metrics provider from OpenTelemetry
+            metrics.AddAspNetCoreInstrumentation();
+            //Our custom metrics
+            metrics.AddMeter(greeterMeter.Name);
+            // Metrics provides by ASP.NET Core in .NET 8
+            metrics.AddMeter("Microsoft.AspNetCore.Hosting");
+        });
 
-IHost app = builder.Build();
+        // Add Tracing for ASP.NET Core and our custom ActivitySource and export via OTLP
+        otel.WithTracing(tracing =>
+        {
+            tracing.AddSource($"OTel.{appName}");
+            tracing.AddAspNetCoreInstrumentation();
+            tracing.AddHttpClientInstrumentation();
+        });
 
-using (IServiceScope ss = app.Services.CreateScope())
-{
-    IOptions<HelpdeskConfigModel> wc_main = ss.ServiceProvider.GetRequiredService<IOptions<HelpdeskConfigModel>>();
-    IWebTransmission webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebTransmission>();
-    TelegramBotConfigModel wc_remote = await webRemoteCall.GetWebConfig();
-    if (Uri.TryCreate(wc_remote.BaseUri, UriKind.Absolute, out _))
-        wc_main.Value.Update(wc_remote.BaseUri);
+        IHost app = builder.Build();
+
+        using (IServiceScope ss = app.Services.CreateScope())
+        {
+            IOptions<HelpdeskConfigModel> wc_main = ss.ServiceProvider.GetRequiredService<IOptions<HelpdeskConfigModel>>();
+            IWebTransmission webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebTransmission>();
+            TelegramBotConfigModel wc_remote = await webRemoteCall.GetWebConfig();
+            if (Uri.TryCreate(wc_remote.BaseUri, UriKind.Absolute, out _))
+                wc_main.Value.Update(wc_remote.BaseUri);
 
 #if DEBUG
 #if DEMO
-    IDbContextFactory<HelpdeskContext> helpdeskDbFactory = ss.ServiceProvider.GetRequiredService<IDbContextFactory<HelpdeskContext>>();
-    using HelpdeskContext context_seed = await helpdeskDbFactory.CreateDbContextAsync();
-    List<RubricIssueHelpdeskModelDB> demo_rubrics = [.. await context_seed.Rubrics.ToArrayAsync()];
-    if (demo_rubrics.Count == 0)
-    {
-        demo_rubrics = [
-            new ()
+            IDbContextFactory<HelpdeskContext> helpdeskDbFactory = ss.ServiceProvider.GetRequiredService<IDbContextFactory<HelpdeskContext>>();
+            using HelpdeskContext context_seed = await helpdeskDbFactory.CreateDbContextAsync();
+            List<RubricIssueHelpdeskModelDB> demo_rubrics = [.. await context_seed.Rubrics.ToArrayAsync()];
+            if (demo_rubrics.Count == 0)
+            {
+                demo_rubrics = [
+                    new ()
             {
                 Name = "Секретарь",
                 NormalizedNameUpper = "СЕКРЕТАРЬ",
@@ -195,41 +194,43 @@ using (IServiceScope ss = app.Services.CreateScope())
                 NormalizedNameUpper = "ДРУГОЕ",
                 SortIndex = 3,
             }];
-        demo_rubrics[0].NestedRubrics = [new() { Name = "Справки", NormalizedNameUpper = "СПРАВКИ", Parent = demo_rubrics[0], SortIndex = 1 }, new() { Name = "Жалобы", NormalizedNameUpper = "ЖАЛОБЫ", Parent = demo_rubrics[0], SortIndex = 2 }];
-        demo_rubrics[1].NestedRubrics = [new() { Name = "Линия 1", NormalizedNameUpper = "ЛИНИЯ 1", Parent = demo_rubrics[1], SortIndex = 1 }, new() { Name = "Линия 2", NormalizedNameUpper = "ЛИНИЯ 2", Parent = demo_rubrics[1], SortIndex = 2 }];
-        await context_seed.AddRangeAsync(demo_rubrics);
-        await context_seed.SaveChangesAsync();
+                demo_rubrics[0].NestedRubrics = [new() { Name = "Справки", NormalizedNameUpper = "СПРАВКИ", Parent = demo_rubrics[0], SortIndex = 1 }, new() { Name = "Жалобы", NormalizedNameUpper = "ЖАЛОБЫ", Parent = demo_rubrics[0], SortIndex = 2 }];
+                demo_rubrics[1].NestedRubrics = [new() { Name = "Линия 1", NormalizedNameUpper = "ЛИНИЯ 1", Parent = demo_rubrics[1], SortIndex = 1 }, new() { Name = "Линия 2", NormalizedNameUpper = "ЛИНИЯ 2", Parent = demo_rubrics[1], SortIndex = 2 }];
+                await context_seed.AddRangeAsync(demo_rubrics);
+                await context_seed.SaveChangesAsync();
+            }
+
+            //if (!await context_seed.Issues.AnyAsync())
+            //{
+            //    int[] rubric_ids = [.. demo_rubrics.Select(x => x.Id)];
+            //    List<HelpdeskIssueStepsEnum> Steps = [.. Enum.GetValues(typeof(HelpdeskIssueStepsEnum)).Cast<HelpdeskIssueStepsEnum>()];
+
+            //    List<IssueHelpdeskModelDB> issues = [];
+            //    Random random = new();
+            //    uint issues_demo_count = 1;
+            //    foreach (HelpdeskIssueStepsEnum st in Steps)
+            //    {
+            //        int size = random.Next(3, 30);
+            //        for (int i = 0; i < size; i++)
+            //        {
+            //            issues.Add(new()
+            //            {
+            //                AuthorIdentityUserId = "",
+            //                Name = $"Тест {issues_demo_count++}",
+            //                NormalizedNameUpper = $"ТЕСТ {issues_demo_count}",
+            //                RubricIssueId = rubric_ids[random.Next(0, rubric_ids.Length)],
+            //                Description = $"Доброго дня. Это demo описание {issues_demo_count}",
+            //                StepIssue = st,
+            //            });
+            //        }
+            //    }
+            //    await context_seed.AddRangeAsync(issues);
+            //    await context_seed.SaveChangesAsync();
+            //}
+#endif
+#endif
+        }
+
+        await app.RunAsync();
     }
-
-    //if (!await context_seed.Issues.AnyAsync())
-    //{
-    //    int[] rubric_ids = [.. demo_rubrics.Select(x => x.Id)];
-    //    List<HelpdeskIssueStepsEnum> Steps = [.. Enum.GetValues(typeof(HelpdeskIssueStepsEnum)).Cast<HelpdeskIssueStepsEnum>()];
-
-    //    List<IssueHelpdeskModelDB> issues = [];
-    //    Random random = new();
-    //    uint issues_demo_count = 1;
-    //    foreach (HelpdeskIssueStepsEnum st in Steps)
-    //    {
-    //        int size = random.Next(3, 30);
-    //        for (int i = 0; i < size; i++)
-    //        {
-    //            issues.Add(new()
-    //            {
-    //                AuthorIdentityUserId = "",
-    //                Name = $"Тест {issues_demo_count++}",
-    //                NormalizedNameUpper = $"ТЕСТ {issues_demo_count}",
-    //                RubricIssueId = rubric_ids[random.Next(0, rubric_ids.Length)],
-    //                Description = $"Доброго дня. Это demo описание {issues_demo_count}",
-    //                StepIssue = st,
-    //            });
-    //        }
-    //    }
-    //    await context_seed.AddRangeAsync(issues);
-    //    await context_seed.SaveChangesAsync();
-    //}
-#endif
-#endif
 }
-
-await app.RunAsync();
