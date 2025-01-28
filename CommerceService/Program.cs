@@ -91,7 +91,7 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddCommandLine(args);
 
 builder.Services
-.Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
+.Configure<RabbitMQConfigModel>(builder.Configuration.GetSection(RabbitMQConfigModel.Configuration))
 ;
 
 builder.Services.AddStackExchangeRedisCache(options =>

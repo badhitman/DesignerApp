@@ -97,8 +97,8 @@ public class Program
         builder.Configuration.AddCommandLine(args);
 
         builder.Services
-            .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
-            .Configure<SmtpConfigModel>(builder.Configuration.GetSection("SmtpConfig"))
+            .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection(RabbitMQConfigModel.Configuration))
+            .Configure<SmtpConfigModel>(builder.Configuration.GetSection(SmtpConfigModel.Configuration))
             ;
 
         builder.Services.AddOptions();

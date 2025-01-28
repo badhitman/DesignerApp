@@ -90,8 +90,8 @@ public class Program
 
 
         builder.Services
-        .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
-    .Configure<HelpdeskConfigModel>(builder.Configuration.GetSection("HelpdeskConfig"))
+        .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection(RabbitMQConfigModel.Configuration))
+    .Configure<HelpdeskConfigModel>(builder.Configuration.GetSection(HelpdeskConfigModel.Configuration))
     ;
 
         builder.Services.AddScoped<IArticlesService, ArticlesService>();

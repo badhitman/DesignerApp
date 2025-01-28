@@ -90,10 +90,13 @@ public class Program
         builder.Configuration.AddCommandLine(args);
 
         builder.Services
-            .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
-            .Configure<WebConfigModel>(builder.Configuration.GetSection("WebConfig"))
+            .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection(RabbitMQConfigModel.Configuration))
+            .Configure<WebConfigModel>(builder.Configuration.GetSection(WebConfigModel.Configuration))
             ;
-        MongoConfigModel _jo = builder.Configuration.GetSection("MongoDB").Get<MongoConfigModel>()!;
+
+        builder.Services.AddSingleton<WebConfigModel>();
+
+        MongoConfigModel _jo = builder.Configuration.GetSection(MongoConfigModel.Configuration).Get<MongoConfigModel>()!;
         builder.Services.AddSingleton(new MongoClient(_jo.ToString()).GetDatabase(_jo.FilesSystemName));
 
         builder.Services.AddMemoryCache();
@@ -159,11 +162,11 @@ public class Program
 
         using (IServiceScope ss = app.Services.CreateScope())
         {
-            IOptions<WebConfigModel> wc_main = ss.ServiceProvider.GetRequiredService<IOptions<WebConfigModel>>();
+            WebConfigModel wc_main = ss.ServiceProvider.GetRequiredService<WebConfigModel>();
             IWebTransmission webRemoteCall = ss.ServiceProvider.GetRequiredService<IWebTransmission>();
             TelegramBotConfigModel wc_remote = await webRemoteCall.GetWebConfig();
             if (Uri.TryCreate(wc_remote.BaseUri, UriKind.Absolute, out _))
-                wc_main.Value.Update(wc_remote.BaseUri);
+                wc_main.Update(wc_remote.BaseUri);
         }
 
         await app.RunAsync();

@@ -87,7 +87,7 @@ public class Program
         builder.Configuration.AddCommandLine(args);
 
         builder.Services
-       .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
+       .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection(RabbitMQConfigModel.Configuration))
        .Configure<BotConfiguration>(builder.Configuration.GetSection(BotConfiguration.Configuration))
        ;
         builder.Services.AddHttpClient(HttpClientsNamesEnum.Wappi.ToString(), cc =>
@@ -187,16 +187,4 @@ public class Program
 
         app.Run();
     }
-}
-
-/// <summary>
-/// BotConfiguration
-/// </summary>
-public class BotConfiguration
-{
-    /// <inheritdoc/>
-    public static readonly string Configuration = "BotConfiguration";
-
-    /// <inheritdoc/>
-    public string BotToken { get; set; } = "";
 }

@@ -229,10 +229,10 @@ else
 ```
 Если отправка Email происходит иначе чем обычный SMTP, тогда следует реализовать `IMailProviderService` под условия и предусмотреть соответствующие настройки.
 
-- MongoDB:
+- MongoDBConfig:
 ```json
 {
-  "MongoDB": {
+  "MongoDBConfig": {
     "Sheme": "mongodb",
     "Host": "localhost",
     "Port": 27017,

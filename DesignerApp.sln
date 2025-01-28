@@ -77,10 +77,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "secrets", "secrets", "{AC947053-95FC-46B4-A464-FB02A72D4441}"
 	ProjectSection(SolutionItems) = preProject
 		..\secrets\connections-strings.Development.json = ..\secrets\connections-strings.Development.json
-		..\secrets\email-conf.Development.json = ..\secrets\email-conf.Development.json
-		..\secrets\mongo-conf.json = ..\secrets\mongo-conf.json
-		..\secrets\rabbitmq-conf.Development.json = ..\secrets\rabbitmq-conf.Development.json
-		..\secrets\telegram-bot.Development.json = ..\secrets\telegram-bot.Development.json
+		..\secrets-DesignerApp.AppHost\email-conf.Development.json = ..\secrets-DesignerApp.AppHost\email-conf.Development.json
+		..\secrets-DesignerApp.AppHost\mongo-conf.json = ..\secrets-DesignerApp.AppHost\mongo-conf.json
+		..\secrets-DesignerApp.AppHost\rabbitmq-conf.Development.json = ..\secrets-DesignerApp.AppHost\rabbitmq-conf.Development.json
+		..\secrets-DesignerApp.AppHost\telegram-bot.Development.json = ..\secrets-DesignerApp.AppHost\telegram-bot.Development.json
 		..\secrets\top-menu.Development.json = ..\secrets\top-menu.Development.json
 	EndProjectSection
 EndProject

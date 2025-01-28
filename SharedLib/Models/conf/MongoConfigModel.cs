@@ -9,6 +9,9 @@ namespace SharedLib;
 /// </summary>
 public class MongoConfigModel : HostConfigModel
 {
+    /// <inheritdoc/>
+    public static readonly string Configuration = "MongoDBConfig";
+
     /// <summary>
     /// Login
     /// </summary>

@@ -9,6 +9,9 @@ namespace SharedLib;
 /// </summary>
 public class SmtpConfigModel
 {
+    /// <inheritdoc/>
+    public static readonly string Configuration = "SmtpConfig";
+
     /// <summary>
     /// Адреса для отправки технических уведомлений с сервера
     /// </summary>

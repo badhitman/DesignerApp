@@ -25,7 +25,7 @@ public class StorageServiceImpl(
     IIdentityTransmission identityRepo,
     ICommerceTransmission commRepo,
     IHelpdeskTransmission HelpdeskRepo,
-    IOptions<WebConfigModel> webConfig,
+    WebConfigModel webConfig,
     ILogger<StorageServiceImpl> loggerRepo) : ISerializeStorage
 {
 #if DEBUG
@@ -295,7 +295,7 @@ public class StorageServiceImpl(
                         OrderDocumentModelDB orderDb = get_order.Response.Single();
                         if (orderDb.HelpdeskId.HasValue && orderDb.HelpdeskId.Value > 0)
                         {
-                            msg = $"В <a href=\"{webConfig.Value.ClearBaseUri}/issue-card/{orderDb.HelpdeskId.Value}\">заказ #{orderDb.Id}</a> добавлен файл '<u>{_file_name}</u>' {GlobalTools.SizeDataAsString(req.Payload.Payload.Length)}";
+                            msg = $"В <a href=\"{webConfig.ClearBaseUri}/issue-card/{orderDb.HelpdeskId.Value}\">заказ #{orderDb.Id}</a> добавлен файл '<u>{_file_name}</u>' {GlobalTools.SizeDataAsString(req.Payload.Payload.Length)}";
                             loggerRepo.LogInformation($"{msg} [{nameof(res.Response.PointId)}:{_uf}]");
                             reqPulse = new()
                             {
@@ -317,7 +317,7 @@ public class StorageServiceImpl(
                     }
                     break;
                 case GlobalStaticConstants.Routes.ISSUE_CONTROLLER_NAME:
-                    msg = $"В <a href=\"{webConfig.Value.ClearBaseUri}/issue-card/{req.Payload.OwnerPrimaryKey.Value}\">заявку #{req.Payload.OwnerPrimaryKey.Value}</a> добавлен файл '<u>{_file_name}</u>' {GlobalTools.SizeDataAsString(req.Payload.Payload.Length)}";
+                    msg = $"В <a href=\"{webConfig.ClearBaseUri}/issue-card/{req.Payload.OwnerPrimaryKey.Value}\">заявку #{req.Payload.OwnerPrimaryKey.Value}</a> добавлен файл '<u>{_file_name}</u>' {GlobalTools.SizeDataAsString(req.Payload.Payload.Length)}";
                     loggerRepo.LogInformation($"{msg} [{nameof(res.Response.PointId)}:{_uf}]");
                     reqPulse = new()
                     {

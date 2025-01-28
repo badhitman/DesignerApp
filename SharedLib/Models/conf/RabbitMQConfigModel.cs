@@ -10,6 +10,9 @@ namespace SharedLib;
 public class RabbitMQConfigModel
 {
     /// <inheritdoc/>
+    public static readonly string Configuration = "RabbitMQConfig";
+
+    /// <inheritdoc/>
     public required string UserName { get; set; } = "guest";
 
     /// <inheritdoc/>

@@ -90,7 +90,7 @@ builder.Configuration.AddCommandLine(args);
 builder.Services.AddOptions();
 
 builder.Services
-   .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection("RabbitMQConfig"))
+   .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection(RabbitMQConfigModel.Configuration))
    .Configure<ConstructorConfigModel>(builder.Configuration.GetSection("ConstructorConfig"));
 
 string connectionIdentityString = builder.Configuration.GetConnectionString($"ConstructorConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'ConstructorConnection{_modePrefix}' not found.");

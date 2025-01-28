@@ -9,6 +9,9 @@ namespace SharedLib;
 /// </summary>
 public class WebConfigModel
 {
+    /// <inheritdoc/>
+    public static readonly string Configuration = "WebConfig";
+
     /// <summary>
     /// BaseUri
     /// </summary>

@@ -3,8 +3,6 @@
 ////////////////////////////////////////////////
 
 using System.Globalization;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
 namespace SharedLib;
@@ -61,6 +59,11 @@ public static partial class GlobalStaticConstants
             return _initSalt;
         }
     }
+
+    /// <summary>
+    /// ASPIRE_ORCHESTRATION
+    /// </summary>
+    public const string AspireOrchestration = "ASPIRE_ORCHESTRATION";
 
     /// <summary>
     /// Fake Host
