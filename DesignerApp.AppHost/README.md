@@ -4,13 +4,13 @@
 Параметры подключения (секреты) нужно разместить в папке с именем `secrets-DesignerApp.AppHost`, но уровнем вложенности выше по отношению к папке приложения (например: `../secrets-DesignerApp.AppHost` или ещё выше в иерархии `../../..`, но глубиной не дальше пяти переходов). Оркестратор сам передаст требуемые параметры в нужные службы. В таком случае достаточно запустить `DesignerApp.AppHost`.
 
 
-![aspire main](./img/aspire-main.png) 
+![aspire main](../img/aspire-main.png) 
 
-![aspire trace](./img/aspire-trace-mq.png)
+![aspire trace](../img/aspire-trace-mq.png)
 
-![aspire traces](./img/aspire-traces-mq.png)
+![aspire traces](../img/aspire-traces-mq.png)
 
-![aspire logs](./img/aspire-logs.png)
+![aspire logs](../img/aspire-logs.png)
 
 ### Шаблоны - файл(ы) секретов
 
