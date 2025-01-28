@@ -68,11 +68,11 @@ public class RabbitClient : IRabbitClient
 
         // Increment the custom counter
         countGreetings.Add(1);
-                
+
         activity?.Start();
 
         string response_topic = waitResponse ? $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}{queue}_{Guid.NewGuid()}" : "";
-        
+
         // Add a tag to the Activity
         activity?.SetTag(nameof(response_topic), response_topic);
 
@@ -206,10 +206,12 @@ public class RabbitClient : IRabbitClient
             else
                 loggerRepo.LogDebug($"Elapsed [{queue}] -> [{response_topic}]: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}");
         }
+        else
+            return Task.FromResult(default(T));
 
-        if (res_io is null)
+        if (typeof(T) != typeof(object) && res_io is null)
         {
-            _msg = $"Response MQ/IO is null!";
+            _msg = $"Response MQ/IO is null [{queue}] -> [{response_topic}]: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}";
             loggerRepo.LogError(_msg);
             return Task.FromResult(default(T));
         }

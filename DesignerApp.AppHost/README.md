@@ -1,7 +1,17 @@
 # .NET Aspire - быстрый запуск
-Для запуска решения предварительно потребуется установленные VisualStudio, .NET 9 и Docker.
-Кроме того, потребуются:  PostgreSQL, RabbitMQ, Redis, MongoDB (например в том же Docker-е).
+Для запуска решения предварительно потребуется установленные **VisualStudio**, **.NET 9** и **Docker**.
+Кроме того, потребуются:  **PostgreSQL**, **RabbitMQ**, **Redis**, **MongoDB** (например, в том же `Docker`-е).
 Параметры подключения (секреты) нужно разместить в папке с именем `secrets-DesignerApp.AppHost`, но уровнем вложенности выше по отношению к папке приложения (например: `../secrets-DesignerApp.AppHost` или ещё выше в иерархии `../../..`, но глубиной не дальше пяти переходов). Оркестратор сам передаст требуемые параметры в нужные службы. В таком случае достаточно запустить `DesignerApp.AppHost`.
+
+
+![aspire main](./img/aspire-main.png) 
+
+![aspire trace](./img/aspire-trace-mq.png)
+
+![aspire traces](./img/aspire-traces-mq.png)
+
+![aspire logs](./img/aspire-logs.png)
+
 ### Шаблоны - файл(ы) секретов
 
 Строки подключения (СУБД + Redis):
@@ -36,7 +46,7 @@ SMTP - отправка email:
 }
 ```
 
-MongoDB - Файловое хранилище:
+MongoDB - файловое хранилище:
 ```
 {
   "MongoDBConfig": {
@@ -60,7 +70,7 @@ RabbitMQ - транспорт:
 }
 ```
 
-TelegramBot token:
+TelegramBot токен:
 ```
 {
   "BotConfiguration": {

@@ -171,6 +171,15 @@ public class Program
             ;
 
         builder.AddProject<Projects.BlankBlazorApp>("blankblazorapp")
+            .WithReference(helpdeskService)
+            .WaitFor(helpdeskService)
+
+            .WithReference(telegramBotService)
+            .WaitFor(telegramBotService)
+
+            .WithReference(identityService)
+            .WaitFor(identityService)
+
             //.WithHttpEndpoint(port: 5066)
             .WithExternalHttpEndpoints()
 
@@ -183,14 +192,9 @@ public class Program
             .WaitFor(commerceService)
             .WithReference(constructorService)
             .WaitFor(constructorService)
-            .WithReference(helpdeskService)
-            .WaitFor(helpdeskService)
-            .WithReference(identityService)
-            .WaitFor(identityService)
+
             .WithReference(storageService)
             .WaitFor(storageService)
-            .WithReference(telegramBotService)
-            .WaitFor(telegramBotService)
         ;
 
         builder.Build().Run();
