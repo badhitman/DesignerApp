@@ -1,5 +1,7 @@
+using Aspire.Hosting;
 using Microsoft.Extensions.Configuration;
 using SharedLib;
+using StackExchange.Redis;
 
 namespace DesignerApp.AppHost;
 
@@ -81,6 +83,7 @@ public class Program
             .SelectMany(x => x.AsEnumerable())
             .ToList();
 
+        /*
         //IResourceBuilder<RabbitMQServerResource> rabbit = builder.AddRabbitMQ("rabbit")
         //    //.WithImageTag("latest")
         //    //.WithLifetime(ContainerLifetime.Persistent)
@@ -121,56 +124,73 @@ public class Program
 
         //    .WithEnvironment(GlobalStaticConstants.AspireOrchestration, envWithAspire);
         //}
+        */
 
-        IResourceBuilder<ProjectResource> apirestservice = builder.AddProject<Projects.ApiRestService>("apirestservice")
+        IResourceBuilder<IResourceWithConnectionString> redisConnectionStr = builder.AddConnectionString($"RedisConnectionString{_modePrefix}");
+        IResourceBuilder<IResourceWithConnectionString> identityConnectionStr = builder.AddConnectionString($"IdentityConnection{_modePrefix}");
+
+        IResourceBuilder<ProjectResource> helpdeskService = builder.AddProject<Projects.HelpdeskService>("helpdeskservice")
+            .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
+            .WithReference(builder.AddConnectionString($"HelpdeskConnection{_modePrefix}"))
+            .WithReference(redisConnectionStr)
+            ;
+
+        IResourceBuilder<ProjectResource> apiRestService = builder.AddProject<Projects.ApiRestService>("apirestservice")
+            .WithReference(redisConnectionStr)
             .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             ;
 
-        IResourceBuilder<ProjectResource> commerceservice = builder.AddProject<Projects.CommerceService>("commerceservice")
+        IResourceBuilder<ProjectResource> commerceService = builder.AddProject<Projects.CommerceService>("commerceservice")
+            .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
+            .WithReference(builder.AddConnectionString($"CommerceConnection{_modePrefix}"))
+            .WithReference(redisConnectionStr)
+            ;
+
+        IResourceBuilder<ProjectResource> constructorService = builder.AddProject<Projects.ConstructorService>("constructorservice")
+            .WithReference(builder.AddConnectionString($"ConstructorConnection{_modePrefix}"))
             .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             ;
 
-        IResourceBuilder<ProjectResource> constructorservice = builder.AddProject<Projects.ConstructorService>("constructorservice")
-            .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
-            ;
-
-        IResourceBuilder<ProjectResource> helpdeskservice = builder.AddProject<Projects.HelpdeskService>("helpdeskservice")
-            .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
-            ;
-
-        IResourceBuilder<ProjectResource> identityservice = builder.AddProject<Projects.IdentityService>("identityservice")
+        IResourceBuilder<ProjectResource> identityService = builder.AddProject<Projects.IdentityService>("identityservice")
+            .WithReference(identityConnectionStr)
+            .WithReference(redisConnectionStr)
             .WithEnvironment(act => smtpConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             ;
 
-        IResourceBuilder<ProjectResource> storageservice = builder.AddProject<Projects.StorageService>("storageservice")
+        IResourceBuilder<ProjectResource> storageService = builder.AddProject<Projects.StorageService>("storageservice")
             .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             .WithEnvironment(act => mongoConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
+            .WithReference(builder.AddConnectionString($"CloudParametersConnection{_modePrefix}"))
             ;
 
-        IResourceBuilder<ProjectResource> telegramBot = builder.AddProject<Projects.TelegramBotService>("telegrambotpolling")
+        IResourceBuilder<ProjectResource> telegramBotService = builder.AddProject<Projects.TelegramBotService>("telegrambotpolling")
             .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
-
+            .WithEnvironment($"{BotConfiguration.Configuration}:{nameof(BotConfiguration.BotToken)}", builder.Configuration[$"{BotConfiguration.Configuration}:{nameof(BotConfiguration.BotToken)}"])
+            .WithReference(builder.AddConnectionString($"TelegramBotConnection{_modePrefix}"))
             ;
 
         builder.AddProject<Projects.BlankBlazorApp>("blankblazorapp")
             //.WithHttpEndpoint(port: 5066)
             .WithExternalHttpEndpoints()
 
-            .WithReference(apirestservice)
-            .WaitFor(apirestservice)
-            .WithReference(commerceservice)
-            .WaitFor(commerceservice)
-            .WithReference(constructorservice)
-            .WaitFor(constructorservice)
-            .WithReference(helpdeskservice)
-            .WaitFor(helpdeskservice)
-            .WithReference(identityservice)
-            .WaitFor(identityservice)
-            .WithReference(storageservice)
-            .WaitFor(storageservice)
-            .WithReference(telegramBot)
-            .WaitFor(telegramBot)
+            .WithReference(builder.AddConnectionString($"MainConnection{_modePrefix}"))
+            .WithReference(identityConnectionStr)
+
+            .WithReference(apiRestService)
+            .WaitFor(apiRestService)
+            .WithReference(commerceService)
+            .WaitFor(commerceService)
+            .WithReference(constructorService)
+            .WaitFor(constructorService)
+            .WithReference(helpdeskService)
+            .WaitFor(helpdeskService)
+            .WithReference(identityService)
+            .WaitFor(identityService)
+            .WithReference(storageService)
+            .WaitFor(storageService)
+            .WithReference(telegramBotService)
+            .WaitFor(telegramBotService)
         ;
 
         builder.Build().Run();

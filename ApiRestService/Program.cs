@@ -103,11 +103,12 @@ builder.Services
 
 builder.Services.AddOptions();
 builder.Services.AddMemoryCache();
+
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString($"RedisConnectionString{_modePrefix}");
-});
-builder.Services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
+})
+.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
 
 builder.Services.AddTransient<UnhandledExceptionAttribute>();
 builder.Services.AddAuthorization();

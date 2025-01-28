@@ -94,17 +94,10 @@ builder.Services
 .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection(RabbitMQConfigModel.Configuration))
 ;
 
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration.GetConnectionString($"RedisConnectionString{_modePrefix}");
-    // options.InstanceName = "app.";
-});
-
 builder.Services.AddScoped<ICommerceService, CommerceImplementService>();
 
 builder.Services.AddSingleton<WebConfigModel>();
 builder.Services.AddOptions();
-builder.Services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
 string connectionIdentityString = builder.Configuration.GetConnectionString($"CommerceConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'CommerceConnection{_modePrefix}' not found.");
 builder.Services.AddDbContextFactory<CommerceContext>(opt =>
 {

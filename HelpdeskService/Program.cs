@@ -13,7 +13,8 @@ using OpenTelemetry;
 using System.Diagnostics.Metrics;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
-using Microsoft.Extensions.DependencyInjection;
+
+namespace HelpdeskService;
 
 /// <summary>
 /// Program
@@ -91,15 +92,14 @@ public class Program
 
         builder.Services
         .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection(RabbitMQConfigModel.Configuration))
-    .Configure<HelpdeskConfigModel>(builder.Configuration.GetSection(HelpdeskConfigModel.Configuration))
-    ;
+        .Configure<HelpdeskConfigModel>(builder.Configuration.GetSection(HelpdeskConfigModel.Configuration))
+        ;
 
         builder.Services.AddScoped<IArticlesService, ArticlesService>();
         builder.Services.AddStackExchangeRedisCache(options =>
-    {
-        options.Configuration = builder.Configuration.GetConnectionString($"RedisConnectionString{_modePrefix}");
-        // options.InstanceName = "app.";
-    });
+        {
+            options.Configuration = builder.Configuration.GetConnectionString($"RedisConnectionString{_modePrefix}");
+        });
 
         builder.Services.AddOptions();
         builder.Services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();

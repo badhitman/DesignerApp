@@ -100,11 +100,6 @@ public class Program
         builder.Services.AddSingleton(new MongoClient(_jo.ToString()).GetDatabase(_jo.FilesSystemName));
 
         builder.Services.AddMemoryCache();
-        builder.Services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = builder.Configuration.GetConnectionString($"RedisConnectionString{_modePrefix}");
-            });
-        builder.Services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
 
         builder.Services.AddOptions();
 
