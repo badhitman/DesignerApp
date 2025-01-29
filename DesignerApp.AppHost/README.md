@@ -18,9 +18,10 @@
 Кроме того, потребуются:  **PostgreSQL**, **RabbitMQ**, **Redis**, **MongoDB** (например, в том же `Docker`-е).
 Параметры подключения (секреты) нужно разместить в папке с именем `secrets-DesignerApp.AppHost`, но уровнем вложенности выше по отношению к папке приложения (например: `../secrets-DesignerApp.AppHost` или ещё выше в иерархии `../../..`, но глубиной не дальше пяти переходов). Оркестратор сам передаст требуемые параметры в нужные службы. В таком случае достаточно запустить `DesignerApp.AppHost`.
 
-### Шаблоны - файл(ы) секретов
+## Шаблоны/примеры секретов
+Aspire хост (`DesignerApp.AppHost`) настраивается в одном месте, а подчинённые службы получают **данные подключений** через переменные окружения от оркестратора.
 
-Строки подключения (СУБД + Redis):
+#### Строки подключения (СУБД + Redis):
 ```json
 {
   "ConnectionStrings": {
@@ -37,7 +38,27 @@
 }
 ```
 
-SMTP - отправка email:
+Хост Aspire так же транслирует в подчинённые службы имя рабочего контура `Transmission.Receives` для [разделения различных экземпляров решения, использующих одну общую инфраструктуру (MQ, DB, Mongo, Redis)](https://github.com/badhitman/DesignerApp?tab=readme-ov-file#stage-%D0%BA%D0%BE%D0%BD%D1%82%D1%83%D1%80). При использовании именованных рабочих контуров требуется предусмотреть и наличие необходимых строк подключения в секретах: к имени строки в конец подключения добавляется имя контура. Если имя контура `_second`, тогда строки подключений должны оканчиваться на `_second`. Примерно так:
+```json
+{
+  "ConnectionStrings": {
+    "RedisConnectionString_second": "localhost,defaultDatabase=1",
+
+    "CommerceConnection_second": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=CommerceContext",
+    "IdentityConnection_second": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=IdentityContext",
+    "TelegramBotConnection_second": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=TelegramBotContext",
+    "MainConnection_second": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=MainContext",
+    "CloudParametersConnection_second": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=StorageContext",
+    "HelpdeskConnection_second": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=HelpDeskContext",
+    "ConstructorConnection_second": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=ConstructorContext"
+  }
+}
+```
+> [!IMPORTANT]
+> Обратите внимание, что в примере для Redis я так же сменил номер БД с нуля на единицу: `defaultDatabase=1`, что бы данные разных контуров были разделены на логическом уровне.
+
+
+#### SMTP - отправка email:
 ```json
 {
   "SmtpConfig": {
@@ -52,7 +73,7 @@ SMTP - отправка email:
 }
 ```
 
-MongoDB - файловое хранилище:
+#### MongoDB - файловое хранилище:
 ```json
 {
   "MongoDBConfig": {
@@ -65,7 +86,7 @@ MongoDB - файловое хранилище:
 }
 ```
 
-RabbitMQ - транспорт:
+#### RabbitMQ - транспорт:
 ```json
 {
 	"RabbitMQConfig": {
@@ -76,11 +97,50 @@ RabbitMQ - транспорт:
 }
 ```
 
-TelegramBot токен:
+#### TelegramBot токен:
 ```json
 {
   "BotConfiguration": {
     "BotToken": "111777000:xxxyyyxxxyyyxxxyyy"
   }
+}
+```
+
+Секреты можно разместить по собственным файлам иил объединить в один:
+```json
+{
+	"ConnectionStrings": {
+		"RedisConnectionString": "localhost,defaultDatabase=0",
+		"CommerceConnection": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=CommerceContext",
+		"IdentityConnection": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=IdentityContext",
+		"TelegramBotConnection": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=TelegramBotContext",
+		"MainConnection": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=MainContext",
+		"CloudParametersConnection": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=StorageContext",
+		"HelpdeskConnection": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=HelpDeskContext",
+		"ConstructorConnection": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=ConstructorContext"
+	},
+	"BotConfiguration": {
+		"BotToken": "111777000:xxxyyyxxxyyyxxxyyy"
+	},
+	"RabbitMQConfig": {
+		"UserName": "debug",
+		"Password": "debug",
+		"VirtualHost": "/"
+	},
+	"MongoDBConfig": {
+		"Sheme": "mongodb",
+		"Host": "localhost",
+		"Port": 27017,
+		"Login": "",
+		"Password": ""
+	},
+	"SmtpConfig": {
+		"PublicName": "yuour title name",
+		"Email": "email@domain.com",
+		"Login": "login_auth_",
+		"Password": "your_pass",
+		"Host": "smtp address",
+		"Port": 465
+	}
 }
 ```

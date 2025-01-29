@@ -42,7 +42,7 @@ string _environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRON
 logger.Warn($"init main: {_environmentName}");
 
 string _modePrefix = Environment.GetEnvironmentVariable(nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)) ?? "";
-if (!string.IsNullOrWhiteSpace(_modePrefix))
+if (!string.IsNullOrWhiteSpace(_modePrefix) && !GlobalStaticConstants.TransmissionQueueNamePrefix.EndsWith(_modePrefix))
     GlobalStaticConstants.TransmissionQueueNamePrefix += _modePrefix.Trim();
 
 string curr_dir = Directory.GetCurrentDirectory();
