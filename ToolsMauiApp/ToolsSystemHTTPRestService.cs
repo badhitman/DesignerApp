@@ -15,9 +15,6 @@ namespace ToolsMauiApp;
 /// </summary>
 public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : IClientHTTPRestService
 {
-    //private static readonly string snh = nameof(ConfigStoreModel.RemoteDirectory);
-
-
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> PartUpload(SessionFileRequestModel req)
     {
@@ -136,5 +133,5 @@ public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : 
         httpClient.Dispose();
         string sd = response.Content.ReadAsStringAsync().Result;
         return JsonConvert.DeserializeObject<TResponseModel<string>>(sd)!;
-    }
+    }    
 }

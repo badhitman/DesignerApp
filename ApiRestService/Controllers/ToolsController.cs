@@ -3,12 +3,12 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Authorization;
+using System.Collections.Concurrent;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using SharedLib;
-using Microsoft.Extensions.Options;
-using System.Collections.Concurrent;
-using Microsoft.EntityFrameworkCore;
 using DbcLib;
 
 namespace ApiRestService.Controllers;
@@ -38,7 +38,6 @@ public class ToolsController(
             req.PageSize = 10;
 
         using NLogsLayerContext context = await logsDbFactory.CreateDbContextAsync();
-
         IQueryable<NLogRecordModelDB> q = context.Logs.AsQueryable();
 
         if (req.Payload.LevelsFilter is not null && req.Payload.LevelsFilter.Length != 0)
@@ -59,15 +58,13 @@ public class ToolsController(
 
         return new()
         {
-                PageNum = req.PageNum,
-                PageSize = req.PageSize,
-                SortingDirection = req.SortingDirection,
-                SortBy = req.SortBy,
-                TotalRowsCount = await q.CountAsync(),
-                Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()]           
+            PageNum = req.PageNum,
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+            TotalRowsCount = await q.CountAsync(),
+            Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()]
         };
-
-        throw new NotImplementedException();
     }
 
     /// <summary>

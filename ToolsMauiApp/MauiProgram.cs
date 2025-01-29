@@ -162,6 +162,8 @@ namespace ToolsMauiApp
             }).UseMauiCommunityToolkit();
             builder.Services.AddMauiBlazorWebView();
 
+            builder.Services.AddScoped<ILogsService, LogsService>();
+
             builder.Services.AddMudServices();
             builder.Services.AddScoped<IClientHTTPRestService, ToolsSystemHTTPRestService>();
             builder.Services.AddScoped<IServerToolsService, ToolsSystemService>();

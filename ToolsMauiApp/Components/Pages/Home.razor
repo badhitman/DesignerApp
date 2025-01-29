@@ -1,6 +1,7 @@
 ﻿@page "/"
 
 @using BlazorLib
+@using BlazorLib.Components
 @using MudBlazor
 @using SharedLib
 
@@ -114,6 +115,9 @@
         </MudTabPanel>
         <MudTabPanel Disabled="@(checkDir is null || !configEdit.Equals(MauiProgram.ConfigStore.Response))" Text="Команды">
             <ExeCommandsComponent ParentPage="this" />
+        </MudTabPanel>
+        <MudTabPanel Disabled="@(checkDir is null || !configEdit.Equals(MauiProgram.ConfigStore.Response))" Text="Логи">
+            <LogsComponent />
         </MudTabPanel>
     </MudTabs>
 }
