@@ -14,7 +14,7 @@ namespace ToolsMauiApp.Components.Pages;
 public partial class Home : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IToolsSystemHTTPRestService ToolsRepo { get; set; } = default!;
+    IClientHTTPRestService ToolsRepo { get; set; } = default!;
 
     ConfigStoreModel configEdit = new();
     TResponseModel<ExpressProfileResponseModel>? testResult;

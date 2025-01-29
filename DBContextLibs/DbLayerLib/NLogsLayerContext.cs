@@ -10,12 +10,12 @@ namespace DbcLib;
 /// <summary>
 /// Промежуточный/общий слой контекста базы данных
 /// </summary>
-public partial class StorageLayerContext : DbContext
+public partial class NLogsLayerContext : DbContext
 {
     /// <summary>
     /// Промежуточный/общий слой контекста базы данных
     /// </summary>
-    public StorageLayerContext(DbContextOptions options)
+    public NLogsLayerContext(DbContextOptions options)
         : base(options)
     {
         //#if DEBUG
@@ -34,22 +34,7 @@ public partial class StorageLayerContext : DbContext
     }
 
     /// <summary>
-    /// Параметры
+    /// Логи
     /// </summary>
-    public DbSet<StorageCloudParameterModelDB> CloudProperties { get; set; } = default!;
-
-    /// <summary>
-    /// Файлы
-    /// </summary>
-    public DbSet<StorageFileModelDB> CloudFiles { get; set; } = default!;
-
-    /// <summary>
-    /// RulesFilesAccess
-    /// </summary>
-    public DbSet<AccessFileRuleModelDB> RulesFilesAccess { get; set; } = default!;
-
-    /// <summary>
-    /// Тэги
-    /// </summary>
-    public DbSet<TagModelDB> CloudTags { get; set; } = default!;
+    public DbSet<NLogRecordModelDB> Logs { get; set; } = default!;    
 }

@@ -22,3 +22,8 @@ Update-Database -Context TelegramBotContext -Project DbSqliteLib -StartupProject
 Add-Migration CommerceContext001 -Context CommerceContext -Project DbSqliteLib -StartupProject CommerceService
 Update-Database -Context CommerceContext -Project DbSqliteLib -StartupProject CommerceService
 ```
+
+```
+Add-Migration NLogsContext001 -Context NLogsContext -Project DbSqliteLib -StartupProject ApiRestService
+Update-Database -Context NLogsContext -Project DbSqliteLib -StartupProject ApiRestService
+```

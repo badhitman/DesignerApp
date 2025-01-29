@@ -27,3 +27,8 @@ Update-Database -Context CommerceContext -Project DbPostgreLib -StartupProject C
 Add-Migration ConstructorContext004 -Context ConstructorContext -Project DbPostgreLib -StartupProject ConstructorService
 Update-Database -Context ConstructorContext -Project DbPostgreLib -StartupProject ConstructorService
 ```
+
+```
+Add-Migration NLogsContext001 -Context NLogsContext -Project DbPostgreLib -StartupProject ApiRestService
+Update-Database -Context NLogsContext -Project DbPostgreLib -StartupProject ApiRestService
+```

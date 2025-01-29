@@ -13,11 +13,3 @@ public partial class StorageContext(DbContextOptions<StorageContext> options) : 
 {
 
 }
-
-/// <summary>
-/// Промежуточный/общий слой контекста базы данных
-/// </summary>
-public partial class NLogsContext(DbContextOptions<NLogsContext> options) : NLogsLayerContext(options)
-{
-
-}

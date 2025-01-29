@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// IToolsSystemService
+/// IServerToolsService
 /// </summary>
-public interface IToolsSystemService
+public interface IServerToolsService
 {
     /// <summary>
     /// ExeCommand

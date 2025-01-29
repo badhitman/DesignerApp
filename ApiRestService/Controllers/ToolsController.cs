@@ -8,6 +8,8 @@ using System.Text;
 using SharedLib;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
+using Microsoft.EntityFrameworkCore;
+using DbcLib;
 
 namespace ApiRestService.Controllers;
 
@@ -16,12 +18,57 @@ namespace ApiRestService.Controllers;
 /// </summary>
 [Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute)), LoggerNolog]
 [Authorize(Roles = nameof(ExpressApiRolesEnum.SystemRoot))]
-public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheService memCache, IOptions<PartUploadSessionConfigModel> сonfigPartUploadSession) : ControllerBase
+public class ToolsController(
+    IServerToolsService toolsRepo,
+    IManualCustomCacheService memCache,
+    IDbContextFactory<NLogsLayerContext> logsDbFactory,
+    IOptions<PartUploadSessionConfigModel> сonfigPartUploadSession) : ControllerBase
 {
     static readonly MemCachePrefixModel PartUploadCacheSessionsPrefix = new($"{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}", GlobalStaticConstants.Routes.SESSIONS_CONTROLLER_NAME);
     static readonly MemCachePrefixModel PartUploadCacheFilesMarkersPrefix = new($"{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}", GlobalStaticConstants.Routes.MARK_ACTION_NAME);
     static readonly MemCachePrefixModel PartUploadCacheFilesDumpsPrefix = new($"{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}", GlobalStaticConstants.Routes.DUMP_ACTION_NAME);
 
+    /// <summary>
+    /// Чтение логов
+    /// </summary>
+    [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LOGS_ACTION_NAME}-{GlobalStaticConstants.Routes.SELECT_ACTION_NAME}")]
+    public async Task<TPaginationResponseModel<NLogRecordModelDB>> LogsSelect(TPaginationRequestModel<LogsSelectRequestModel> req)
+    {
+        if (req.PageSize < 10)
+            req.PageSize = 10;
+
+        using NLogsLayerContext context = await logsDbFactory.CreateDbContextAsync();
+
+        IQueryable<NLogRecordModelDB> q = context.Logs.AsQueryable();
+
+        if (req.Payload.LevelsFilter is not null && req.Payload.LevelsFilter.Length != 0)
+            q = q.Where(x => req.Payload.LevelsFilter.Contains(x.RecordLevel));
+
+        if (req.Payload.LoggersFilter is not null && req.Payload.LoggersFilter.Length != 0)
+            q = q.Where(x => req.Payload.LoggersFilter.Contains(x.RecordLevel));
+
+        if (req.Payload.ContextsPrefixesFilter is not null && req.Payload.ContextsPrefixesFilter.Length != 0)
+            q = q.Where(x => req.Payload.ContextsPrefixesFilter.Contains(x.RecordLevel));
+
+        if (req.Payload.ApplicationsFilter is not null && req.Payload.ApplicationsFilter.Length != 0)
+            q = q.Where(x => req.Payload.ApplicationsFilter.Contains(x.RecordLevel));
+
+        IOrderedQueryable<NLogRecordModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+          ? q.OrderBy(x => x.RecordTime)
+          : q.OrderByDescending(x => x.RecordTime);
+
+        return new()
+        {
+                PageNum = req.PageNum,
+                PageSize = req.PageSize,
+                SortingDirection = req.SortingDirection,
+                SortBy = req.SortBy,
+                TotalRowsCount = await q.CountAsync(),
+                Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()]           
+        };
+
+        throw new NotImplementedException();
+    }
 
     /// <summary>
     /// Загрузка порции файла
@@ -48,7 +95,7 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
         uploadedFile.OpenReadStream().CopyTo(ms);
         FilePartMetadataModel currentPartMetadata = sessionUploadPart.FilePartsMetadata.First(x => x.PartFileId == fileToken);
 
-        if(currentPartMetadata.PartFileSize != uploadedFile.Length)
+        if (currentPartMetadata.PartFileSize != uploadedFile.Length)
             return ResponseBaseModel.CreateError($"Размер пакета данных ожидался {GlobalTools.SizeDataAsString(currentPartMetadata.PartFileSize)}, а в запросе получено {GlobalTools.SizeDataAsString(uploadedFile.Length)}");
 
         if (sessionUploadPart.FilePartsMetadata.Count == 1)
@@ -57,11 +104,11 @@ public class ToolsController(IToolsSystemService toolsRepo, IManualCustomCacheSe
                 Task.Run(async () => { await memCache.RemoveAsync(new MemCacheComplexKeyModel(fileToken, PartUploadCacheFilesMarkersPrefix)); }),
                 Task.Run(async () => { await memCache.RemoveAsync(new MemCacheComplexKeyModel(fileToken, PartUploadCacheFilesDumpsPrefix)); }),
                 Task.Run(async () => { await memCache.RemoveAsync(new MemCacheComplexKeyModel(sessionToken, PartUploadCacheSessionsPrefix)); })]);
-            
+
             return await toolsRepo.UpdateFile(_file_name, sessionUploadPart.RemoteDirectory, ms.ToArray());
         }
         else
-        {            
+        {
             FilePartMetadataModel[] partsFiles = sessionUploadPart.FilePartsMetadata
                 .Where(x => !x.PartFileId.Equals(fileToken))
                 .ToArray();

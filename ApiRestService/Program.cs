@@ -17,6 +17,8 @@ using System.Diagnostics.Metrics;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using DbcLib;
 
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
@@ -104,6 +106,10 @@ builder.Services
 builder.Services.AddOptions();
 builder.Services.AddMemoryCache();
 
+string connectionNlogsString = builder.Configuration.GetConnectionString($"NLogsConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'NLogsConnection{_modePrefix}' not found.");
+builder.Services.AddDbContextFactory<NLogsLayerContext>(opt =>
+    opt.UseNpgsql(connectionNlogsString));
+
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString($"RedisConnectionString{_modePrefix}");
@@ -154,7 +160,7 @@ otel.WithTracing(tracing =>
     tracing.AddHttpClientInstrumentation();
     tracing.AddSource($"OTel.{appName}");
 });
-builder.Services.AddScoped<IToolsSystemService, ToolsSystemService>();
+builder.Services.AddScoped<IServerToolsService, ToolsSystemService>();
 
 builder.Services
     .AddControllers(options => options.Filters.Add(typeof(LoggerActionFilter)))

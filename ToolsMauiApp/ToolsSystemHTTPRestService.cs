@@ -13,7 +13,7 @@ namespace ToolsMauiApp;
 /// <summary>
 /// ToolsSystemHTTPRestService
 /// </summary>
-public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : IToolsSystemHTTPRestService
+public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : IClientHTTPRestService
 {
     //private static readonly string snh = nameof(ConfigStoreModel.RemoteDirectory);
 

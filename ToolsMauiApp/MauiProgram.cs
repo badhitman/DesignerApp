@@ -163,8 +163,8 @@ namespace ToolsMauiApp
             builder.Services.AddMauiBlazorWebView();
 
             builder.Services.AddMudServices();
-            builder.Services.AddScoped<IToolsSystemHTTPRestService, ToolsSystemHTTPRestService>();
-            builder.Services.AddScoped<IToolsSystemService, ToolsSystemService>();
+            builder.Services.AddScoped<IClientHTTPRestService, ToolsSystemHTTPRestService>();
+            builder.Services.AddScoped<IServerToolsService, ToolsSystemService>();
             //
             if (ConfigStore.Response is not null)
                 builder.Services.AddHttpClient(HttpClientsNamesEnum.Tools.ToString(), cc =>

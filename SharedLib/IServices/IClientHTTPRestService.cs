@@ -5,9 +5,9 @@
 namespace SharedLib;
 
 /// <summary>
-/// IToolsSystemExtService
+/// IClientHTTPRestService
 /// </summary>
-public interface IToolsSystemHTTPRestService : IToolsSystemService
+public interface IClientHTTPRestService : IServerToolsService
 {
     /// <summary>
     /// GetMe

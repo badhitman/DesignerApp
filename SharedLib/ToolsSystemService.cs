@@ -10,7 +10,7 @@ namespace SharedLib;
 /// <summary>
 /// ToolsSystemService
 /// </summary>
-public class ToolsSystemService : IToolsSystemService
+public class ToolsSystemService : IServerToolsService
 {
     /// <inheritdoc/>
     public Task<TResponseModel<List<ToolsFilesResponseModel>>> GetDirectory(ToolsFilesRequestModel req)

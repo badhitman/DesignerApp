@@ -15,10 +15,10 @@ namespace ToolsMauiApp.Components;
 public partial class ExeCommandsComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IToolsSystemService ToolsLocalRepo { get; set; } = default!;
+    IServerToolsService ToolsLocalRepo { get; set; } = default!;
 
     [Inject]
-    IToolsSystemHTTPRestService ToolsExtRepo { get; set; } = default!;
+    IClientHTTPRestService ToolsExtRepo { get; set; } = default!;
 
 
     /// <summary>

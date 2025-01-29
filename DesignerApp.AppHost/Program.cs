@@ -137,6 +137,7 @@ public class Program
 
         IResourceBuilder<ProjectResource> apiRestService = builder.AddProject<Projects.ApiRestService>("apirestservice")
             .WithReference(redisConnectionStr)
+            .WithReference(builder.AddConnectionString($"NlogsConnection{_modePrefix}"))
             .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             ;
 

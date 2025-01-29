@@ -22,3 +22,8 @@ Update-Database -Context TelegramBotContext -Project DbMySQLLib -StartupProject 
 Add-Migration CommerceContext001 -Context CommerceContext -Project DbMySQLLib -StartupProject CommerceService
 Update-Database -Context CommerceContext -Project DbMySQLLib -StartupProject CommerceService
 ```
+
+```
+Add-Migration NLogsContext001 -Context NLogsContext -Project DbMySQLLib -StartupProject ApiRestService
+Update-Database -Context NLogsContext -Project DbMySQLLib -StartupProject ApiRestService
+```
