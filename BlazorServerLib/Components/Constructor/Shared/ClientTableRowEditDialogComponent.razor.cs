@@ -16,7 +16,7 @@ namespace BlazorWebLib.Components.Constructor.Shared;
 public partial class ClientTableRowEditDialogComponent : BlazorBusyComponentBaseModel
 {
     [CascadingParameter]
-    MudDialogInstance MudDialog { get; set; } = default!;
+    IMudDialogInstance MudDialog { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]

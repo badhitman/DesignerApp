@@ -107,7 +107,7 @@ builder.Services.AddOptions();
 builder.Services.AddMemoryCache();
 
 string connectionNlogsString = builder.Configuration.GetConnectionString($"NLogsConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'NLogsConnection{_modePrefix}' not found.");
-builder.Services.AddDbContextFactory<NLogsLayerContext>(opt =>
+builder.Services.AddDbContextFactory<NLogsContext>(opt =>
     opt.UseNpgsql(connectionNlogsString));
 
 builder.Services.AddStackExchangeRedisCache(options =>

@@ -100,7 +100,7 @@ public partial class DocumentsSchemesTableComponent : BlazorBusyComponentBaseAut
         };
 
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult? result = await DialogServiceRepo.Show<EditDocumentSchemeDialogComponent>(document_scheme.Id < 1 ? "Создание новой анкеты/опроса" : $"Редактирование анкеты/опроса #{document_scheme.Id}", parameters, options).Result;
+        IDialogReference result = await DialogServiceRepo.ShowAsync<EditDocumentSchemeDialogComponent>(document_scheme.Id < 1 ? "Создание новой анкеты/опроса" : $"Редактирование анкеты/опроса #{document_scheme.Id}", parameters, options);
         if (table is not null)
             await table.ReloadServerData();
     }

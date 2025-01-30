@@ -117,7 +117,7 @@ public partial class SessionsViewComponent : BlazorBusyComponentBaseAuthModel
             { x => x.Session, rest.Response }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult? result = await DialogServiceRepo.Show<EditSessionDialogComponent>($"Редактирование сессии. Опрос/анкета: '{rest.Response?.Owner?.Name}'", parameters, options).Result;
+        IDialogReference result = await DialogServiceRepo.ShowAsync<EditSessionDialogComponent>($"Редактирование сессии. Опрос/анкета: '{rest.Response?.Owner?.Name}'", parameters, options);
         if (table is not null)
             await table.ReloadServerData();
     }

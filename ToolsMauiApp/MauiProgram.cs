@@ -161,7 +161,7 @@ public static class MauiProgram
             fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
         }).UseMauiCommunityToolkit();
         builder.Services.AddMauiBlazorWebView();
-
+        
         builder.Services.AddScoped<ILogsService, LogsService>();
 
         builder.Services.AddMudServices();

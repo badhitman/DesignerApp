@@ -80,7 +80,8 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
         _ = InvokeAsync(async () =>
         {
-            DialogResult? result = await DialogServiceRepo.Show<ClientTableRowEditDialogComponent>($"Редактирование строки данных №:{row_num}", parameters, options).Result;
+            IDialogReference result = await DialogServiceRepo.ShowAsync<ClientTableRowEditDialogComponent>($"Редактирование строки данных №:{row_num}", parameters, options);
+            
             await ReloadSession();
         });
     }
@@ -148,7 +149,7 @@ public partial class ClientTableViewFormComponent : BlazorBusyComponentBaseModel
             { x => x.ParentFormsPage, ParentFormsPage }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult? result = await DialogServiceRepo.Show<ClientTableRowEditDialogComponent>($"Созданная строка данных №{rest.Response}", parameters, options).Result;
+        IDialogReference result = await DialogServiceRepo.ShowAsync<ClientTableRowEditDialogComponent>($"Созданная строка данных №{rest.Response}", parameters, options);
         ValueFieldSessionDocumentDataBaseModel req = new()
         {
             GroupByRowNum = row_num,

@@ -29,6 +29,6 @@ Update-Database -Context ConstructorContext -Project DbPostgreLib -StartupProjec
 ```
 
 ```
-Add-Migration NLogsContext001 -Context NLogsContext -Project DbPostgreLib -StartupProject ApiRestService
+Add-Migration NLogsContext002 -Context NLogsContext -Project DbPostgreLib -StartupProject ApiRestService
 Update-Database -Context NLogsContext -Project DbPostgreLib -StartupProject ApiRestService
 ```

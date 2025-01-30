@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using SharedLib
+
+<MudTable ServerData="ServerReload" Dense="true" Hover="true" >
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Логи</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="RecordTime" T="NLogRecordModelDB">RecordTime</MudTableSortLabel></MudTh>
+        <MudTh>App</MudTh>
+        <MudTh>Message</MudTh>
+        <MudTh>Level</MudTh>
+        @* <MudTh>StackTrace</MudTh>
+        <MudTh>CallSite</MudTh>
+        <MudTh>Logger</MudTh>
+        <MudTh>ExceptionMessage</MudTh>
+        <MudTh>AllEventProperties</MudTh> *@
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="RecordTime">@context.RecordTime</MudTd>
+        <MudTd DataLabel="App">@context.ApplicationName <sup>@context.ContextPrefix</sup></MudTd>
+        <MudTd DataLabel="Message">@context.RecordMessage</MudTd>
+        <MudTd DataLabel="Level">@context.RecordLevel</MudTd>
+       @*  <MudTd DataLabel="StackTrace">@context.StackTrace</MudTd>
+        <MudTd DataLabel="CallSite">@context.CallSite</MudTd>
+        <MudTd DataLabel="Logger">@context.Logger</MudTd>
+        <MudTd DataLabel="ExceptionMessage">@context.ExceptionMessage</MudTd>
+        <MudTd DataLabel="AllEventProperties">@context.AllEventProperties</MudTd> *@
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>

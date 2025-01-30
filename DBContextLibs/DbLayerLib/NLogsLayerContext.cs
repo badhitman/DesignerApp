@@ -19,7 +19,7 @@ public partial class NLogsLayerContext : DbContext
         : base(options)
     {
         //#if DEBUG
-        //        Database.EnsureCreated();
+        //  Database.EnsureCreated();
         //#else
         Database.Migrate();
         //#endif

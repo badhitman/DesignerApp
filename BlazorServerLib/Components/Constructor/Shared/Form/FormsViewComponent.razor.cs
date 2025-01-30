@@ -68,7 +68,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
             { x => x.ParentFormsPage, ParentFormsPage }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult? result = await DialogServiceRepo.Show<EditFormDialogComponent>($"Редактирование формы #{rest.Response?.Id}", parameters, options).Result;
+        IDialogReference result = await DialogServiceRepo.ShowAsync<EditFormDialogComponent>($"Редактирование формы #{rest.Response?.Id}", parameters, options);
 
         if (table is not null)
             await table.ReloadServerData();
@@ -110,7 +110,7 @@ public partial class FormsViewComponent : BlazorBusyComponentBaseModel
             { x => x.ParentFormsPage, ParentFormsPage }
         };
         DialogOptions options = new() { MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true, CloseOnEscapeKey = true };
-        DialogResult? result = await DialogServiceRepo.Show<EditFormDialogComponent>("Создание новой формы", parameters, options).Result;
+        IDialogReference result = await DialogServiceRepo.ShowAsync<EditFormDialogComponent>("Создание новой формы", parameters, options);
 
         if (table is not null)
             await table.ReloadServerData();

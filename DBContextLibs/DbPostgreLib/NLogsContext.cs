@@ -9,7 +9,7 @@ namespace DbcLib;
 /// <summary>
 /// Промежуточный/общий слой контекста базы данных
 /// </summary>
-public partial class NLogsContext(DbContextOptions<NLogsContext> options) : NLogsLayerContext(options)
+public class NLogsContext(DbContextOptions<NLogsContext> options) : NLogsLayerContext(options)
 {
 
 }

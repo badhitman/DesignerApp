@@ -11,7 +11,7 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DefineConstants>$(DefineConstants);DEMO</DefineConstants>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />
 	</ItemGroup>

@@ -30,7 +30,7 @@ public partial class EditSessionDialogComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [CascadingParameter]
-    public MudDialogInstance MudDialog { get; set; } = default!;
+    public IMudDialogInstance MudDialog { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]

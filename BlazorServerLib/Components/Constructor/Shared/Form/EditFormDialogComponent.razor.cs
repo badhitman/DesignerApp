@@ -21,7 +21,7 @@ public partial class EditFormDialogComponent : BlazorBusyComponentBaseAuthModel
 
 
     [CascadingParameter]
-    MudDialogInstance MudDialog { get; set; } = default!;
+    IMudDialogInstance MudDialog { get; set; } = default!;
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]

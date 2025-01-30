@@ -21,7 +21,7 @@ namespace ApiRestService.Controllers;
 public class ToolsController(
     IServerToolsService toolsRepo,
     IManualCustomCacheService memCache,
-    IDbContextFactory<NLogsLayerContext> logsDbFactory,
+    IDbContextFactory<NLogsContext> logsDbFactory,
     IOptions<PartUploadSessionConfigModel> сonfigPartUploadSession) : ControllerBase
 {
     static readonly MemCachePrefixModel PartUploadCacheSessionsPrefix = new($"{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}", GlobalStaticConstants.Routes.SESSIONS_CONTROLLER_NAME);
@@ -37,7 +37,7 @@ public class ToolsController(
         if (req.PageSize < 10)
             req.PageSize = 10;
 
-        using NLogsLayerContext context = await logsDbFactory.CreateDbContextAsync();
+        using NLogsContext context = await logsDbFactory.CreateDbContextAsync();
         IQueryable<NLogRecordModelDB> q = context.Logs.AsQueryable();
 
         if (req.Payload.LevelsFilter is not null && req.Payload.LevelsFilter.Length != 0)

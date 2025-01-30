@@ -5,12 +5,12 @@
 namespace SharedLib;
 
 /// <summary>
-/// TelegramDialog
+/// ILogsService
 /// </summary>
-public interface ITelegramDialogService
+public interface ILogsService
 {
     /// <summary>
-    /// Обработка входящих сообщений из Telegram
+    /// LogsSelect
     /// </summary>
-    public Task<TelegramDialogResponseModel> TelegramDialogHandle(TelegramDialogRequestModel tgDialog);
+    public Task<TPaginationResponseModel<NLogRecordModelDB>> LogsSelect(TPaginationRequestModel<LogsSelectRequestModel> req);
 }
