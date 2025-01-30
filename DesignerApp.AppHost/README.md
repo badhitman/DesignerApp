@@ -106,6 +106,32 @@ Aspire хост (`DesignerApp.AppHost`) настраивается в одном
 }
 ```
 
+#### Api access Tokens
+```json
+{
+	"ApiAccess": {
+		"Permissions": [
+			{
+				"User": "testSystem",
+				"Secret": "XXXXXXX-BBBB-000000-RRRRRRRR-OOOOOOOO",
+				"Roles": [
+					"SystemRoot"
+				]
+			},
+			{
+				"User": "test",
+				"Secret": "XXXXXXX-BBBB-000000-RRRRRRRR-OOOOOOOO",
+				"Roles": [
+					"OrganizationsWriteCommerce",
+					"PaymentsWriteCommerce",
+					"OrdersWriteCommerce"
+				]
+			}
+		]
+	}
+}
+```
+
 Секреты можно разместить по собственным файлам иил объединить в один:
 ```json
 {
@@ -141,6 +167,26 @@ Aspire хост (`DesignerApp.AppHost`) настраивается в одном
 		"Password": "your_pass",
 		"Host": "smtp address",
 		"Port": 465
+	},
+	"ApiAccess": {
+		"Permissions": [
+			{
+				"User": "testSystem",
+				"Secret": "XXXXXXX-BBBB-000000-RRRRRRRR-OOOOOOOO",
+				"Roles": [
+					"SystemRoot"
+				]
+			},
+			{
+				"User": "test",
+				"Secret": "XXXXXXX-BBBB-000000-RRRRRRRR-OOOOOOOO",
+				"Roles": [
+					"OrganizationsWriteCommerce",
+					"PaymentsWriteCommerce",
+					"OrdersWriteCommerce"
+				]
+			}
+		]
 	}
 }
 ```

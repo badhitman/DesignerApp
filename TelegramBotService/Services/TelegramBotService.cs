@@ -208,7 +208,7 @@ public class TelegramBotServiceImplement(ILogger<TelegramBotServiceImplement> _l
         TResponseModel<byte[]> res = new();
         try
         {
-            Telegram.Bot.Types.File fileTg = await _botClient.GetFile(fileId);
+            TGFile fileTg = await _botClient.GetFile(fileId);
             MemoryStream ms = new();
 
             if (string.IsNullOrWhiteSpace(fileTg.FilePath))

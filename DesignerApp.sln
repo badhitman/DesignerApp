@@ -76,6 +76,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmlGenerator", "..\HtmlGen
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "secrets", "secrets", "{AC947053-95FC-46B4-A464-FB02A72D4441}"
 	ProjectSection(SolutionItems) = preProject
+		..\secrets-DesignerApp.AppHost\api-access.json = ..\secrets-DesignerApp.AppHost\api-access.json
 		..\secrets-DesignerApp.AppHost\connections-strings.Development.json = ..\secrets-DesignerApp.AppHost\connections-strings.Development.json
 		..\secrets-DesignerApp.AppHost\email-conf.Development.json = ..\secrets-DesignerApp.AppHost\email-conf.Development.json
 		..\secrets-DesignerApp.AppHost\mongo-conf.json = ..\secrets-DesignerApp.AppHost\mongo-conf.json

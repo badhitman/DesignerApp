@@ -83,7 +83,13 @@ public class Program
             .SelectMany(x => x.AsEnumerable())
             .ToList();
 
-        /*
+        List<KeyValuePair<string, string?>> apiAccessConfig = builder.Configuration
+            .GetChildren()
+            .Where(x => x.Path.Equals(RestApiConfigBaseModel.Configuration, StringComparison.OrdinalIgnoreCase))
+            .SelectMany(x => x.AsEnumerable())
+            .ToList();
+
+        /* apiAccess
         //IResourceBuilder<RabbitMQServerResource> rabbit = builder.AddRabbitMQ("rabbit")
         //    //.WithImageTag("latest")
         //    //.WithLifetime(ContainerLifetime.Persistent)
@@ -128,7 +134,7 @@ public class Program
 
         IResourceBuilder<IResourceWithConnectionString> redisConnectionStr = builder.AddConnectionString($"RedisConnectionString{_modePrefix}");
         IResourceBuilder<IResourceWithConnectionString> identityConnectionStr = builder.AddConnectionString($"IdentityConnection{_modePrefix}");
-
+        
         IResourceBuilder<ProjectResource> helpdeskService = builder.AddProject<Projects.HelpdeskService>("helpdeskservice")
             .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             .WithReference(builder.AddConnectionString($"HelpdeskConnection{_modePrefix}"))
@@ -138,6 +144,7 @@ public class Program
         IResourceBuilder<ProjectResource> apiRestService = builder.AddProject<Projects.ApiRestService>("apirestservice")
             .WithReference(redisConnectionStr)
             .WithReference(builder.AddConnectionString($"NlogsConnection{_modePrefix}"))
+            .WithEnvironment(act => apiAccessConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             ;
 

@@ -9,6 +9,9 @@ namespace SharedLib;
 /// </summary>
 public class RestApiConfigBaseModel
 {
+    /// <inheritdoc/>
+    public static readonly string Configuration = "ApiAccess";
+
     /// <summary>
     /// Пользователи и их права (для удалённого доступа к серверу)
     /// </summary>
