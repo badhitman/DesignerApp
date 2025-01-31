@@ -167,7 +167,7 @@ note for DbPostgreLib "Если используется другая СУБД, 
 #### Логирование (Nlog)
 Nlog пишет одновременно: в текстовый файл и в базу данных (`PostgreSQL`). Строка подключения к БД находится в конфигах 'nlog.config' - отредактируйте под свои параметры. Строка подключения по умолчанию (для всех сервисов): `Server=localhost;Port=5432;User Id=nlog;Password=nlog;Database=nlogs;`
 
-Благодаря консолидации логов в одной бд они доступны для просмотра через Web и через ![Tools (maui app)](https://github.com/badhitman/DesignerApp?tab=readme-ov-file#tools-maui-app)
+Благодаря консолидации логов в одной бд они доступны для просмотра через Web и через [Tools (maui app)](https://github.com/badhitman/DesignerApp?tab=readme-ov-file#tools-maui-app)
 ![dd](./img/logs-web-view.png)
 
 ### Настройка
