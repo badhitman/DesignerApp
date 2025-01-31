@@ -17,6 +17,74 @@ public partial class LogsComponent
     ILogsService LogsRepo { get; set; } = default!;
 
 
+    bool _AllEventProperties;
+    bool AllEventProperties
+    {
+        get => _AllEventProperties;
+        set
+        {
+            _AllEventProperties = value;
+            InvokeAsync(table.ReloadServerData);
+        }
+    }
+
+    bool _ExceptionMessage;
+    bool ExceptionMessage
+    {
+        get => _ExceptionMessage;
+        set
+        {
+            _ExceptionMessage = value;
+            InvokeAsync(table.ReloadServerData);
+        }
+    }
+
+    bool _Logger;
+    bool Logger
+    {
+        get => _Logger;
+        set
+        {
+            _Logger = value;
+            InvokeAsync(table.ReloadServerData);
+        }
+    }
+
+    bool _CallSite;
+    bool CallSite
+    {
+        get => _CallSite;
+        set
+        {
+            _CallSite = value;
+            InvokeAsync(table.ReloadServerData);
+        }
+    }
+
+    bool _StackTrace;
+    bool StackTrace
+    {
+        get => _StackTrace;
+        set
+        {
+            _StackTrace = value;
+            InvokeAsync(table.ReloadServerData);
+        }
+    }
+
+    bool _ContextPrefix;
+    bool ContextPrefix
+    {
+        get => _ContextPrefix;
+        set
+        {
+            _ContextPrefix = value;
+            InvokeAsync(table.ReloadServerData);
+        }
+    }
+
+    private MudTable<NLogRecordModelDB> table = default!;
+
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>

@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IStorageTransmission
 {
     /// <summary>
+    /// Чтение логов
+    /// </summary>
+    public Task<TPaginationResponseModel<NLogRecordModelDB>> LogsSelect(TPaginationRequestModel<LogsSelectRequestModel> req);
+
+    /// <summary>
     /// TagSet
     /// </summary>
     public Task<TResponseModel<bool>> TagSet(TagSetModel req);

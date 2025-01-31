@@ -111,4 +111,8 @@ public class StorageTransmission(IRabbitClient rabbitClient) : IStorageTransmiss
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> TagSet(TagSetModel req)
         => await rabbitClient.MqRemoteCall<TResponseModel<bool>>(GlobalStaticConstants.TransmissionQueues.TagSetReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<NLogRecordModelDB>> LogsSelect(TPaginationRequestModel<LogsSelectRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<NLogRecordModelDB>>(GlobalStaticConstants.TransmissionQueues.LogsSelectStorageReceive, req) ?? new();
 }

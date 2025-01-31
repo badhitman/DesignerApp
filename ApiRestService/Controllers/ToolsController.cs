@@ -21,7 +21,7 @@ namespace ApiRestService.Controllers;
 public class ToolsController(
     IServerToolsService toolsRepo,
     IManualCustomCacheService memCache,
-    IDbContextFactory<NLogsContext> logsDbFactory,
+    IStorageTransmission storeRepo,
     IOptions<PartUploadSessionConfigModel> сonfigPartUploadSession) : ControllerBase
 {
     static readonly MemCachePrefixModel PartUploadCacheSessionsPrefix = new($"{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}", GlobalStaticConstants.Routes.SESSIONS_CONTROLLER_NAME);
@@ -34,37 +34,7 @@ public class ToolsController(
     [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LOGS_ACTION_NAME}-{GlobalStaticConstants.Routes.SELECT_ACTION_NAME}")]
     public async Task<TPaginationResponseModel<NLogRecordModelDB>> LogsSelect(TPaginationRequestModel<LogsSelectRequestModel> req)
     {
-        if (req.PageSize < 10)
-            req.PageSize = 10;
-
-        using NLogsContext context = await logsDbFactory.CreateDbContextAsync();
-        IQueryable<NLogRecordModelDB> q = context.Logs.AsQueryable();
-
-        if (req.Payload.LevelsFilter is not null && req.Payload.LevelsFilter.Length != 0)
-            q = q.Where(x => req.Payload.LevelsFilter.Contains(x.RecordLevel));
-
-        if (req.Payload.LoggersFilter is not null && req.Payload.LoggersFilter.Length != 0)
-            q = q.Where(x => req.Payload.LoggersFilter.Contains(x.RecordLevel));
-
-        if (req.Payload.ContextsPrefixesFilter is not null && req.Payload.ContextsPrefixesFilter.Length != 0)
-            q = q.Where(x => req.Payload.ContextsPrefixesFilter.Contains(x.RecordLevel));
-
-        if (req.Payload.ApplicationsFilter is not null && req.Payload.ApplicationsFilter.Length != 0)
-            q = q.Where(x => req.Payload.ApplicationsFilter.Contains(x.RecordLevel));
-
-        IOrderedQueryable<NLogRecordModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
-          ? q.OrderBy(x => x.RecordTime)
-          : q.OrderByDescending(x => x.RecordTime);
-
-        return new()
-        {
-            PageNum = req.PageNum,
-            PageSize = req.PageSize,
-            SortingDirection = req.SortingDirection,
-            SortBy = req.SortBy,
-            TotalRowsCount = await q.CountAsync(),
-            Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()]
-        };
+        return await storeRepo.LogsSelect(req);
     }
 
     /// <summary>

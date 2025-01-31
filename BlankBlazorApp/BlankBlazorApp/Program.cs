@@ -201,6 +201,7 @@ builder.Services
 // Scoped
 builder.Services.AddScoped<IUsersAuthenticateService, UsersAuthenticateService>()
     .AddScoped<IUsersProfilesService, UsersProfilesService>()
+    .AddScoped<ILogsService, LogsService>()
     ;
 
 #region MQ Transmission (remote methods call)

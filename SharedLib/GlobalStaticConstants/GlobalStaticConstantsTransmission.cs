@@ -332,10 +332,7 @@ public static partial class GlobalStaticConstants
 
         /// <inheritdoc/>
         public readonly static string SetWebConfigHelpdeskReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, $"{Routes.WEB_CONTROLLER_NAME}_{Routes.CONFIGURATION_CONTROLLER_NAME}", $"{Routes.SET_ACTION_NAME}-of-{Routes.HELPDESK_CONTROLLER_NAME}");
-
-        /// <inheritdoc/>
-        public readonly static string SetWebConfigStorageReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, $"{Routes.WEB_CONTROLLER_NAME}_{Routes.CONFIGURATION_CONTROLLER_NAME}", $"{Routes.SET_ACTION_NAME}-of-{Routes.STORAGE_CONTROLLER_NAME}");
-        #endregion
+#endregion
 
         #region Constructor
         #region projects
@@ -776,6 +773,12 @@ public static partial class GlobalStaticConstants
         #endregion
 
         #region Storage
+        /// <inheritdoc/>
+        public readonly static string SetWebConfigStorageReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TELEGRAM_CONTROLLER_NAME, $"{Routes.WEB_CONTROLLER_NAME}_{Routes.CONFIGURATION_CONTROLLER_NAME}", $"{Routes.SET_ACTION_NAME}-of-{Routes.STORAGE_CONTROLLER_NAME}");
+
+        /// <inheritdoc/>
+        public readonly static string LogsSelectStorageReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TOOLS_CONTROLLER_NAME, Routes.LOGS_ACTION_NAME, Routes.SELECT_ACTION_NAME);
+
         /// <inheritdoc/>
         public readonly static string FilesSelectReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.STORAGE_CONTROLLER_NAME, Routes.FILES_CONTROLLER_NAME, Routes.SELECT_ACTION_NAME);
 
