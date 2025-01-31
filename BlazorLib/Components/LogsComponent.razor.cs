@@ -115,6 +115,7 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
         };
 
         TPaginationResponseModel<NLogRecordModelDB> selector = await LogsRepo.LogsSelect(req);
+        
         await SetBusy(false, token);
         return new TableData<NLogRecordModelDB>() { TotalItems = selector.TotalRowsCount, Items = selector.Response };
     }

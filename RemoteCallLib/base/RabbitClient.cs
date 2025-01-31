@@ -209,12 +209,14 @@ public class RabbitClient : IRabbitClient
         else
             return Task.FromResult(default(T));
 
-        if ((typeof(T) != typeof(object) && (res_io is null || res_io.Response is null)) )
+        if ((typeof(T) != typeof(object) && (res_io is null || res_io.Response is null)))
         {
             _msg = $"Response MQ/IO is null [{queue}] -> [{response_topic}]: {stopwatch.Elapsed} > {TimeSpan.FromMilliseconds(RabbitConfigRepo.RemoteCallTimeoutMs)}";
             loggerRepo.LogError(_msg);
             return Task.FromResult(default(T));
         }
+        else if(res_io is null)
+            return Task.FromResult(default(T));
 
         return Task.FromResult(res_io.Response);
     }
