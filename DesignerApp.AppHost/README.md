@@ -50,7 +50,8 @@ Aspire хост (`DesignerApp.AppHost`) настраивается в одном
     "MainConnection_second": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=MainContext",
     "CloudParametersConnection_second": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=StorageContext",
     "HelpdeskConnection_second": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=HelpDeskContext",
-    "ConstructorConnection_second": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=ConstructorContext"
+    "ConstructorConnection_second": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=ConstructorContext",
+	"NlogsConnection": "Server=localhost;Port=5432;User Id=nlog;Password=nlog;Database=NLogs"
   }
 }
 ```
@@ -143,7 +144,8 @@ Aspire хост (`DesignerApp.AppHost`) настраивается в одном
 		"MainConnection": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=MainContext",
 		"CloudParametersConnection": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=StorageContext",
 		"HelpdeskConnection": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=HelpDeskContext",
-		"ConstructorConnection": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=ConstructorContext"
+		"ConstructorConnection": "Server=localhost;Port=5432;User Id=dev;Password=dev;Database=ConstructorContext",
+		"NlogsConnection": "Server=localhost;Port=5432;User Id=nlog;Password=nlog;Database=NLogs"
 	},
 	"BotConfiguration": {
 		"BotToken": "111777000:xxxyyyxxxyyyxxxyyy"

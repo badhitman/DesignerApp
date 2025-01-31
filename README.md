@@ -167,8 +167,10 @@ note for DbPostgreLib "Если используется другая СУБД, 
 #### Логирование (Nlog)
 Nlog пишет одновременно: в текстовый файл и в базу данных (`PostgreSQL`). Строка подключения к БД находится в конфигах 'nlog.config' - отредактируйте под свои параметры. Строка подключения по умолчанию (для всех сервисов): `Server=localhost;Port=5432;User Id=nlog;Password=nlog;Database=nlogs;`
 
+Для создания бд следует использовать миграции для контекста `NLogsContext` в службе `StorageService` (которая в конечном итоге предоставляет трансмиссию внешним потребителям).
+
 Благодаря консолидации логов в одной бд они доступны для просмотра через Web и через [Tools (maui app)](https://github.com/badhitman/DesignerApp?tab=readme-ov-file#tools-maui-app)
-![dd](./img/logs-web-view.png)
+![logs web view](./img/logs-web-view.png)
 
 ### Настройка
 - Перед запуском: в Blazor[^4] потребуются конфиги **Email** (отправка писем **SMTP**. в. т.ч. для **Identity**), а для **TelegramBot** потребуется токен. **MQ** и **Redis** настройки потребуются всем сервисам (единый контекст для всех сервисов). База данных может быть как SQLite, так и PostgreSQL/MySQL (у каждого сервиса своя БД). **MongoDB** потребуется для `StorageService`.
