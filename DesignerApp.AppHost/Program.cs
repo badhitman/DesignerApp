@@ -143,7 +143,6 @@ public class Program
 
         IResourceBuilder<ProjectResource> apiRestService = builder.AddProject<Projects.ApiRestService>("apirestservice")
             .WithReference(redisConnectionStr)
-            .WithReference(builder.AddConnectionString($"NlogsConnection{_modePrefix}"))
             .WithEnvironment(act => apiAccessConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             ;
@@ -167,6 +166,7 @@ public class Program
             ;
 
         IResourceBuilder<ProjectResource> storageService = builder.AddProject<Projects.StorageService>("storageservice")
+            .WithReference(builder.AddConnectionString($"NlogsConnection{_modePrefix}"))
             .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             .WithEnvironment(act => mongoConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             .WithReference(builder.AddConnectionString($"CloudParametersConnection{_modePrefix}"))

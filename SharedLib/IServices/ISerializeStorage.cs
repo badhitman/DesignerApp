@@ -12,6 +12,11 @@ namespace SharedLib;
 /// </remarks>
 public interface ISerializeStorage
 {
+    /// <summary>
+    /// Чтение логов
+    /// </summary>
+    public Task<TPaginationResponseModel<NLogRecordModelDB>> LogsSelect(TPaginationRequestModel<LogsSelectRequestModel> req);
+
     #region tags
     /// <summary>
     /// FilesAreaGetMetadata

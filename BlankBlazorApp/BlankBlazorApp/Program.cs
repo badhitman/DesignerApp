@@ -119,7 +119,6 @@ builder.Services.AddIdleCircuitHandler(options =>
 
 builder.Services.AddOptions();
 builder.Services
-    //.Configure<SmtpConfigModel>(builder.Configuration.GetSection("SmtpConfig"))
     .Configure<UserManageConfigModel>(builder.Configuration.GetSection("UserManage"))
     .Configure<ServerConfigModel>(builder.Configuration.GetSection("ServerConfig"))
     .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection(RabbitMQConfigModel.Configuration))

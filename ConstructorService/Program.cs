@@ -93,10 +93,10 @@ builder.Services
    .Configure<RabbitMQConfigModel>(builder.Configuration.GetSection(RabbitMQConfigModel.Configuration))
    .Configure<ConstructorConfigModel>(builder.Configuration.GetSection("ConstructorConfig"));
 
-string connectionIdentityString = builder.Configuration.GetConnectionString($"ConstructorConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'ConstructorConnection{_modePrefix}' not found.");
+string connectionString = builder.Configuration.GetConnectionString($"ConstructorConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'ConstructorConnection{_modePrefix}' not found.");
 builder.Services.AddDbContextFactory<ConstructorContext>(opt =>
 {
-    opt.UseNpgsql(connectionIdentityString);
+    opt.UseNpgsql(connectionString);
 
 #if DEBUG
     opt.EnableSensitiveDataLogging(true);

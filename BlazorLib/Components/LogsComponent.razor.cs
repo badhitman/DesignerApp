@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
 
-namespace ToolsMauiApp.Components;
+namespace BlazorLib.Components;
 
 /// <summary>
 /// LogsComponent

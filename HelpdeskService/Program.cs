@@ -103,10 +103,10 @@ public class Program
 
         builder.Services.AddOptions();
         builder.Services.AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
-        string connectionIdentityString = builder.Configuration.GetConnectionString($"HelpdeskConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'HelpdeskConnection{_modePrefix}' not found.");
+        string connectionString = builder.Configuration.GetConnectionString($"HelpdeskConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'HelpdeskConnection{_modePrefix}' not found.");
         builder.Services.AddDbContextFactory<HelpdeskContext>(opt =>
     {
-        opt.UseNpgsql(connectionIdentityString);
+        opt.UseNpgsql(connectionString);
 
 #if DEBUG
         opt.EnableSensitiveDataLogging(true);

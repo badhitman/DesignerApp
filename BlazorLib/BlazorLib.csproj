@@ -24,4 +24,10 @@
 		<ProjectReference Include="..\CodegeneratorLib\CodegeneratorLib.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Content Update="Components\LogsComponent.razor">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	  </Content>
+	</ItemGroup>
+
 </Project>

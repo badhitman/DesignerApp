@@ -9,6 +9,11 @@ Update-Database -Context StorageContext -Project DbPostgreLib -StartupProject St
 ```
 
 ```
+Add-Migration NLogsContext002 -Context NLogsContext -Project DbPostgreLib -StartupProject StorageService
+Update-Database -Context NLogsContext -Project DbPostgreLib -StartupProject StorageService
+```
+
+```
 Add-Migration HelpdeskPostgreContext014 -Context HelpdeskContext -Project DbPostgreLib -StartupProject HelpdeskService
 Update-Database -Context HelpdeskContext -Project DbPostgreLib -StartupProject HelpdeskService
 ```
@@ -26,9 +31,4 @@ Update-Database -Context CommerceContext -Project DbPostgreLib -StartupProject C
 ```
 Add-Migration ConstructorContext004 -Context ConstructorContext -Project DbPostgreLib -StartupProject ConstructorService
 Update-Database -Context ConstructorContext -Project DbPostgreLib -StartupProject ConstructorService
-```
-
-```
-Add-Migration NLogsContext002 -Context NLogsContext -Project DbPostgreLib -StartupProject ApiRestService
-Update-Database -Context NLogsContext -Project DbPostgreLib -StartupProject ApiRestService
 ```

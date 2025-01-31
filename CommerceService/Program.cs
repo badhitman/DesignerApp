@@ -98,10 +98,10 @@ builder.Services.AddScoped<ICommerceService, CommerceImplementService>();
 
 builder.Services.AddSingleton<WebConfigModel>();
 builder.Services.AddOptions();
-string connectionIdentityString = builder.Configuration.GetConnectionString($"CommerceConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'CommerceConnection{_modePrefix}' not found.");
+string connectionString = builder.Configuration.GetConnectionString($"CommerceConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'CommerceConnection{_modePrefix}' not found.");
 builder.Services.AddDbContextFactory<CommerceContext>(opt =>
 {
-    opt.UseNpgsql(connectionIdentityString);
+    opt.UseNpgsql(connectionString);
 
 #if DEBUG
     opt.EnableSensitiveDataLogging(true);

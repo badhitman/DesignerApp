@@ -103,9 +103,13 @@ public class Program
 
         builder.Services.AddOptions();
 
-        string connectionIdentityString = builder.Configuration.GetConnectionString($"CloudParametersConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'CloudParametersConnection{_modePrefix}' not found.");
+        string connectionString = builder.Configuration.GetConnectionString($"CloudParametersConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'CloudParametersConnection{_modePrefix}' not found.");
         builder.Services.AddDbContextFactory<StorageContext>(opt =>
-            opt.UseNpgsql(connectionIdentityString));
+            opt.UseNpgsql(connectionString));
+
+        connectionString = builder.Configuration.GetConnectionString($"NLogsConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'CloudParametersConnection{_modePrefix}' not found.");
+        builder.Services.AddDbContextFactory<NLogsContext>(opt =>
+            opt.UseNpgsql(connectionString));
 
         builder.Services
         .AddScoped<IHelpdeskTransmission, HelpdeskTransmission>()

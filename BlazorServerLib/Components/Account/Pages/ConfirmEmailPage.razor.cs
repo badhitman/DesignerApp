@@ -5,16 +5,11 @@ using SharedLib;
 
 namespace BlazorWebLib.Components.Account.Pages;
 
-/// <summary>
-/// 
-/// </summary>
+/// <inheritdoc/>
 public partial class ConfirmEmailPage : ComponentBase
 {
     [Inject]
     IIdentityTransmission IdentityRepo { get; set; } = default!;
-
-    [Inject]
-    IUsersAuthenticateService UserAuthManager { get; set; } = default!;
 
     [Inject]
     IdentityRedirectManager RedirectManager { get; set; } = default!;
@@ -29,9 +24,7 @@ public partial class ConfirmEmailPage : ComponentBase
     [SupplyParameterFromQuery]
     private string? Code { get; set; }
 
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <inheritdoc/>
     public List<ResultMessage> Messages = [];
 
     /// <inheritdoc/>
