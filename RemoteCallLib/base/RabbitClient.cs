@@ -5,6 +5,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Diagnostics.Metrics;
 using RabbitMQ.Client.Events;
 using System.Diagnostics;
 using System.Text.Json;
@@ -12,8 +13,6 @@ using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System.Text;
 using SharedLib;
-using System.Diagnostics.Metrics;
-using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace RemoteCallLib;
 
@@ -187,7 +186,6 @@ public class RabbitClient : IRabbitClient
             }
             catch (OperationCanceledException)
             {
-                //res.AddInfo("Обработка запроса прервана: OperationCanceledException");
                 loggerRepo.LogDebug($"response for {response_topic}");
             }
             catch (Exception ex)
