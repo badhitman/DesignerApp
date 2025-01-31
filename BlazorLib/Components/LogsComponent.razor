@@ -1,9 +1,21 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
 @using SharedLib
 
-<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
+@inherits BlazorBusyComponentBaseModel
+
+<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table" Loading="IsBusyProgress">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Логи</MudText>
+        <MudText Typo="Typo.h6">
+            Логи
+            @if (IsBusyProgress)
+            {
+                <sup class="spinner-grow spinner-grow-sm text-primary"></sup>
+            }
+            else
+            {
+                <sup title="Обновить" @onclick="ReloadTable" style="cursor:pointer;" class="bi bi-arrow-clockwise text-success-emphasis"></sup>
+            }
+        </MudText>
         <MudSpacer />
         <MudCheckBox @bind-Value="StackTrace" Label="StackTrace" />
         <MudCheckBox @bind-Value="CallSite" Label="CallSite" />

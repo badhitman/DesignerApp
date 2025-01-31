@@ -11,12 +11,13 @@ namespace BlazorLib.Components;
 /// <summary>
 /// LogsComponent
 /// </summary>
-public partial class LogsComponent
+public partial class LogsComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
     ILogsService LogsRepo { get; set; } = default!;
 
 
+    #region columns visible
     bool _AllEventProperties;
     bool AllEventProperties
     {
@@ -82,14 +83,26 @@ public partial class LogsComponent
             InvokeAsync(table.ReloadServerData);
         }
     }
+    #endregion
 
     private MudTable<NLogRecordModelDB> table = default!;
+
+    async Task ReloadTable()
+    {
+        if (table is null)
+            return;
+
+        await SetBusy();
+        await table.ReloadServerData();
+        await SetBusy(false);
+    }
 
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>
     private async Task<TableData<NLogRecordModelDB>> ServerReload(TableState state, CancellationToken token)
     {
+        await SetBusy(token: token);
         TPaginationRequestModel<LogsSelectRequestModel> req = new()
         {
             Payload = new()
@@ -102,6 +115,7 @@ public partial class LogsComponent
         };
 
         TPaginationResponseModel<NLogRecordModelDB> selector = await LogsRepo.LogsSelect(req);
+        await SetBusy(false, token);
         return new TableData<NLogRecordModelDB>() { TotalItems = selector.TotalRowsCount, Items = selector.Response };
     }
 }

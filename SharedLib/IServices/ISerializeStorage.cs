@@ -17,6 +17,11 @@ public interface ISerializeStorage
     /// </summary>
     public Task<TPaginationResponseModel<NLogRecordModelDB>> LogsSelect(TPaginationRequestModel<LogsSelectRequestModel> req);
 
+    /// <summary>
+    /// MetadataLogs
+    /// </summary>
+    public Task<TResponseModel<LogsMetadataResponseModel>> MetadataLogs(PeriodDatesTimesModel req);
+
     #region tags
     /// <summary>
     /// FilesAreaGetMetadata

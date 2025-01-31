@@ -13,6 +13,14 @@ namespace RemoteCallLib;
 public class StorageTransmission(IRabbitClient rabbitClient) : IStorageTransmission
 {
     /// <inheritdoc/>
+    public async Task<TResponseModel<LogsMetadataResponseModel>> MetadataLogs(PeriodDatesTimesModel req)
+        => await rabbitClient.MqRemoteCall<TResponseModel<LogsMetadataResponseModel>>(GlobalStaticConstants.TransmissionQueues.MetadataLogsReceive, req) ?? new();
+
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<NLogRecordModelDB>> LogsSelect(TPaginationRequestModel<LogsSelectRequestModel> req)
+        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<NLogRecordModelDB>>(GlobalStaticConstants.TransmissionQueues.LogsSelectStorageReceive, req) ?? new();
+
+    /// <inheritdoc/>
     public async Task<TResponseModel<List<T>?>> ReadParameters<T>(StorageMetadataModel[] req)
     {
         TResponseModel<List<StorageCloudParameterPayloadModel>>? response_payload = await rabbitClient.MqRemoteCall<TResponseModel<List<StorageCloudParameterPayloadModel>>>(GlobalStaticConstants.TransmissionQueues.ReadCloudParametersReceive, req);
@@ -111,8 +119,4 @@ public class StorageTransmission(IRabbitClient rabbitClient) : IStorageTransmiss
     /// <inheritdoc/>
     public async Task<TResponseModel<bool>> TagSet(TagSetModel req)
         => await rabbitClient.MqRemoteCall<TResponseModel<bool>>(GlobalStaticConstants.TransmissionQueues.TagSetReceive, req) ?? new();
-
-    /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<NLogRecordModelDB>> LogsSelect(TPaginationRequestModel<LogsSelectRequestModel> req)
-        => await rabbitClient.MqRemoteCall<TPaginationResponseModel<NLogRecordModelDB>>(GlobalStaticConstants.TransmissionQueues.LogsSelectStorageReceive, req) ?? new();
 }

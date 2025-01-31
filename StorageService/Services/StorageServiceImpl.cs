@@ -3,17 +3,16 @@
 ////////////////////////////////////////////////
 
 using Microsoft.Extensions.Caching.Memory;
+using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
+using MongoDB.Driver.GridFS;
 using Newtonsoft.Json;
+using MongoDB.Driver;
+using MongoDB.Bson;
+using ImageMagick;
 using SharedLib;
 using DbcLib;
-using ImageMagick;
-using MongoDB.Bson;
-using MongoDB.Driver.GridFS;
-using System.Text.RegularExpressions;
-using MongoDB.Driver;
-using Microsoft.Extensions.Options;
 
 namespace StorageService;
 
@@ -32,8 +31,47 @@ public class StorageServiceImpl(
 #if DEBUG
     static readonly TimeSpan _ts = TimeSpan.FromSeconds(2);
 #else
-    static readonly TimeSpan _ts = TimeSpan.FromSeconds(5);
+    static readonly TimeSpan _ts = TimeSpan.FromSeconds(10);
 #endif
+    /// <inheritdoc/>
+    public async Task<TResponseModel<LogsMetadataResponseModel>> MetadataLogs(PeriodDatesTimesModel req)
+    {
+        Dictionary<string, int> LevelsAvailable = [];
+        Dictionary<string, int> ApplicationsAvailable = [];
+        Dictionary<string, int> ContextsPrefixesAvailable = [];
+        Dictionary<string, int> LoggersAvailable = [];
+
+        await Task.WhenAll([
+                Task.Run(async () => {
+                    using NLogsContext ctx = await logsDbFactory.CreateDbContextAsync();
+                    (await ctx.Logs.GroupBy(x => x.RecordLevel).Select(x => new KeyValuePair<string, int>(x.Key, x.Count())).ToListAsync()).ForEach(x => LevelsAvailable.Add(x.Key, x.Value));
+                }),
+                Task.Run(async () => {
+                    using NLogsContext ctx = await logsDbFactory.CreateDbContextAsync();
+                    (await ctx.Logs.GroupBy(x => x.ApplicationName).Select(x => new KeyValuePair<string, int>(x.Key, x.Count())).ToListAsync()).ForEach(x => ApplicationsAvailable.Add(x.Key, x.Value));
+                }),
+                Task.Run(async () => {
+                    using NLogsContext ctx = await logsDbFactory.CreateDbContextAsync();
+                    (await ctx.Logs.GroupBy(x => x.ContextPrefix).Select(x => new KeyValuePair<string?, int>(x.Key, x.Count())).ToListAsync()).ForEach(x => ContextsPrefixesAvailable.Add(x.Key ?? "", x.Value));
+                }),
+                Task.Run(async () => {
+                    using NLogsContext ctx = await logsDbFactory.CreateDbContextAsync();
+                    (await ctx.Logs.GroupBy(x => x.Logger).Select(x => new KeyValuePair<string?, int>(x.Key, x.Count())).ToListAsync()).ForEach(x => LoggersAvailable.Add(x.Key ?? "", x.Value));
+                }),
+            ]);
+
+        return new()
+        {
+            Response = new()
+            {
+                ContextsPrefixesAvailable = ContextsPrefixesAvailable,
+                ApplicationsAvailable = ApplicationsAvailable,
+                LoggersAvailable = LoggersAvailable,
+                LevelsAvailable = LevelsAvailable,
+            }
+        };
+    }
+
     /// <inheritdoc/>
     public async Task<TPaginationResponseModel<NLogRecordModelDB>> LogsSelect(TPaginationRequestModel<LogsSelectRequestModel> req)
     {
