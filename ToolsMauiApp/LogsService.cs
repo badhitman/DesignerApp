@@ -21,4 +21,13 @@ public class LogsService(IHttpClientFactory HttpClientFactory) : ILogsService
         string rj = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<TPaginationResponseModel<NLogRecordModelDB>>(rj)!;
     }
+
+    /// <inheritdoc/>
+    public async Task<TResponseModel<LogsMetadataResponseModel>> MetadataLogs(PeriodDatesTimesModel req)
+    {
+        using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Tools.ToString());
+        using HttpResponseMessage response = await client.PostAsJsonAsync($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LOGS_ACTION_NAME}-{GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME}", req);
+        string rj = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<TResponseModel<LogsMetadataResponseModel>>(rj)!;
+    }
 }
