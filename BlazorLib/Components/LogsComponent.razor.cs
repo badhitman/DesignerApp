@@ -117,6 +117,11 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
         await SetBusy(false);
     }
 
+    private void PageChanged(int i)
+    {
+        table.NavigateTo(i - 1);
+    }
+
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>

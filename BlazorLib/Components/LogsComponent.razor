@@ -119,6 +119,6 @@
         <MudText>Загрузка...</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudTablePager />
+        <MudPagination MiddleCount="5" BoundaryCount="5" SelectedChanged="PageChanged" Count="@((table.GetFilteredItemsCount() + table.RowsPerPage - 1) / table.RowsPerPage)" Class="pa-4" />
     </PagerContent>
 </MudTable>
