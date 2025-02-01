@@ -41,22 +41,38 @@ public class StorageServiceImpl(
         Dictionary<string, int> ContextsPrefixesAvailable = [];
         Dictionary<string, int> LoggersAvailable = [];
 
+        IQueryable<NLogRecordModelDB> QuerySet(IQueryable<NLogRecordModelDB> q)
+        {
+            if (req.StartAt.HasValue)
+            {
+                DateTime _dt = req.StartAt.Value.SetKindUtc();
+                q = q.Where(x => x.RecordTime >= _dt);
+            }
+            if (req.FinalOff.HasValue)
+            {
+                DateTime _dt = req.FinalOff.Value.SetKindUtc().Date.AddHours(23).AddMinutes(59).AddSeconds(59);
+                q = q.Where(x => x.RecordTime <= _dt);
+            }
+            
+            return q;
+        }
+
         await Task.WhenAll([
                 Task.Run(async () => {
                     using NLogsContext ctx = await logsDbFactory.CreateDbContextAsync();
-                    (await ctx.Logs.GroupBy(x => x.RecordLevel).Select(x => new KeyValuePair<string, int>(x.Key, x.Count())).ToListAsync()).ForEach(x => LevelsAvailable.Add(x.Key, x.Value));
+                    (await QuerySet(ctx.Logs.AsQueryable()).GroupBy(x => x.RecordLevel).Select(x => new KeyValuePair<string, int>(x.Key, x.Count())).ToListAsync()).ForEach(x => LevelsAvailable.Add(x.Key, x.Value));
                 }),
                 Task.Run(async () => {
                     using NLogsContext ctx = await logsDbFactory.CreateDbContextAsync();
-                    (await ctx.Logs.GroupBy(x => x.ApplicationName).Select(x => new KeyValuePair<string, int>(x.Key, x.Count())).ToListAsync()).ForEach(x => ApplicationsAvailable.Add(x.Key, x.Value));
+                    (await QuerySet(ctx.Logs.AsQueryable()).GroupBy(x => x.ApplicationName).Select(x => new KeyValuePair<string, int>(x.Key, x.Count())).ToListAsync()).ForEach(x => ApplicationsAvailable.Add(x.Key, x.Value));
                 }),
                 Task.Run(async () => {
                     using NLogsContext ctx = await logsDbFactory.CreateDbContextAsync();
-                    (await ctx.Logs.GroupBy(x => x.ContextPrefix).Select(x => new KeyValuePair<string?, int>(x.Key, x.Count())).ToListAsync()).ForEach(x => ContextsPrefixesAvailable.Add(x.Key ?? "", x.Value));
+                    (await QuerySet(ctx.Logs.AsQueryable()).GroupBy(x => x.ContextPrefix).Select(x => new KeyValuePair<string?, int>(x.Key, x.Count())).ToListAsync()).ForEach(x => ContextsPrefixesAvailable.Add(x.Key ?? "", x.Value));
                 }),
                 Task.Run(async () => {
                     using NLogsContext ctx = await logsDbFactory.CreateDbContextAsync();
-                    (await ctx.Logs.GroupBy(x => x.Logger).Select(x => new KeyValuePair<string?, int>(x.Key, x.Count())).ToListAsync()).ForEach(x => LoggersAvailable.Add(x.Key ?? "", x.Value));
+                    (await QuerySet(ctx.Logs.AsQueryable()).GroupBy(x => x.Logger).Select(x => new KeyValuePair<string?, int>(x.Key, x.Count())).ToListAsync()).ForEach(x => LoggersAvailable.Add(x.Key ?? "", x.Value));
                 }),
             ]);
 
@@ -80,6 +96,17 @@ public class StorageServiceImpl(
 
         using NLogsContext context = await logsDbFactory.CreateDbContextAsync();
         IQueryable<NLogRecordModelDB> q = context.Logs.AsQueryable();
+
+        if (req.Payload.StartAt.HasValue)
+        {
+            DateTime _dt = req.Payload.StartAt.Value.SetKindUtc();
+            q = q.Where(x => x.RecordTime >= _dt);
+        }
+        if (req.Payload.FinalOff.HasValue)
+        {
+            DateTime _dt = req.Payload.FinalOff.Value.SetKindUtc().Date.AddHours(23).AddMinutes(59).AddSeconds(59);
+            q = q.Where(x => x.RecordTime <= _dt);
+        }
 
         if (req.Payload.LevelsFilter is not null && req.Payload.LevelsFilter.Length != 0)
             q = q.Where(x => req.Payload.LevelsFilter.Contains(x.RecordLevel));

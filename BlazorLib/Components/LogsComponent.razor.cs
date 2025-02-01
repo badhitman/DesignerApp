@@ -17,6 +17,15 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
     ILogsService LogsRepo { get; set; } = default!;
 
 
+    MudDateRangePicker _picker = default!;
+
+    DateRange _dateRangeBind = new(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+    DateRange DateRangeBind
+    {
+        get => _dateRangeBind;
+        set { _dateRangeBind = value; InvokeAsync(table.ReloadServerData); }
+    }
+
     #region columns visible
     bool _AllEventProperties;
     bool AllEventProperties
@@ -85,7 +94,7 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
     }
     #endregion
 
-    private MudTable<NLogRecordModelDB> table = default!;
+    MudTable<NLogRecordModelDB> table = default!;
 
     async Task ReloadTable()
     {
@@ -107,7 +116,8 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
         {
             Payload = new()
             {
-
+                StartAt = DateRangeBind.Start,
+                FinalOff = DateRangeBind.End,
             },
             PageNum = state.Page,
             PageSize = state.PageSize,
@@ -115,7 +125,9 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
         };
 
         TPaginationResponseModel<NLogRecordModelDB> selector = await LogsRepo.LogsSelect(req);
-        
+        TResponseModel<LogsMetadataResponseModel> md = await LogsRepo.MetadataLogs(new() { StartAt = DateRangeBind.Start, FinalOff = DateRangeBind.End });
+
+
         await SetBusy(false, token);
         return new TableData<NLogRecordModelDB>() { TotalItems = selector.TotalRowsCount, Items = selector.Response };
     }

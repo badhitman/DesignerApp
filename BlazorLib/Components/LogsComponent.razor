@@ -17,6 +17,13 @@
             }
         </MudText>
         <MudSpacer />
+        <MudDateRangePicker @ref="_picker" @bind-DateRange="DateRangeBind" AutoClose PickerVariant="PickerVariant.Dialog">
+            <PickerActions>
+                <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.ClearAsync())">Clear</MudButton>
+                <MudButton OnClick="@(() => _picker.CloseAsync(false))">Cancel</MudButton>
+                <MudButton Color="Color.Primary" OnClick="@(() => _picker.CloseAsync())">Ok</MudButton>
+            </PickerActions>
+        </MudDateRangePicker>
         <MudCheckBox @bind-Value="StackTrace" Label="StackTrace" />
         <MudCheckBox @bind-Value="CallSite" Label="CallSite" />
         <MudCheckBox @bind-Value="Logger" Label="Logger" />

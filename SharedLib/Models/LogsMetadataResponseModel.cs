@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Метаданные логов: доступные типы данных и общая статистика по ним
 /// </summary>
-public class LogsMetadataResponseModel
+public class LogsMetadataResponseModel : PeriodDatesTimesModel
 {
     /// <inheritdoc/>
     public required Dictionary<string, int> LevelsAvailable { get; set; }

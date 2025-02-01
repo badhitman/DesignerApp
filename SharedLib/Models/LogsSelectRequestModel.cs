@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// LogsSelectRequestModel
 /// </summary>
-public class LogsSelectRequestModel
+public class LogsSelectRequestModel : PeriodDatesTimesModel
 {
     /// <summary>
     /// LevelsFilter
