@@ -1,0 +1,15 @@
+﻿<div class="card my-2">
+    <div class="card-body">
+        <h5 class="card-title">@Title</h5>
+        <div class="d-flex flex-wrap">
+            @{
+                int _i = -1;
+            }
+            @foreach (KeyValuePair<string, int> _filter in FiltersAvailable)
+            {
+                int setIndex = ++_i;
+                <MudCheckBox ValueChanged="@((bool newCheckboxValue) => OnCheckedChanged(newCheckboxValue, setIndex))">`@_filter.Key` <sup title="Количество записей в БД" class="ms-2 mark">@_filter.Value</sup></MudCheckBox>
+            }
+        </div>
+    </div>
+</div>

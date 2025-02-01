@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using BlazorLib.Components.Shared;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
@@ -16,7 +17,7 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
     [Inject]
     ILogsService LogsRepo { get; set; } = default!;
 
-
+    LogsMetadataResponseModel? _metaData;
     MudDateRangePicker _picker = default!;
 
     DateRange _dateRangeBind = new(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
@@ -96,6 +97,16 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
 
     MudTable<NLogRecordModelDB> table = default!;
 
+    FiltersUniversalComponent? ContextsPrefixesAvailable = default!;
+    FiltersUniversalComponent? ApplicationsAvailable = default!;
+    FiltersUniversalComponent? LevelsAvailable = default!;
+    FiltersUniversalComponent? LoggersAvailable = default!;
+
+    void CheckedChangedAction()
+    {
+        InvokeAsync(table.ReloadServerData);
+    }
+
     async Task ReloadTable()
     {
         if (table is null)
@@ -118,15 +129,25 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
             {
                 StartAt = DateRangeBind.Start,
                 FinalOff = DateRangeBind.End,
+                ApplicationsFilter = ApplicationsAvailable is null ? null : [.. ApplicationsAvailable.GetSelected()],
+                ContextsPrefixesFilter = ContextsPrefixesAvailable is null ? null : [.. ContextsPrefixesAvailable.GetSelected()],
+                LevelsFilter = LevelsAvailable is null ? null : [.. LevelsAvailable.GetSelected()],
+                LoggersFilter = LoggersAvailable is null ? null : [.. LoggersAvailable.GetSelected()],
             },
             PageNum = state.Page,
             PageSize = state.PageSize,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
 
-        TPaginationResponseModel<NLogRecordModelDB> selector = await LogsRepo.LogsSelect(req);
-        TResponseModel<LogsMetadataResponseModel> md = await LogsRepo.MetadataLogs(new() { StartAt = DateRangeBind.Start, FinalOff = DateRangeBind.End });
+        TPaginationResponseModel<NLogRecordModelDB> selector = default!;
+        TResponseModel<LogsMetadataResponseModel> md = default!;
 
+        await Task.WhenAll([
+            Task.Run(async () => selector = await LogsRepo.LogsSelect(req)),
+            Task.Run(async () => md = await LogsRepo.MetadataLogs(new() { StartAt = DateRangeBind.Start, FinalOff = DateRangeBind.End })),
+            ]);
+
+        _metaData = md.Response;
 
         await SetBusy(false, token);
         return new TableData<NLogRecordModelDB>() { TotalItems = selector.TotalRowsCount, Items = selector.Response };

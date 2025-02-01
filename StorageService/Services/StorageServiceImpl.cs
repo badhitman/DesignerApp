@@ -112,17 +112,21 @@ public class StorageServiceImpl(
             q = q.Where(x => req.Payload.LevelsFilter.Contains(x.RecordLevel));
 
         if (req.Payload.LoggersFilter is not null && req.Payload.LoggersFilter.Length != 0)
-            q = q.Where(x => req.Payload.LoggersFilter.Contains(x.RecordLevel));
+            q = q.Where(x => req.Payload.LoggersFilter.Contains(x.Logger));
 
         if (req.Payload.ContextsPrefixesFilter is not null && req.Payload.ContextsPrefixesFilter.Length != 0)
-            q = q.Where(x => req.Payload.ContextsPrefixesFilter.Contains(x.RecordLevel));
+            q = q.Where(x => req.Payload.ContextsPrefixesFilter.Contains(x.ContextPrefix));
 
         if (req.Payload.ApplicationsFilter is not null && req.Payload.ApplicationsFilter.Length != 0)
-            q = q.Where(x => req.Payload.ApplicationsFilter.Contains(x.RecordLevel));
+            q = q.Where(x => req.Payload.ApplicationsFilter.Contains(x.ApplicationName));
 
         IOrderedQueryable<NLogRecordModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
           ? q.OrderBy(x => x.RecordTime)
           : q.OrderByDescending(x => x.RecordTime);
+
+#if DEBUG
+        var _v = await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync();
+#endif
 
         return new()
         {

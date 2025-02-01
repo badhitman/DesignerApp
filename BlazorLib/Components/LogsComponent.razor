@@ -1,7 +1,28 @@
-﻿@using Microsoft.AspNetCore.Components.Web
+﻿@using BlazorLib.Components.Shared
+@using Microsoft.AspNetCore.Components.Web
 @using SharedLib
 
 @inherits BlazorBusyComponentBaseModel
+
+@if (_metaData is not null)
+{
+    if (_metaData.ContextsPrefixesAvailable.Count != 0)
+    {
+        <FiltersUniversalComponent FiltersAvailable="_metaData.ContextsPrefixesAvailable" Title="Префикс/Имя контура" @ref="ContextsPrefixesAvailable" CheckedChangedHandle="CheckedChangedAction" />
+    }
+    if (_metaData.ApplicationsAvailable.Count != 0)
+    {
+        <FiltersUniversalComponent FiltersAvailable="_metaData.ApplicationsAvailable" Title="App`s" @ref="ApplicationsAvailable" CheckedChangedHandle="CheckedChangedAction" />
+    }
+    if (_metaData.LevelsAvailable.Count != 0)
+    {
+        <FiltersUniversalComponent FiltersAvailable="_metaData.LevelsAvailable" Title="Levels" @ref="LevelsAvailable" CheckedChangedHandle="CheckedChangedAction" />
+    }
+    if (_metaData.LoggersAvailable.Count != 0)
+    {
+        <FiltersUniversalComponent FiltersAvailable="_metaData.LoggersAvailable" Title="Loggers" @ref="LoggersAvailable" CheckedChangedHandle="CheckedChangedAction" />
+    }
+}
 
 <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table" Loading="IsBusyProgress">
     <ToolBarContent>
