@@ -41,6 +41,9 @@ public class StorageServiceImpl(
         Dictionary<string, int> ContextsPrefixesAvailable = [];
         Dictionary<string, int> LoggersAvailable = [];
 
+        DateTime? minDate = null;
+        DateTime? maxDate = null;
+
         IQueryable<NLogRecordModelDB> QuerySet(IQueryable<NLogRecordModelDB> q)
         {
             if (req.StartAt.HasValue)
@@ -58,6 +61,14 @@ public class StorageServiceImpl(
         }
 
         await Task.WhenAll([
+                Task.Run(async () => {
+                    using NLogsContext ctx = await logsDbFactory.CreateDbContextAsync();
+                    minDate = await ctx.Logs.MinAsync(x => x.RecordTime);
+                }),
+                Task.Run(async () => {
+                    using NLogsContext ctx = await logsDbFactory.CreateDbContextAsync();
+                    maxDate = await ctx.Logs.MaxAsync(x => x.RecordTime);
+                }),
                 Task.Run(async () => {
                     using NLogsContext ctx = await logsDbFactory.CreateDbContextAsync();
                     (await QuerySet(ctx.Logs.AsQueryable()).GroupBy(x => x.RecordLevel).Select(x => new KeyValuePair<string, int>(x.Key, x.Count())).ToListAsync()).ForEach(x => LevelsAvailable.Add(x.Key, x.Value));
@@ -84,6 +95,8 @@ public class StorageServiceImpl(
                 ApplicationsAvailable = ApplicationsAvailable,
                 LoggersAvailable = LoggersAvailable,
                 LevelsAvailable = LevelsAvailable,
+                StartAt = minDate,
+                FinalOff = maxDate,
             }
         };
     }

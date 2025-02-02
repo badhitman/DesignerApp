@@ -22,7 +22,7 @@ public class InfoController : ControllerBase
     /// Получить информацию по текущему профилю (проверка токена доступа)
     /// </summary>
     /// <returns>Информация по текущему пользователю (имя и роли)</returns>
-    [HttpGet($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.INFO_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.MY_CONTROLLER_NAME}"), Authorize]
+    [HttpGet($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.INFO_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.MY_CONTROLLER_NAME}"), TypeFilter(typeof(RolesAuthorizationFilter))]
     public ExpressProfileResponseModel GetMyProfile()
     {
         ExpressProfileResponseModel res = new()
@@ -37,7 +37,7 @@ public class InfoController : ControllerBase
     /// <summary>
     /// Получить все роли, существующие в системе (публичный доступ без токена)
     /// </summary>
-    /// <returns>Все роли, которыми система оперирует впринципе</returns>
+    /// <returns>Все роли, которыми система оперирует 'в принципе'</returns>
     [HttpGet("/api/info/get-all-roles-names")]
     public IEnumerable<string?> GetAllRoles()
     {
@@ -52,12 +52,12 @@ public class InfoController : ControllerBase
     /// </summary>
     /// <returns>Типовой ответ</returns>
     [HttpGet($"/api/values/{nameof(RedirectToLoginPath)}")]
-    public ResponseBaseModel RedirectToLoginPath([FromQuery] string? ReturnUrl) => new() { Messages = new List<ResultMessage>() { new() { Text = "Требуется пройти авторизацию", TypeMessage = ResultTypesEnum.Error } } };
+    public ResponseBaseModel RedirectToLoginPath([FromQuery] string? ReturnUrl) => new() { Messages = [new() { Text = "Требуется пройти авторизацию", TypeMessage = ResultTypesEnum.Error }] };
 
     /// <summary>
     /// Ответ на запрос от редиректа Identity для запрета доступа Identity
     /// </summary>
     /// <returns>Типовой ответ</returns>
     [HttpGet($"/api/values/{nameof(RedirectToAccessDeniedPath)}")]
-    public ResponseBaseModel RedirectToAccessDeniedPath([FromQuery] string? ReturnUrl) => new() { Messages = new List<ResultMessage>() { new() { Text = "Доступ запрещён", TypeMessage = ResultTypesEnum.Error } } };
+    public ResponseBaseModel RedirectToAccessDeniedPath([FromQuery] string? ReturnUrl) => new() { Messages = [new() { Text = "Доступ запрещён", TypeMessage = ResultTypesEnum.Error }] };
 }

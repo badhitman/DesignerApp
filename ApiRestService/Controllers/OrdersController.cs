@@ -13,11 +13,7 @@ namespace ApiRestService.Controllers;
 /// Заказы
 /// </summary>
 [Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute))]
-#if DEBUG
-[AllowAnonymous]
-#else
-[Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersReadCommerce)},{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
-#endif
+[TypeFilter(typeof(RolesAuthorizationFilter), Arguments = [$"{nameof(ExpressApiRolesEnum.OrdersReadCommerce)},{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}"])]
 public class OrdersController(ICommerceTransmission commRepo, IHelpdeskTransmission hdRepo, IStorageTransmission storageRepo) : ControllerBase
 {
     /// <summary>
@@ -40,11 +36,7 @@ public class OrdersController(ICommerceTransmission commRepo, IHelpdeskTransmiss
     /// Роль: <see cref="ExpressApiRolesEnum.OrdersWriteCommerce"/>
     /// </remarks>
     [HttpPost($"/api/{GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME}/{{OrderId}}/{GlobalStaticConstants.Routes.ATTACHMENT_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.ADD_ACTION_NAME}")]
-#if DEBUG
-    [AllowAnonymous]
-#else
-    [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
-#endif
+    [TypeFilter(typeof(RolesAuthorizationFilter), Arguments = [$"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}"])]
     public async Task<TResponseModel<StorageFileModelDB>> AttachmentForOrder([FromRoute] int OrderId, IFormFile uploadedFile)
     {
         TResponseModel<StorageFileModelDB> response = new();
@@ -96,11 +88,7 @@ public class OrdersController(ICommerceTransmission commRepo, IHelpdeskTransmiss
     /// Роль: <see cref="ExpressApiRolesEnum.OrdersWriteCommerce"/>
     /// </remarks>
     [HttpPost($"/api/{GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.ROW_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}")]
-#if DEBUG
-    [AllowAnonymous]
-#else
-    [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
-#endif
+    [TypeFilter(typeof(RolesAuthorizationFilter), Arguments = [$"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}"])]
     public async Task<TResponseModel<int>> RowForOrderUpdate(RowOfOrderDocumentModelDB row)
         => await commRepo.RowForOrderUpdate(row);
 
@@ -111,11 +99,7 @@ public class OrdersController(ICommerceTransmission commRepo, IHelpdeskTransmiss
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.OrdersWriteCommerce"/>
     /// </remarks>
-#if DEBUG
-    [AllowAnonymous]
-#else
-    [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
-#endif
+    [TypeFilter(typeof(RolesAuthorizationFilter), Arguments = [$"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}"])]
     [HttpDelete($"/api/{GlobalStaticConstants.Routes.ORDERS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.ROW_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}")]
     public async Task<TResponseModel<bool>> RowForOrderDelete([FromBody] int[] rows_ids)
         => await commRepo.RowsForOrderDelete(rows_ids);
@@ -126,11 +110,7 @@ public class OrdersController(ICommerceTransmission commRepo, IHelpdeskTransmiss
     /// <param name="OrderId">Идентификатор заказа</param>
     /// <param name="Step">Статус заказа, который нужно установить</param>
     [HttpPost($"/api/{GlobalStaticConstants.Routes.ORDER_CONTROLLER_NAME}/{{OrderId}}/{GlobalStaticConstants.Routes.STAGE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}/{{Step}}")]
-#if DEBUG
-    [AllowAnonymous]
-#else
-    [Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
-#endif
+    [TypeFilter(typeof(RolesAuthorizationFilter), Arguments = [$"{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}"])]
     public async Task<TResponseModel<bool>> OrderStageSet([FromRoute] int OrderId, [FromRoute] StatusesDocumentsEnum Step)
     {
         TResponseModel<OrderDocumentModelDB[]> call = await commRepo.OrdersRead(new() { Payload = [OrderId], SenderActionUserId = GlobalStaticConstants.Roles.System });

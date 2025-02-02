@@ -19,6 +19,7 @@ using OpenTelemetry.Trace;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using DbcLib;
+using Microsoft.AspNetCore.Authorization;
 
 Logger logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
@@ -103,6 +104,7 @@ builder.Services
 .Configure<PartUploadSessionConfigModel>(builder.Configuration.GetSection("PartUploadSessionConfig"))
 ;
 
+builder.Services.AddOpenApi();
 builder.Services.AddOptions();
 builder.Services.AddMemoryCache();
 
@@ -116,10 +118,10 @@ builder.Services.AddStackExchangeRedisCache(options =>
 })
 .AddSingleton<IManualCustomCacheService, ManualCustomCacheService>();
 
-builder.Services.AddTransient<UnhandledExceptionAttribute>();
-builder.Services.AddAuthorization();
+builder.Services.AddHttpContextAccessor();
 
-RestApiConfigBaseModel restConf = builder.Configuration.GetSection("ApiAccess").Get<RestApiConfigBaseModel>() ?? throw new Exception("Отсутствует конфигурация ApiAccess");
+builder.Services.AddTransient<UnhandledExceptionAttribute>();
+builder.Services.AddScoped<RolesAuthorizationFilter>();
 
 // Add services to the container.
 #region MQ Transmission (remote methods call)
@@ -176,7 +178,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-
+RestApiConfigBaseModel restConf = builder.Configuration.GetSection("ApiAccess").Get<RestApiConfigBaseModel>() ?? throw new Exception("Отсутствует конфигурация ApiAccess");
 builder.Services.AddSwaggerGen(options =>
           {
               options.SwaggerDoc("v1", new OpenApiInfo
@@ -205,6 +207,7 @@ WebApplication app = builder.Build();
 
 app.MapDefaultEndpoints();
 app.UseStaticFiles();
+app.MapOpenApi();
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
@@ -222,16 +225,16 @@ app.UseDeveloperExceptionPage();
 app.UseExceptionHandler("/Error");
 #endif
 
-app.UseAuthentication();
-app.UseWhen(context =>
-{
-    return context.Request.Path.Value?.StartsWith("/api") ?? false;
-}, appBuilder =>
-{
-    app.UseMiddleware<PassageMiddleware>();
-});
+//app.UseAuthentication();
+//app.UseWhen(context =>
+//{
+//    return context.Request.Path.Value?.StartsWith("/api") ?? false;
+//}, appBuilder =>
+//{
+//    app.UseMiddleware<PassageMiddleware>();
+//});
 
-app.UseAuthorization();
+//app.UseAuthorization();
 app.Run();
 
 static string GetXmlCommentsPath()

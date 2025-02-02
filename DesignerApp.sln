@@ -75,15 +75,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtmlGenerator", "..\HtmlGenerator\HtmlGenerator.csproj", "{4A8F6D3B-8C09-4E82-8366-0DB04CBA68D5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "secrets", "secrets", "{AC947053-95FC-46B4-A464-FB02A72D4441}"
-	ProjectSection(SolutionItems) = preProject
-		..\secrets-DesignerApp.AppHost\api-access.json = ..\secrets-DesignerApp.AppHost\api-access.json
-		..\secrets-DesignerApp.AppHost\connections-strings.Development.json = ..\secrets-DesignerApp.AppHost\connections-strings.Development.json
-		..\secrets-DesignerApp.AppHost\email-conf.Development.json = ..\secrets-DesignerApp.AppHost\email-conf.Development.json
-		..\secrets-DesignerApp.AppHost\mongo-conf.json = ..\secrets-DesignerApp.AppHost\mongo-conf.json
-		..\secrets-DesignerApp.AppHost\rabbitmq-conf.Development.json = ..\secrets-DesignerApp.AppHost\rabbitmq-conf.Development.json
-		..\secrets-DesignerApp.AppHost\telegram-bot.Development.json = ..\secrets-DesignerApp.AppHost\telegram-bot.Development.json
-		..\secrets\top-menu.Development.json = ..\secrets\top-menu.Development.json
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommerceService", "CommerceService\CommerceService.csproj", "{C8B00CC0-BAA6-48E4-9FC3-F89BD4B079C3}"
 EndProject
@@ -147,6 +138,28 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesignerApp.ServiceDefaults", "DesignerApp.ServiceDefaults\DesignerApp.ServiceDefaults.csproj", "{D2DBA6AF-E491-4715-B154-907BCCA05066}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBotService", "TelegramBotService\TelegramBotService.csproj", "{26000A47-6D72-4CC1-9003-A6B09E829878}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppHost", "AppHost", "{E17C8007-9007-414F-83F3-AFD89B127DC7}"
+	ProjectSection(SolutionItems) = preProject
+		..\secrets-DesignerApp.AppHost\api-access.json = ..\secrets-DesignerApp.AppHost\api-access.json
+		..\secrets-DesignerApp.AppHost\connections-strings.Development.json = ..\secrets-DesignerApp.AppHost\connections-strings.Development.json
+		..\secrets-DesignerApp.AppHost\email-conf.Development.json = ..\secrets-DesignerApp.AppHost\email-conf.Development.json
+		..\secrets-DesignerApp.AppHost\mongo-conf.json = ..\secrets-DesignerApp.AppHost\mongo-conf.json
+		..\secrets-DesignerApp.AppHost\rabbitmq-conf.Development.json = ..\secrets-DesignerApp.AppHost\rabbitmq-conf.Development.json
+		..\secrets-DesignerApp.AppHost\telegram-bot.Development.json = ..\secrets-DesignerApp.AppHost\telegram-bot.Development.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "custom", "custom", "{8EA09A7B-13C1-40A4-8C1E-F99667A9F94A}"
+	ProjectSection(SolutionItems) = preProject
+		..\secrets\api-access.json = ..\secrets\api-access.json
+		..\secrets\connections-strings.Development.json = ..\secrets\connections-strings.Development.json
+		..\secrets\email-conf.Development.json = ..\secrets\email-conf.Development.json
+		..\secrets\mongo-conf.json = ..\secrets\mongo-conf.json
+		..\secrets\mqtt-conf.Development.json = ..\secrets\mqtt-conf.Development.json
+		..\secrets\rabbitmq-conf.Development.json = ..\secrets\rabbitmq-conf.Development.json
+		..\secrets\telegram-bot.Development.json = ..\secrets\telegram-bot.Development.json
+		..\secrets\top-menu.Development.json = ..\secrets\top-menu.Development.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -289,6 +302,8 @@ Global
 		{F23783DE-35E0-429C-BD5F-8FA6F7011D33} = {13C283FD-FD28-4E44-9F5F-4B3CC1FEF8EB}
 		{A44C1002-FB5D-4626-B3B3-7E3D50A97E38} = {90E71949-5CC1-4E9F-A5F2-DC59078B3849}
 		{26000A47-6D72-4CC1-9003-A6B09E829878} = {90E71949-5CC1-4E9F-A5F2-DC59078B3849}
+		{E17C8007-9007-414F-83F3-AFD89B127DC7} = {AC947053-95FC-46B4-A464-FB02A72D4441}
+		{8EA09A7B-13C1-40A4-8C1E-F99667A9F94A} = {AC947053-95FC-46B4-A464-FB02A72D4441}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DBB18C2F-86F0-40C9-B9ED-1CA9D03EDDE3}

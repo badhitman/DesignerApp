@@ -6,7 +6,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
-using System.Globalization;
 using System.Diagnostics;
 using System.Reflection;
 using HtmlAgilityPack;
@@ -348,7 +347,7 @@ public static partial class GlobalTools
     {
         foreach (FieldInfo field in enumValue.GetType().GetFields())
         {
-            var descriptionAttribute = field.GetCustomAttributes<DescriptionAttribute>().FirstOrDefault();
+            DescriptionAttribute? descriptionAttribute = field.GetCustomAttributes<DescriptionAttribute>().FirstOrDefault();
             if (descriptionAttribute != null && field.Name.Equals(enumValue.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 return descriptionAttribute.Description;

@@ -12,11 +12,7 @@ namespace ApiRestService.Controllers;
 /// Номенклатура
 /// </summary>
 [Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute))]
-#if DEBUG
-[AllowAnonymous]
-#else
-[Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersReadCommerce)},{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
-#endif
+[TypeFilter(typeof(RolesAuthorizationFilter), Arguments = [$"{nameof(ExpressApiRolesEnum.OrdersReadCommerce)},{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}"])]
 public class CommerceController(ICommerceTransmission commRepo) : ControllerBase
 {
     /// <summary>

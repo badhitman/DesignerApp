@@ -12,11 +12,7 @@ namespace ApiRestService.Controllers;
 /// Offers
 /// </summary>
 [Route("api/[controller]/[action]"), ApiController, ServiceFilter(typeof(UnhandledExceptionAttribute))]
-#if DEBUG
-[AllowAnonymous]
-#else
-[Authorize(Roles = $"{nameof(ExpressApiRolesEnum.OrdersReadCommerce)},{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}")]
-#endif
+[TypeFilter(typeof(RolesAuthorizationFilter), Arguments = [$"{nameof(ExpressApiRolesEnum.OrdersReadCommerce)},{nameof(ExpressApiRolesEnum.OrdersWriteCommerce)}"])]
 public class OffersController(ICommerceTransmission commRepo) : ControllerBase
 {
     /// <summary>

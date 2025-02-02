@@ -38,13 +38,12 @@ public class PassageMiddleware(RequestDelegate next)
         try
         {
             await InitSession();
+            await _next.Invoke(_http_context);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error {nameof(PassageMiddleware)}");
         }
-
-        await _next.Invoke(_http_context);
     }
 
     /// <summary>
@@ -82,9 +81,9 @@ public class PassageMiddleware(RequestDelegate next)
         {
             try
             {
-                await _http_context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, princ);
                 //await _http_context.SignOutAsync();
-                _http_context.User = princ;
+                //await _http_context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, princ);
+                //_http_context.User = princ;
             }
             catch (Exception ex)
             {

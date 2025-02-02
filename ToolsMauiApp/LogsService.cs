@@ -2,42 +2,61 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Microsoft.Extensions.Logging;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using Newtonsoft.Json;
 using SharedLib;
-using System.Net.Http.Json;
 
 namespace ToolsMauiApp;
 
 /// <summary>
 /// LogsService
 /// </summary>
-public class LogsService(IHttpClientFactory HttpClientFactory, ILogger<LogsService> loggerRepo) : ILogsService
+public class LogsService : ILogsService
 {
+    JsonSerializerOptions _serializerOptions;
+
+    /// <summary>
+    /// LogsService
+    /// </summary>
+    public LogsService()
+    {
+        _serializerOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true
+        };
+    }
+
     /// <inheritdoc/>
     public async Task<TPaginationResponseModel<NLogRecordModelDB>> LogsSelect(TPaginationRequestModel<LogsSelectRequestModel> req)
     {
-        using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Tools.ToString());
-        using HttpResponseMessage response = await client.PostAsJsonAsync($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LOGS_ACTION_NAME}-{GlobalStaticConstants.Routes.SELECT_ACTION_NAME}", req);
+        using HttpClient _client = new();
+        _client.DefaultRequestHeaders.Add("token-access", MauiProgram.ConfigStore.Response?.AccessToken);
+
+        string json = System.Text.Json.JsonSerializer.Serialize(req, _serializerOptions);
+        StringContent content = new(json, Encoding.UTF8, "application/json");
+
+        using HttpResponseMessage response = await _client.PostAsync(new Uri($"{MauiProgram.ConfigStore.Response?.ApiAddress}/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LOGS_ACTION_NAME}-{GlobalStaticConstants.Routes.SELECT_ACTION_NAME}"), content);
+
+        // HttpResponseMessage response = await _client.PostAsJsonAsync($"{MauiProgram.ConfigStore.Response?.ApiAddress}/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LOGS_ACTION_NAME}-{GlobalStaticConstants.Routes.SELECT_ACTION_NAME}", req);
         string rj = await response.Content.ReadAsStringAsync();
 
-        try
-        {
-            return JsonConvert.DeserializeObject<TPaginationResponseModel<NLogRecordModelDB>>(rj)!;
-        }
-        catch (Exception ex)
-        {
-            TPaginationResponseModel<NLogRecordModelDB> res = new();
-            loggerRepo.LogError(ex, rj);
-            return res;
-        }
+        return JsonConvert.DeserializeObject<TPaginationResponseModel<NLogRecordModelDB>>(rj)!;
     }
 
     /// <inheritdoc/>
     public async Task<TResponseModel<LogsMetadataResponseModel>> MetadataLogs(PeriodDatesTimesModel req)
     {
-        using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Tools.ToString());
-        using HttpResponseMessage response = await client.PostAsJsonAsync($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LOGS_ACTION_NAME}-{GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME}", req);
+        using HttpClient _client = new();
+        _client.DefaultRequestHeaders.Add("token-access", MauiProgram.ConfigStore.Response?.AccessToken);
+
+        string json = System.Text.Json.JsonSerializer.Serialize(req, _serializerOptions);
+        StringContent content = new(json, Encoding.UTF8, "application/json");
+
+        using HttpResponseMessage response = await _client.PostAsync(new Uri($"{MauiProgram.ConfigStore.Response?.ApiAddress}/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LOGS_ACTION_NAME}-{GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME}"), content);
+        //using HttpResponseMessage response = await _client.PostAsJsonAsync($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LOGS_ACTION_NAME}-{GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME}", req);
         string rj = await response.Content.ReadAsStringAsync();
 
         try
@@ -47,7 +66,7 @@ public class LogsService(IHttpClientFactory HttpClientFactory, ILogger<LogsServi
         catch (Exception ex)
         {
             TResponseModel<LogsMetadataResponseModel> res = new();
-            loggerRepo.LogError(ex, rj);
+
             res.Messages.InjectException(ex);
             return res;
         }
