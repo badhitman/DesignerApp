@@ -135,6 +135,13 @@ public class Program
         IResourceBuilder<IResourceWithConnectionString> redisConnectionStr = builder.AddConnectionString($"RedisConnectionString{_modePrefix}");
         IResourceBuilder<IResourceWithConnectionString> identityConnectionStr = builder.AddConnectionString($"IdentityConnection{_modePrefix}");
         
+        IResourceBuilder<ProjectResource> storageService = builder.AddProject<Projects.StorageService>("storageservice")
+            .WithReference(builder.AddConnectionString($"NlogsConnection{_modePrefix}"))
+            .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
+            .WithEnvironment(act => mongoConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
+            .WithReference(builder.AddConnectionString($"CloudParametersConnection{_modePrefix}"))
+            ;
+
         IResourceBuilder<ProjectResource> helpdeskService = builder.AddProject<Projects.HelpdeskService>("helpdeskservice")
             .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             .WithReference(builder.AddConnectionString($"HelpdeskConnection{_modePrefix}"))
@@ -165,13 +172,6 @@ public class Program
             .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             ;
 
-        IResourceBuilder<ProjectResource> storageService = builder.AddProject<Projects.StorageService>("storageservice")
-            .WithReference(builder.AddConnectionString($"NlogsConnection{_modePrefix}"))
-            .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
-            .WithEnvironment(act => mongoConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
-            .WithReference(builder.AddConnectionString($"CloudParametersConnection{_modePrefix}"))
-            ;
-
         IResourceBuilder<ProjectResource> telegramBotService = builder.AddProject<Projects.TelegramBotService>("telegrambotpolling")
             .WithEnvironment(act => rabbitConfig.ForEach(x => act.EnvironmentVariables.Add(x.Key, x.Value ?? "")))
             .WithEnvironment($"{BotConfiguration.Configuration}:{nameof(BotConfiguration.BotToken)}", builder.Configuration[$"{BotConfiguration.Configuration}:{nameof(BotConfiguration.BotToken)}"])
@@ -179,6 +179,9 @@ public class Program
             ;
 
         builder.AddProject<Projects.BlankBlazorApp>("blankblazorapp")
+            .WithReference(storageService)
+            .WaitFor(storageService)
+
             .WithReference(helpdeskService)
             .WaitFor(helpdeskService)
 
@@ -200,9 +203,6 @@ public class Program
             .WaitFor(commerceService)
             .WithReference(constructorService)
             .WaitFor(constructorService)
-
-            .WithReference(storageService)
-            .WaitFor(storageService)
         ;
 
         builder.Build().Run();

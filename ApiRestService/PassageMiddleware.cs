@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using SharedLib;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace ApiRestService;
 
@@ -23,8 +24,8 @@ public class PassageMiddleware(RequestDelegate next)
 {
     private readonly RequestDelegate _next = next;
     HttpContext? _http_context;
-    RestApiConfigBaseModel? _conf;
-    ILogger<PassageMiddleware>? _loggerRepo;
+    RestApiConfigBaseModel _conf = default!;
+    ILogger<PassageMiddleware> _loggerRepo = default!;
 
     /// <summary>
     /// Конвейер
@@ -79,9 +80,16 @@ public class PassageMiddleware(RequestDelegate next)
 
         if (curr_sid != perm.Secret || _http_context.User?.Identity?.Name != princ.Identity.Name || _http_context.User?.Identity?.IsAuthenticated != true || current_permission_roles.Any(x => !current_session_roles.Contains(x)) || current_session_roles.Any(x => !current_permission_roles.Contains(x)))
         {
-            await _http_context.SignOutAsync();
-            _http_context.User = princ;
-            await _http_context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, princ);
+            try
+            {
+                await _http_context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, princ);
+                //await _http_context.SignOutAsync();
+                _http_context.User = princ;
+            }
+            catch (Exception ex)
+            {
+                _loggerRepo.LogError(ex, _http_context.Request.ToString());
+            }
         }
     }
 

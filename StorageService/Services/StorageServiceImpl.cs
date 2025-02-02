@@ -53,7 +53,7 @@ public class StorageServiceImpl(
                 DateTime _dt = req.FinalOff.Value.SetKindUtc().Date.AddHours(23).AddMinutes(59).AddSeconds(59);
                 q = q.Where(x => x.RecordTime <= _dt);
             }
-            
+
             return q;
         }
 
@@ -125,7 +125,14 @@ public class StorageServiceImpl(
           : q.OrderByDescending(x => x.RecordTime);
 
 #if DEBUG
-        var _v = await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync();
+        try
+        {
+            var _v = await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync();
+        }
+        catch (Exception ex)
+        {
+            loggerRepo.LogError(ex, "test");
+        }
 #endif
 
         return new()

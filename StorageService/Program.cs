@@ -39,7 +39,7 @@ public class Program
                 logging.IncludeFormattedMessage = true; logging.IncludeScopes = true;
             });
 
-        string _environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Other";
+        string _environmentName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Other";
         logger.Warn($"init main: {_environmentName}");
         string _modePrefix = Environment.GetEnvironmentVariable(nameof(GlobalStaticConstants.TransmissionQueueNamePrefix)) ?? "";
         if (!string.IsNullOrWhiteSpace(_modePrefix) && !GlobalStaticConstants.TransmissionQueueNamePrefix.EndsWith(_modePrefix))
@@ -103,13 +103,13 @@ public class Program
 
         builder.Services.AddOptions();
 
-        string connectionString = builder.Configuration.GetConnectionString($"CloudParametersConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'CloudParametersConnection{_modePrefix}' not found.");
+        string connectionStorage = builder.Configuration.GetConnectionString($"CloudParametersConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'CloudParametersConnection{_modePrefix}' not found.");
         builder.Services.AddDbContextFactory<StorageContext>(opt =>
-            opt.UseNpgsql(connectionString));
+            opt.UseNpgsql(connectionStorage));
 
-        connectionString = builder.Configuration.GetConnectionString($"NLogsConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'CloudParametersConnection{_modePrefix}' not found.");
+        string connectionNlog = builder.Configuration.GetConnectionString($"NLogsConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'NLogsConnection{_modePrefix}' not found.");
         builder.Services.AddDbContextFactory<NLogsContext>(opt =>
-            opt.UseNpgsql(connectionString));
+            opt.UseNpgsql(connectionNlog));
 
         builder.Services
         .AddScoped<IHelpdeskTransmission, HelpdeskTransmission>()
@@ -117,10 +117,8 @@ public class Program
 
         #region MQ Transmission (remote methods call)
         string appName = typeof(Program).Assembly.GetName().Name ?? "AssemblyName";
-        builder.Services.AddSingleton<IRabbitClient>(x =>
-                new RabbitClient(x.GetRequiredService<IOptions<RabbitMQConfigModel>>(),
-                            x.GetRequiredService<ILogger<RabbitClient>>(),
-                            appName));
+        builder.Services
+            .AddSingleton<IRabbitClient>(x => new RabbitClient(x.GetRequiredService<IOptions<RabbitMQConfigModel>>(), x.GetRequiredService<ILogger<RabbitClient>>(), appName));
 
         builder.Services
         .AddScoped<IWebTransmission, WebTransmission>()
