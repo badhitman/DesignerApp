@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DbPostgreLib.Migrations.NLogs
 {
     [DbContext(typeof(NLogsContext))]
-    [Migration("20250130160845_NLogsContext001")]
+    [Migration("20250202082341_NLogsContext001")]
     partial class NLogsContext001
     {
         /// <inheritdoc />
