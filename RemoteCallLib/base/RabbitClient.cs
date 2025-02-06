@@ -63,16 +63,11 @@ public class RabbitClient : IRabbitClient
         using Activity? activity = greeterActivitySource.StartActivity($"OTel.{queue}");
 
         Meter greeterMeter = new($"OTel.{AppName}", "1.0.0");
-        Counter<int> countGreetings = greeterMeter.CreateCounter<int>("greetings.count", description: "Counts the number of greetings");
-
-        // Increment the custom counter
-        countGreetings.Add(1);
+        Counter<long> countGreetings = greeterMeter.CreateCounter<long>(GlobalStaticConstants.Routes.DURATION_ACTION_NAME, description: "Длительность в мс.");
 
         activity?.Start();
 
         string response_topic = waitResponse ? $"{RabbitConfigRepo.QueueMqNamePrefixForResponse}{queue}_{Guid.NewGuid()}" : "";
-
-        // Add a tag to the Activity
         activity?.SetTag(nameof(response_topic), response_topic);
 
         using IConnection _connection = factory.CreateConnection(); ;
@@ -99,8 +94,10 @@ public class RabbitClient : IRabbitClient
             consumer.Received -= MessageReceivedEvent;
             string content = Encoding.UTF8.GetString(e.Body.ToArray());
 
-            // Add a tag to the Activity
-            activity?.SetTag(nameof(content), content);
+            if (!content.Contains(GlobalStaticConstants.Routes.PASSWORD_CONTROLLER_NAME, StringComparison.OrdinalIgnoreCase))
+                activity?.SetBaggage(nameof(content), content);
+            else
+                activity?.SetBaggage(nameof(content), $"MUTE: `{GlobalStaticConstants.Routes.PASSWORD_CONTROLLER_NAME}` - contains");
 
             try
             {
@@ -109,6 +106,8 @@ public class RabbitClient : IRabbitClient
 
                 if (!res_io.Success())
                     loggerRepo.LogError(res_io.Message());
+
+                countGreetings.Add(res_io.Duration().Milliseconds);
             }
             catch (Exception ex)
             {
@@ -144,6 +143,7 @@ public class RabbitClient : IRabbitClient
                 Console.WriteLine(ex);
             }
         }
+
         activity?.Stop();
         _channel!.QueueDeclare(queue: queue,
                       durable: true,
@@ -213,7 +213,7 @@ public class RabbitClient : IRabbitClient
             loggerRepo.LogError(_msg);
             return Task.FromResult(default(T));
         }
-        else if(res_io is null)
+        else if (res_io is null)
             return Task.FromResult(default(T));
 
         return Task.FromResult(res_io.Response);

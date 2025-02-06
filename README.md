@@ -115,7 +115,12 @@ note for DbPostgreLib "Если используется другая СУБД, 
 ```
 
 ### Службы (активные/запускаемые):
-В случае использования Aspire, следует запустить только хост-оркестратор. Для автономного запуска собственные микро сервисы запускаются в виде служб, а вспомогательные службы RabbitMQ, Redis, MongoDB и PostgreSQL запускаются пакетно в [docker-compose.yml](./devops/docker-compose.yml). Пример того как может быть настроено в VS:
+В случае использования Aspire, [достаточно запустить только хост-оркестратор](https://github.com/badhitman/DesignerApp/tree/main/DesignerApp.AppHost). Создание файла манифеста:
+```PowerShell
+dotnet run --project DesignerApp.AppHost/DesignerApp.AppHost.csproj --publisher manifest --output-path ../aspire-manifest.json
+```
+
+Для ручного запуска собственные микро сервисы настраиваются в виде служб, а вспомогательные службы RabbitMQ, Redis, MongoDB и PostgreSQL запускаются пакетом в [docker-compose.yml](./devops/docker-compose.yml). Пример того как может быть настроено в VS:
 ![пример состава и порядка запуска проектов](./img/csproj-set-demo.png)
 
 #### [TelegramBotService](https://github.com/badhitman/DesignerApp/tree/main/TelegramBotService) 

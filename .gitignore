@@ -406,3 +406,4 @@ FodyWeavers.xsd
 *.sqlite-shm
 **/wwwroot/lib
 */wwwroot/libs/*
+/aspire-manifest.json

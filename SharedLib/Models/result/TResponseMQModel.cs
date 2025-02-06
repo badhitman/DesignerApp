@@ -20,6 +20,11 @@ public class TResponseMQModel<T> : ResponseBaseModel
     public DateTime FinalizedServer { get; set; }
 
     /// <summary>
+    /// Duration
+    /// </summary>
+    public TimeSpan Duration() => FinalizedServer - StartedServer;
+
+    /// <summary>
     /// Базовая модель ответа/результата на запрос
     /// </summary>
     public TResponseMQModel() { }

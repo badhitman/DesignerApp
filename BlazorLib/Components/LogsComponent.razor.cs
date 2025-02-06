@@ -145,9 +145,6 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
 
-        //TPaginationResponseModel<NLogRecordModelDB> selector = await LogsRepo.LogsSelect(req);
-        //TResponseModel<LogsMetadataResponseModel> md = await LogsRepo.MetadataLogs(new() { StartAt = DateRangeBind.Start, FinalOff = DateRangeBind.End });
-
         TPaginationResponseModel<NLogRecordModelDB> selector = default!;
         TResponseModel<LogsMetadataResponseModel> md = default!;
 

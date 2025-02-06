@@ -967,6 +967,11 @@ public static partial class GlobalStaticConstants
         public const string DUMP_ACTION_NAME = "dump";
 
         /// <summary>
+        /// Duration
+        /// </summary>
+        public const string DURATION_ACTION_NAME = "duration";
+
+        /// <summary>
         /// Vote
         /// </summary>
         public const string VOTE_ACTION_NAME = "vote";
