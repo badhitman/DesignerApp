@@ -48,8 +48,11 @@
     [Inject]
     AuthenticationStateProvider authRepo { get; set; } = default!;
 
+
     [CascadingParameter, EditorRequired]
     public required NavMainMenuModel NavMainMenu { get; set; }
+    
+    
     UserInfoMainModel? user = default!;
     private bool _isDarkMode = true;
 
