@@ -12,6 +12,12 @@ namespace SharedLib;
 /// </remarks>
 public interface ISerializeStorage
 {
+    #region logs
+    /// <summary>
+    /// Определить номер страницы для строки
+    /// </summary>
+    public Task<TPaginationResponseModel<NLogRecordModelDB>> FindPageNumForRow(int req);
+
     /// <summary>
     /// Чтение логов
     /// </summary>
@@ -21,6 +27,7 @@ public interface ISerializeStorage
     /// MetadataLogs
     /// </summary>
     public Task<TResponseModel<LogsMetadataResponseModel>> MetadataLogs(PeriodDatesTimesModel req);
+    #endregion
 
     #region tags
     /// <summary>

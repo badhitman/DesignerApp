@@ -36,7 +36,7 @@
             @foreach (NLogRecordModelDB _chipEl in favoritesRecords.OrderBy(x => x.RecordTime))
             {
                 string _classLevel = GetClassLevel(_chipEl.RecordLevel);
-                <MudChip OnClick="() => OnChipClick(_chipEl)" Value="@_chipEl" Text="@($"{_chipEl.RecordLevel}: {_chipEl.RecordTime.GetHumanDateTime()}")" Class="@_classLevel" />
+                <MudChip OnClick="async () => await OnChipClick(_chipEl)" Value="@_chipEl" Text="@($"{_chipEl.RecordLevel}: {_chipEl.RecordTime.GetHumanDateTime()}")" Class="@_classLevel" />
             }
         </MudChipSet>
     </MudStack>

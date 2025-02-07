@@ -113,7 +113,7 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
         return Icons.Material.Filled.CheckBoxOutlineBlank;
     }
 
-    void OnChipClick(NLogRecordModelDB chip)
+    async Task OnChipClick(NLogRecordModelDB chip)
     {
         
     }

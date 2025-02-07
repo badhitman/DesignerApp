@@ -33,6 +33,22 @@ public class StorageServiceImpl(
 #else
     static readonly TimeSpan _ts = TimeSpan.FromSeconds(10);
 #endif
+
+    #region logs
+    /// <inheritdoc/>
+    public async Task<TPaginationResponseModel<NLogRecordModelDB>> FindPageNumForRow(int req)
+    {
+        TPaginationResponseModel<NLogRecordModelDB> res = new();
+        using NLogsContext ctx = await logsDbFactory.CreateDbContextAsync();
+
+        if(!await ctx.Logs.AnyAsync(x=> x.Id == req))
+            return res;
+
+
+
+        return res;
+    }
+
     /// <inheritdoc/>
     public async Task<TResponseModel<LogsMetadataResponseModel>> MetadataLogs(PeriodDatesTimesModel req)
     {
@@ -158,6 +174,7 @@ public class StorageServiceImpl(
             Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()]
         };
     }
+    #endregion
 
     #region tags
     /// <inheritdoc/>
