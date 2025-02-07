@@ -23,12 +23,12 @@ public class InfoController : ControllerBase
     /// </summary>
     /// <returns>Информация по текущему пользователю (имя и роли)</returns>
     [HttpGet($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.INFO_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.MY_CONTROLLER_NAME}"), TypeFilter(typeof(RolesAuthorizationFilter))]
-    public ExpressProfileResponseModel GetMyProfile()
+    public ExpressProfileResponseModel GetMyProfile([FromServices] ExpressUserPermissionModel userPerm)
     {
         ExpressProfileResponseModel res = new()
         {
-            UserName = HttpContext.User.Identity?.Name,
-            Roles = HttpContext.User.FindAll(ClaimTypes.Role).Select(x => x.Value).ToArray()
+            UserName = userPerm.User,
+            Roles = userPerm.Roles?.Select(x => x.ToString()),
         };
 
         return res;

@@ -2,6 +2,7 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+
 namespace SharedLib;
 
 /// <summary>
@@ -23,4 +24,14 @@ public class ExpressUserPermissionModel
     /// Роль доступные пользователю
     /// </summary>
     public IEnumerable<ExpressApiRolesEnum>? Roles { get; set; }
+
+    /// <summary>
+    /// Update
+    /// </summary>
+    public void Update(ExpressUserPermissionModel perm)
+    {
+        User = perm.User;
+        Secret = perm.Secret;
+        Roles = perm.Roles;
+    }
 }

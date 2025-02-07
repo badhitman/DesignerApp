@@ -10,7 +10,7 @@ namespace ApiRestService;
 /// Авторизация по ролям
 /// </summary>
 [AttributeUsage(AttributeTargets.All)]
-public class RolesAuthorizationFilter(IOptions<RestApiConfigBaseModel> _conf, string? Roles = null) : Attribute, IAuthorizationFilter
+public class RolesAuthorizationFilter(IOptions<RestApiConfigBaseModel> _conf, ExpressUserPermissionModel permissionUser, string? Roles = null) : Attribute, IAuthorizationFilter
 {
     static ReadOnlySpan<char> Separator => [' ', ',', '\t', '\n', '\r'];
     HttpContext _http_context = default!;
@@ -28,8 +28,9 @@ public class RolesAuthorizationFilter(IOptions<RestApiConfigBaseModel> _conf, st
             return;
         }
 
-        string user_name = perm.User ?? $"for user not set name (key: {perm.Secret})";
-        context.HttpContext.Response.Headers.Append(nameof(perm.User), user_name);
+        permissionUser.Update(perm);
+        //string user_name = perm.User ?? $"for user not set name (key: {perm.Secret})";
+        //context.HttpContext.Response.Headers.Append(nameof(perm.User), user_name);
 
         string[] roles = Roles?.Split(Separator).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray() ?? [];
         if (roles.Length != 0 && perm.Roles?.Any(x => roles.Any(y => y.Equals(x.ToString(), StringComparison.OrdinalIgnoreCase))) != true)

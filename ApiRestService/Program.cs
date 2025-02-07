@@ -123,6 +123,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<UnhandledExceptionAttribute>();
 builder.Services.AddScoped<RolesAuthorizationFilter>();
 
+builder.Services.AddScoped<ExpressUserPermissionModel>();
+
 // Add services to the container.
 #region MQ Transmission (remote methods call)
 string appName = typeof(Program).Assembly.GetName().Name ?? "AssemblyName";

@@ -123,6 +123,20 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
         table.NavigateTo(i - 1);
     }
 
+    static string GetClassLevel(string recordLevel)
+    {
+        if(recordLevel.StartsWith("I", StringComparison.OrdinalIgnoreCase))
+            return "text-info";
+
+        if (recordLevel.StartsWith("W", StringComparison.OrdinalIgnoreCase))
+            return "text-warning";
+
+        if (recordLevel.StartsWith("E", StringComparison.OrdinalIgnoreCase))
+            return "text-danger";
+
+        return "";
+    }
+
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>

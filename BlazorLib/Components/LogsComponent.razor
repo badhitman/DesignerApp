@@ -84,10 +84,13 @@
         }
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="RecordTime">@context.RecordTime</MudTd>
-        <MudTd DataLabel="App">@context.ApplicationName <sup>@context.ContextPrefix</sup></MudTd>
-        <MudTd DataLabel="Message">@context.RecordMessage</MudTd>
-        <MudTd DataLabel="Level">@context.RecordLevel</MudTd>
+        @{
+            string _classLevel = GetClassLevel(context.RecordLevel); // Error, Warn, Info
+        }
+        <MudTd DataLabel="RecordTime" Class="@_classLevel">@context.RecordTime</MudTd>
+        <MudTd DataLabel="App" Class="@_classLevel">@context.ApplicationName <sup>@context.ContextPrefix</sup></MudTd>
+        <MudTd DataLabel="Message" Class="@_classLevel">@context.RecordMessage</MudTd>
+        <MudTd DataLabel="Level" Class="@_classLevel">@context.RecordLevel</MudTd>
 
         @if (StackTrace)
         {
