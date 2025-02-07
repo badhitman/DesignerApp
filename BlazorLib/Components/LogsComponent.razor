@@ -26,7 +26,26 @@
     </MudStack>
 }
 
-<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table" Loading="IsBusyProgress">
+@if (favoritesRecords.Count != 0)
+{
+    <MudStack Justify="@Justify.Center"
+              Class="mud-width-full mb-3">
+        <MudChipSet T="NLogRecordModelDB"
+                    AllClosable
+                    OnClose="@OnChipClosed">
+            @foreach (NLogRecordModelDB _chipEl in favoritesRecords.OrderBy(x => x.RecordTime))
+            {
+                string _classLevel = GetClassLevel(_chipEl.RecordLevel);
+                <MudChip OnClick="() => OnChipClick(_chipEl)" Value="@_chipEl" Text="@($"{_chipEl.RecordLevel}: {_chipEl.RecordTime.GetHumanDateTime()}")" Class="@_classLevel" />
+            }
+        </MudChipSet>
+    </MudStack>
+}
+
+<MudTable T="NLogRecordModelDB"
+          ServerData="ServerReload"
+          Dense Hover Striped @ref="table"
+          Loading="IsBusyProgress">
     <ToolBarContent>
         <MudText Typo="Typo.h6">
             Логи
@@ -54,6 +73,9 @@
         <MudCheckBox @bind-Value="AllEventProperties" Label="AllEventProperties" />
     </ToolBarContent>
     <HeaderContent>
+        <MudTh>
+
+        </MudTh>
         <MudTh><MudTableSortLabel SortLabel="RecordTime" T="NLogRecordModelDB">RecordTime</MudTableSortLabel></MudTh>
         <MudTh>App</MudTh>
         <MudTh>Message</MudTh>
@@ -85,8 +107,13 @@
     </HeaderContent>
     <RowTemplate>
         @{
-            string _classLevel = GetClassLevel(context.RecordLevel); // Error, Warn, Info
+            string _classLevel = GetClassLevel(context.RecordLevel);
         }
+        <MudTd>
+            <MudIconButton aria-label="select"
+                           Icon="@GetCheckBoxIcon(context)"
+                           OnClick="() => SelectRow(context)" />
+        </MudTd>
         <MudTd DataLabel="RecordTime" Class="@_classLevel">@context.RecordTime</MudTd>
         <MudTd DataLabel="App" Class="@_classLevel">@context.ApplicationName <sup>@context.ContextPrefix</sup></MudTd>
         <MudTd DataLabel="Message" Class="@_classLevel">@context.RecordMessage</MudTd>
@@ -124,6 +151,14 @@
         <MudText>Загрузка...</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudPagination MiddleCount="5" BoundaryCount="5" SelectedChanged="PageChanged" Count="@((table.GetFilteredItemsCount() + table.RowsPerPage - 1) / table.RowsPerPage)" Class="pa-4" />
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+                       HorizontalAlignment="@HorizontalAlignment.Center" />
+        <div class="d-flex flex-column align-center">
+            <MudPagination MiddleCount="5"
+                           BoundaryCount="5"
+                           SelectedChanged="PageChanged"
+                           Count="@((table.GetFilteredItemsCount() + table.RowsPerPage - 1) / table.RowsPerPage)"
+                           Class="pa-4" />
+        </div>
     </PagerContent>
 </MudTable>

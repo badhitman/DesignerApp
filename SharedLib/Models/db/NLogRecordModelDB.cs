@@ -4,6 +4,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Metrics;
 
 namespace SharedLib;
 
@@ -56,4 +57,33 @@ public class NLogRecordModelDB
 
     /// <inheritdoc/>
     public string? AllEventProperties { get; set; }
+
+    /// <inheritdoc/>
+    public static bool operator ==(NLogRecordModelDB L1, NLogRecordModelDB L2)
+    {
+        return L1.Id == L2.Id;
+    }
+
+    /// <inheritdoc/>
+    public static bool operator !=(NLogRecordModelDB L1, NLogRecordModelDB L2)
+    {
+        return L1.Id != L2.Id;
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
+    }
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        if (obj == null) return false;
+
+        if (obj is NLogRecordModelDB _el)
+            return Id == _el.Id;
+
+        return false;
+    }
 }

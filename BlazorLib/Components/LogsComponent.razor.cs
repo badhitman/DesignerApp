@@ -6,6 +6,7 @@ using BlazorLib.Components.Shared;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SharedLib;
+using static MudBlazor.CategoryTypes;
 
 namespace BlazorLib.Components;
 
@@ -97,11 +98,42 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
     #endregion
 
     MudTable<NLogRecordModelDB> table = default!;
+    readonly HashSet<NLogRecordModelDB> favoritesRecords = [];
 
     FiltersUniversalComponent? ContextsPrefixesAvailable = default!;
     FiltersUniversalComponent? ApplicationsAvailable = default!;
     FiltersUniversalComponent? LevelsAvailable = default!;
     FiltersUniversalComponent? LoggersAvailable = default!;
+
+    string GetCheckBoxIcon(NLogRecordModelDB _row)
+    {
+        if (favoritesRecords.Any(x => x.Id == _row.Id))
+            return Icons.Material.Filled.CheckBox;
+
+        return Icons.Material.Filled.CheckBoxOutlineBlank;
+    }
+
+    void OnChipClick(NLogRecordModelDB chip)
+    {
+        
+    }
+
+    void OnChipClosed(MudChip<NLogRecordModelDB> chip)
+    {
+        NLogRecordModelDB? el = favoritesRecords.FirstOrDefault(x => x.Id == chip.Value?.Id);
+        if (el is not null)
+            favoritesRecords.Remove(el);        
+    }
+
+    void SelectRow(NLogRecordModelDB _row)
+    {
+        NLogRecordModelDB? el = favoritesRecords.FirstOrDefault(x => x.Id == _row.Id);
+
+        if (el is not null)
+            favoritesRecords.Remove(el);
+        else
+            favoritesRecords.Add(_row);
+    }
 
     void CheckedChangedAction()
     {
@@ -125,7 +157,7 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
 
     static string GetClassLevel(string recordLevel)
     {
-        if(recordLevel.StartsWith("I", StringComparison.OrdinalIgnoreCase))
+        if (recordLevel.StartsWith("I", StringComparison.OrdinalIgnoreCase))
             return "text-info";
 
         if (recordLevel.StartsWith("W", StringComparison.OrdinalIgnoreCase))
