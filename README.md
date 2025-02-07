@@ -120,7 +120,7 @@ note for DbPostgreLib "Если используется другая СУБД, 
 dotnet run --project DesignerApp.AppHost/DesignerApp.AppHost.csproj --publisher manifest --output-path ../aspire-manifest.json
 ```
 
-Для ручного запуска собственные микро сервисы настраиваются в виде служб, а вспомогательные службы RabbitMQ, Redis, MongoDB и PostgreSQL запускаются пакетом в [docker-compose.yml](./devops/docker-compose.yml). Пример того как может быть настроено в VS:
+Для ручного запуска [собственные микро сервисы настраиваются в виде служб](https://github.com/badhitman/DesignerApp/tree/main/devops/etc/systemd/system), а вспомогательные службы RabbitMQ, Redis, MongoDB и PostgreSQL запускаются пакетом в [docker-compose.yml](./devops/docker-compose.yml). Пример того как может быть настроено в VS:
 ![пример состава и порядка запуска проектов](./img/csproj-set-demo.png)
 
 #### [TelegramBotService](https://github.com/badhitman/DesignerApp/tree/main/TelegramBotService) 
