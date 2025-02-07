@@ -16,7 +16,7 @@ public interface ISerializeStorage
     /// <summary>
     /// Определить номер страницы для строки
     /// </summary>
-    public Task<TPaginationResponseModel<NLogRecordModelDB>> FindPageNumForRow(int req);
+    public Task<TPaginationResponseModel<NLogRecordModelDB>> GoToPageForRow(TPaginationRequestModel<int> req);
 
     /// <summary>
     /// Чтение логов

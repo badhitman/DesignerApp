@@ -2,11 +2,10 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib.Components.Shared;
 using Microsoft.AspNetCore.Components;
+using BlazorLib.Components.Shared;
 using MudBlazor;
 using SharedLib;
-using static MudBlazor.CategoryTypes;
 
 namespace BlazorLib.Components;
 
@@ -22,7 +21,7 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
     LogsMetadataResponseModel? _metaData;
     MudDateRangePicker _picker = default!;
 
-    DateRange _dateRangeBind = new(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+    DateRange _dateRangeBind = new(DateTime.Now.AddDays(-1).Date, DateTime.Now.Date);
     DateRange DateRangeBind
     {
         get => _dateRangeBind;
@@ -105,6 +104,8 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
     FiltersUniversalComponent? LevelsAvailable = default!;
     FiltersUniversalComponent? LoggersAvailable = default!;
 
+    int selectedRecord;
+
     string GetCheckBoxIcon(NLogRecordModelDB _row)
     {
         if (favoritesRecords.Any(x => x.Id == _row.Id))
@@ -113,16 +114,31 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
         return Icons.Material.Filled.CheckBoxOutlineBlank;
     }
 
+    bool navInit = false;
     async Task OnChipClick(NLogRecordModelDB chip)
     {
-        
+        await SetBusy();
+        selectedRecord = chip.Id;
+
+        _dateRangeBind = new(null, null);
+
+        ApplicationsAvailable = null;
+        ContextsPrefixesAvailable = null;
+        LevelsAvailable = null;
+        LoggersAvailable = null;
+
+        navInit = true;
+        if (table.CurrentPage == 0)
+            await table.ReloadServerData();
+        else
+            table.NavigateTo(0);
     }
 
     void OnChipClosed(MudChip<NLogRecordModelDB> chip)
     {
         NLogRecordModelDB? el = favoritesRecords.FirstOrDefault(x => x.Id == chip.Value?.Id);
         if (el is not null)
-            favoritesRecords.Remove(el);        
+            favoritesRecords.Remove(el);
     }
 
     void SelectRow(NLogRecordModelDB _row)
@@ -169,12 +185,13 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
         return "";
     }
 
+    TPaginationResponseModel<NLogRecordModelDB>? DirectPage;
+
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>
     private async Task<TableData<NLogRecordModelDB>> ServerReload(TableState state, CancellationToken token)
     {
-        await SetBusy(token: token);
         TPaginationRequestModel<LogsSelectRequestModel> req = new()
         {
             Payload = new()
@@ -190,10 +207,40 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
             PageSize = state.PageSize,
             SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
         };
+        await SetBusy(token: token);
+        if (selectedRecord != 0)
+        {
+            if (navInit)
+            {
+                DirectPage = await LogsRepo.GoToPageForRow(new()
+                {
+                    Payload = selectedRecord,
+                    PageNum = state.Page,
+                    PageSize = state.PageSize,
+                    SortBy = req.SortBy,
+                    SortingDirection = req.SortingDirection,
+                });
+                navInit = false;
+                await SetBusy(false, token);
+            }
+
+            if (DirectPage is not null)
+            {
+                if (DirectPage.PageNum == state.Page)
+                {
+                    int trc = DirectPage.TotalRowsCount;
+                    List<NLogRecordModelDB>? items = DirectPage.Response;
+                    DirectPage = null;
+                    return new TableData<NLogRecordModelDB>() { TotalItems = trc, Items = items };
+                }
+                else
+                    table.NavigateTo(DirectPage.PageNum);
+            }
+        }
 
         TPaginationResponseModel<NLogRecordModelDB> selector = default!;
         TResponseModel<LogsMetadataResponseModel> md = default!;
-
+        
         await Task.WhenAll([
                 Task.Run(async () => selector = await LogsRepo.LogsSelect(req)),
                 Task.Run(async () => md = await LogsRepo.MetadataLogs(new() { StartAt = DateRangeBind.Start, FinalOff = DateRangeBind.End })),

@@ -36,15 +36,37 @@ public class StorageServiceImpl(
 
     #region logs
     /// <inheritdoc/>
-    public async Task<TPaginationResponseModel<NLogRecordModelDB>> FindPageNumForRow(int req)
+    public async Task<TPaginationResponseModel<NLogRecordModelDB>> GoToPageForRow(TPaginationRequestModel<int> req)
     {
-        TPaginationResponseModel<NLogRecordModelDB> res = new();
-        using NLogsContext ctx = await logsDbFactory.CreateDbContextAsync();
+        if (req.PageSize < 10)
+            req.PageSize = 10;
 
-        if(!await ctx.Logs.AnyAsync(x=> x.Id == req))
+        using NLogsContext ctx = await logsDbFactory.CreateDbContextAsync();
+        IQueryable<NLogRecordModelDB> q = ctx.Logs.AsQueryable();
+
+        TPaginationResponseModel<NLogRecordModelDB> res = new()
+        {
+            TotalRowsCount = await q.CountAsync(),
+            PageSize = req.PageSize,
+            SortingDirection = req.SortingDirection,
+            SortBy = req.SortBy,
+        };
+
+        if (!await q.AnyAsync(x => x.Id == req.Payload))
             return res;
 
+        IOrderedQueryable<NLogRecordModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+          ? q.OrderBy(x => x.RecordTime)
+          : q.OrderByDescending(x => x.RecordTime);
 
+        res.PageNum = 0;
+        while (!await oq.Skip(res.PageNum * req.PageSize).Take(req.PageSize).AnyAsync(x => x.Id == req.Payload))
+            res.PageNum++;
+
+        res.Response = [.. await oq.Skip(res.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()];
+
+        if (!res.Response.Any(x => x.Id == req.Payload))
+            return await GoToPageForRow(req);
 
         return res;
     }
@@ -153,16 +175,7 @@ public class StorageServiceImpl(
           ? q.OrderBy(x => x.RecordTime)
           : q.OrderByDescending(x => x.RecordTime);
 
-#if DEBUG
-        try
-        {
-            var _v = await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync();
-        }
-        catch (Exception ex)
-        {
-            loggerRepo.LogError(ex, "test");
-        }
-#endif
+        int trc = await q.CountAsync();
 
         return new()
         {
@@ -170,7 +183,7 @@ public class StorageServiceImpl(
             PageSize = req.PageSize,
             SortingDirection = req.SortingDirection,
             SortBy = req.SortBy,
-            TotalRowsCount = await q.CountAsync(),
+            TotalRowsCount = trc,
             Response = [.. await oq.Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()]
         };
     }

@@ -3,6 +3,11 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
+
+#if DEBUG
+
+#endif
 using MudBlazor;
 
 namespace BlazorLib;
@@ -13,27 +18,41 @@ namespace BlazorLib;
 /// </summary>
 public abstract class BlazorBusyComponentBaseModel : ComponentBase, IDisposable
 {
+    [Inject]
+    ILogger<BlazorBusyComponentBaseModel> Logger { get; set; } = default!;
+
     /// <summary>
     /// Snackbar
     /// </summary>
     [Inject]
     public ISnackbar SnackbarRepo { get; set; } = default!;
 
-
+    bool _isBusyProgress;
     /// <summary>
     /// Компонент занят отправкой REST запроса и обработки ответа
     /// </summary>
-    public bool IsBusyProgress { get; set; }
+    public bool IsBusyProgress
+    {
+        get => _isBusyProgress;
+        set
+        {
+#if DEBUG
+            Logger.LogDebug($"{nameof(IsBusyProgress)}:{value}");
+#endif
+            _isBusyProgress = value;
+        }
+    }
 
     /// <summary>
     /// SetBusy
     /// </summary>
     public async Task SetBusy(bool is_busy = true, CancellationToken token = default)
     {
-        if (IsBusyProgress == is_busy)
-            return;
-
-        IsBusyProgress = is_busy;
+#if DEBUG
+        Logger.LogDebug($"{nameof(SetBusy)}:{is_busy}");
+#endif
+        _isBusyProgress = is_busy;
+        StateHasChanged();
         await Task.Delay(1, token);
         StateHasChanged();
     }

@@ -2,13 +2,13 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using static SharedLib.GlobalStaticConstants;
 using System.Collections.Concurrent;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using SharedLib;
-using Microsoft.AspNetCore.Authorization;
 
 namespace ApiRestService.Controllers;
 
@@ -23,14 +23,24 @@ public class ToolsController(
     IStorageTransmission storeRepo,
     IOptions<PartUploadSessionConfigModel> сonfigPartUploadSession) : ControllerBase
 {
-    static readonly MemCachePrefixModel PartUploadCacheSessionsPrefix = new($"{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}", GlobalStaticConstants.Routes.SESSIONS_CONTROLLER_NAME);
-    static readonly MemCachePrefixModel PartUploadCacheFilesMarkersPrefix = new($"{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}", GlobalStaticConstants.Routes.MARK_ACTION_NAME);
-    static readonly MemCachePrefixModel PartUploadCacheFilesDumpsPrefix = new($"{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}", GlobalStaticConstants.Routes.DUMP_ACTION_NAME);
+    static readonly MemCachePrefixModel
+        PartUploadCacheSessionsPrefix = new($"{Routes.PART_CONTROLLER_NAME}-{Routes.UPLOAD_ACTION_NAME}", Routes.SESSIONS_CONTROLLER_NAME),
+        PartUploadCacheFilesMarkersPrefix = new($"{Routes.PART_CONTROLLER_NAME}-{Routes.UPLOAD_ACTION_NAME}", Routes.MARK_ACTION_NAME),
+        PartUploadCacheFilesDumpsPrefix = new($"{Routes.PART_CONTROLLER_NAME}-{Routes.UPLOAD_ACTION_NAME}", Routes.DUMP_ACTION_NAME);
+
+    /// <summary>
+    /// Перейти к странице логов с искомой строкой
+    /// </summary>
+    [HttpPost($"/{Routes.API_CONTROLLER_NAME}/{Routes.TOOLS_CONTROLLER_NAME}/{Routes.LOGS_ACTION_NAME}-{Routes.PAGE_ACTION_NAME}/{Routes.GOTO_ACTION_NAME}-for-{Routes.RECORD_CONTROLLER_NAME}"), LoggerNolog]
+    public async Task<TPaginationResponseModel<NLogRecordModelDB>> GoToPageForRow(TPaginationRequestModel<int> req)
+    {
+        return await storeRepo.GoToPageForRow(req);
+    }
 
     /// <summary>
     /// Чтение логов
     /// </summary>
-    [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LOGS_ACTION_NAME}-{GlobalStaticConstants.Routes.SELECT_ACTION_NAME}"), LoggerNolog]
+    [HttpPost($"/{Routes.API_CONTROLLER_NAME}/{Routes.TOOLS_CONTROLLER_NAME}/{Routes.LOGS_ACTION_NAME}-{Routes.SELECT_ACTION_NAME}"), LoggerNolog]
     public async Task<TPaginationResponseModel<NLogRecordModelDB>> LogsSelect(TPaginationRequestModel<LogsSelectRequestModel> req)
     {
         return await storeRepo.LogsSelect(req);
@@ -39,7 +49,7 @@ public class ToolsController(
     /// <summary>
     /// Чтение логов
     /// </summary>
-    [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LOGS_ACTION_NAME}-{GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME}"), LoggerNolog]
+    [HttpPost($"/{Routes.API_CONTROLLER_NAME}/{Routes.TOOLS_CONTROLLER_NAME}/{Routes.LOGS_ACTION_NAME}-{Routes.METADATA_CONTROLLER_NAME}"), LoggerNolog]
     public async Task<TResponseModel<LogsMetadataResponseModel>> MetadataLogs(PeriodDatesTimesModel req)
     {
         return await storeRepo.MetadataLogs(req);
@@ -48,8 +58,8 @@ public class ToolsController(
     /// <summary>
     /// Загрузка порции файла
     /// </summary>
-    [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}")]
-    public async Task<ResponseBaseModel> PartUpload(IFormFile uploadedFile, [FromQuery(Name = $"{GlobalStaticConstants.Routes.SESSION_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}")] string sessionToken, [FromQuery(Name = $"{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}")] string fileToken)
+    [HttpPost($"/{Routes.API_CONTROLLER_NAME}/{Routes.TOOLS_CONTROLLER_NAME}/{Routes.PART_CONTROLLER_NAME}-{Routes.UPLOAD_ACTION_NAME}")]
+    public async Task<ResponseBaseModel> PartUpload(IFormFile uploadedFile, [FromQuery(Name = $"{Routes.SESSION_CONTROLLER_NAME}_{Routes.TOKEN_CONTROLLER_NAME}")] string sessionToken, [FromQuery(Name = $"{Routes.FILE_CONTROLLER_NAME}_{Routes.TOKEN_CONTROLLER_NAME}")] string fileToken)
     {
         if (uploadedFile is null || uploadedFile.Length == 0)
             return ResponseBaseModel.CreateError($"Данные файла отсутствуют - {nameof(PartUpload)}");
@@ -162,7 +172,7 @@ public class ToolsController(
     /// <summary>
     /// Создать сессию порционной (частями) загрузки файлов
     /// </summary>
-    [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.SESSION_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}-{GlobalStaticConstants.Routes.START_ACTION_NAME}")]
+    [HttpPost($"/{Routes.API_CONTROLLER_NAME}/{Routes.TOOLS_CONTROLLER_NAME}/{Routes.SESSION_CONTROLLER_NAME}-{Routes.PART_CONTROLLER_NAME}-{Routes.UPLOAD_ACTION_NAME}-{Routes.START_ACTION_NAME}")]
     public async Task<TResponseModel<PartUploadSessionModel>> PartUploadSessionStart(PartUploadSessionStartRequestModel req)
     {
         TResponseModel<PartUploadSessionModel> res = new();
@@ -211,8 +221,8 @@ public class ToolsController(
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>
     /// </remarks>
-    [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}")]
-    public async Task<TResponseModel<string>> FileUpdateOrCreate(IFormFile uploadedFile, [FromQuery(Name = $"{GlobalStaticConstants.Routes.REMOTE_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.DIRECTORY_CONTROLLER_NAME}")] string remoteDirectory)
+    [HttpPost($"/{Routes.API_CONTROLLER_NAME}/{Routes.TOOLS_CONTROLLER_NAME}/{Routes.FILE_CONTROLLER_NAME}-{Routes.UPDATE_ACTION_NAME}")]
+    public async Task<TResponseModel<string>> FileUpdateOrCreate(IFormFile uploadedFile, [FromQuery(Name = $"{Routes.REMOTE_CONTROLLER_NAME}_{Routes.DIRECTORY_CONTROLLER_NAME}")] string remoteDirectory)
     {
         TResponseModel<string> response = new();
         remoteDirectory = Encoding.UTF8.GetString(Convert.FromBase64String(remoteDirectory));
@@ -237,7 +247,7 @@ public class ToolsController(
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>
     /// </remarks>
-    [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.CMD_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.EXE_ACTION_NAME}")]
+    [HttpPost($"/{Routes.API_CONTROLLER_NAME}/{Routes.TOOLS_CONTROLLER_NAME}/{Routes.CMD_CONTROLLER_NAME}/{Routes.EXE_ACTION_NAME}")]
     public TResponseModel<string> ExeCommand(ExeCommandModel req)
     {
         TResponseModel<string> res = new();
@@ -260,7 +270,7 @@ public class ToolsController(
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>
     /// </remarks>
-    [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DIRECTORY_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.GET_ACTION_NAME}"), LoggerNolog]
+    [HttpPost($"/{Routes.API_CONTROLLER_NAME}/{Routes.TOOLS_CONTROLLER_NAME}/{Routes.DIRECTORY_CONTROLLER_NAME}/{Routes.GET_ACTION_NAME}"), LoggerNolog]
     public Task<TResponseModel<List<ToolsFilesResponseModel>>> GetDirectory(ToolsFilesRequestModel req)
         => toolsRepo.GetDirectory(req);
 
@@ -270,7 +280,7 @@ public class ToolsController(
     /// <remarks>
     /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>
     /// </remarks>
-    [HttpPost($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}")]
+    [HttpPost($"/{Routes.API_CONTROLLER_NAME}/{Routes.TOOLS_CONTROLLER_NAME}/{Routes.FILE_CONTROLLER_NAME}-{Routes.DELETE_ACTION_NAME}")]
     public async Task<TResponseModel<bool>> FileDelete(DeleteRemoteFileRequestModel req)
     {
         return await toolsRepo.DeleteFile(req);

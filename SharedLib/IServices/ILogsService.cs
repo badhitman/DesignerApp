@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface ILogsService
 {
     /// <summary>
+    /// Определить номер страницы для строки
+    /// </summary>
+    public Task<TPaginationResponseModel<NLogRecordModelDB>> GoToPageForRow(TPaginationRequestModel<int> req);
+
+    /// <summary>
     /// LogsSelect
     /// </summary>
     public Task<TPaginationResponseModel<NLogRecordModelDB>> LogsSelect(TPaginationRequestModel<LogsSelectRequestModel> req);

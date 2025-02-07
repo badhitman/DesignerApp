@@ -1067,6 +1067,11 @@ public static partial class GlobalStaticConstants
         public const string SELECT_ACTION_NAME = "select";
 
         /// <summary>
+        /// Go to
+        /// </summary>
+        public const string GOTO_ACTION_NAME = "goto";
+
+        /// <summary>
         /// Изменение
         /// </summary>
         public const string CHANGE_ACTION_NAME = "change";

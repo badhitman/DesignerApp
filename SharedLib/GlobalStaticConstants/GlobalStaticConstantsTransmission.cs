@@ -780,6 +780,9 @@ public static partial class GlobalStaticConstants
         public readonly static string LogsSelectStorageReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TOOLS_CONTROLLER_NAME, Routes.LOGS_ACTION_NAME, Routes.SELECT_ACTION_NAME);
 
         /// <inheritdoc/>
+        public readonly static string GoToPageForRowReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TOOLS_CONTROLLER_NAME, $"{Routes.LOGS_ACTION_NAME}-{Routes.PAGE_ACTION_NAME}", $"{Routes.GOTO_ACTION_NAME}-for-{Routes.RECORD_CONTROLLER_NAME}");
+        
+        /// <inheritdoc/>
         public readonly static string MetadataLogsReceive = Path.Combine(TransmissionQueueNamePrefix, Routes.TOOLS_CONTROLLER_NAME, Routes.LOGS_ACTION_NAME, Routes.METADATA_CONTROLLER_NAME);
 
         /// <inheritdoc/>

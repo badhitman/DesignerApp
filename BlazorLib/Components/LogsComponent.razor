@@ -42,10 +42,10 @@
     </MudStack>
 }
 
-<MudTable T="NLogRecordModelDB"
-          ServerData="ServerReload"
-          Dense Hover Striped @ref="table"
-          Loading="IsBusyProgress">
+<MudTable @ref="table"
+          Dense Hover Striped
+          T="NLogRecordModelDB"
+          ServerData="ServerReload">
     <ToolBarContent>
         <MudText Typo="Typo.h6">
             Логи
@@ -153,12 +153,15 @@
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
                        HorizontalAlignment="@HorizontalAlignment.Center" />
-        <div class="d-flex flex-column align-center">
-            <MudPagination MiddleCount="5"
-                           BoundaryCount="5"
-                           SelectedChanged="PageChanged"
-                           Count="@((table.GetFilteredItemsCount() + table.RowsPerPage - 1) / table.RowsPerPage)"
-                           Class="pa-4" />
-        </div>
+        @if (selectedRecord == 0)
+        {
+            <div class="d-flex flex-column align-center">
+                <MudPagination MiddleCount="5"
+                               BoundaryCount="5"
+                               SelectedChanged="PageChanged"
+                               Count="@((table.GetFilteredItemsCount() + table.RowsPerPage - 1) / table.RowsPerPage)"
+                               Class="pa-4" />
+            </div>
+        }
     </PagerContent>
 </MudTable>

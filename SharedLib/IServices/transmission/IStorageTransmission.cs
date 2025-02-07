@@ -10,6 +10,11 @@ namespace SharedLib;
 public interface IStorageTransmission
 {
     /// <summary>
+    /// GoToPageForRow
+    /// </summary>
+    public Task<TPaginationResponseModel<NLogRecordModelDB>> GoToPageForRow(TPaginationRequestModel<int> req);
+
+    /// <summary>
     /// Metadata Logs
     /// </summary>
     public Task<TResponseModel<LogsMetadataResponseModel>> MetadataLogs(PeriodDatesTimesModel req);
