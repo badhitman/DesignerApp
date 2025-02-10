@@ -9,7 +9,7 @@ namespace SharedLib;
 
 /// <inheritdoc/>
 [Index(nameof(STATUS))]
-public class ObjectKLADRModelDB : StreetKLADRModelDB
+public class ObjectKLADRModelDB : RootKLADRModelDB
 {
     /// <inheritdoc/>
     [Required, StringLength(1)]

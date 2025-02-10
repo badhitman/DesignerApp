@@ -3,6 +3,7 @@ using System;
 using DbcLib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DbPostgreLib.Migrations.Storage
 {
     [DbContext(typeof(StorageContext))]
-    partial class StorageContextModelSnapshot : ModelSnapshot
+    [Migration("20250210164739_StorageContext015_2")]
+    partial class StorageContext015_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -229,7 +232,7 @@ namespace DbPostgreLib.Migrations.Storage
 
                     b.HasIndex("SOCRNAME");
 
-                    b.ToTable("SocrbasesKLADR");
+                    b.ToTable("SocrbaseKLADRModelDB");
                 });
 
             modelBuilder.Entity("SharedLib.StorageCloudParameterModelDB", b =>
@@ -346,68 +349,6 @@ namespace DbPostgreLib.Migrations.Storage
                     b.HasIndex("PrefixPropertyName", "OwnerPrimaryKey");
 
                     b.ToTable("CloudFiles");
-                });
-
-            modelBuilder.Entity("SharedLib.StreetKLADRModelDB", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CODE")
-                        .IsRequired()
-                        .HasMaxLength(17)
-                        .HasColumnType("character varying(17)");
-
-                    b.Property<string>("GNINMB")
-                        .IsRequired()
-                        .HasMaxLength(4)
-                        .HasColumnType("character varying(4)");
-
-                    b.Property<string>("INDEX")
-                        .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("character varying(6)");
-
-                    b.Property<string>("NAME")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)");
-
-                    b.Property<string>("OCATD")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("character varying(11)");
-
-                    b.Property<string>("SOCR")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<string>("UNO")
-                        .IsRequired()
-                        .HasMaxLength(4)
-                        .HasColumnType("character varying(4)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CODE");
-
-                    b.HasIndex("GNINMB");
-
-                    b.HasIndex("INDEX");
-
-                    b.HasIndex("NAME");
-
-                    b.HasIndex("OCATD");
-
-                    b.HasIndex("SOCR");
-
-                    b.HasIndex("UNO");
-
-                    b.ToTable("StreetsKLADR");
                 });
 
             modelBuilder.Entity("SharedLib.TagModelDB", b =>

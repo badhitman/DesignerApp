@@ -81,5 +81,5 @@ public partial class StorageLayerContext : DbContext
     public DbSet<SocrbaseKLADRModelDB> SocrbasesKLADR { get; set; } = default!;
 
     /// <inheritdoc/>
-    public DbSet<SocrbaseKLADRModelDB> StreetsKLADR { get; set; } = default!;
+    public DbSet<StreetKLADRModelDB> StreetsKLADR { get; set; } = default!;
 }
