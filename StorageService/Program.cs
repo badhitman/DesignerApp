@@ -109,7 +109,13 @@ public class Program
 
         string connectionNlog = builder.Configuration.GetConnectionString($"NLogsConnection{_modePrefix}") ?? throw new InvalidOperationException($"Connection string 'NLogsConnection{_modePrefix}' not found.");
         builder.Services.AddDbContextFactory<NLogsContext>(opt =>
-            opt.UseNpgsql(connectionNlog));
+            {
+                opt.UseNpgsql(connectionNlog);
+#if DEBUG
+                opt.EnableSensitiveDataLogging(true);
+                opt.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+#endif
+            });
 
         builder.Services
         .AddScoped<IHelpdeskTransmission, HelpdeskTransmission>()

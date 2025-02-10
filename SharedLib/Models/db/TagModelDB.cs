@@ -16,7 +16,7 @@ public class TagModelDB : StorageBaseModelDB
     /// <summary>
     /// NormalizedTagNameUpper
     /// </summary>
-    public string NormalizedTagNameUpper { get; set; } = default!;
+    public required string NormalizedTagNameUpper { get; set; }
 
     /// <summary>
     /// Имя параметра

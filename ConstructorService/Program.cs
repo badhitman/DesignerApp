@@ -100,6 +100,7 @@ builder.Services.AddDbContextFactory<ConstructorContext>(opt =>
 
 #if DEBUG
     opt.EnableSensitiveDataLogging(true);
+    opt.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
 #endif
 });
 

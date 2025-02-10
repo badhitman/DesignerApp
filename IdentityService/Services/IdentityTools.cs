@@ -12,10 +12,7 @@ using System.Net.Mail;
 using IdentityLib;
 using System.Text;
 using SharedLib;
-using Org.BouncyCastle.Ocsp;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Drawing;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace IdentityService;
 
@@ -1666,6 +1663,7 @@ public class IdentityTools(
 
         if (roles_that_need_add_in_db.Length != 0)
         {
+            loggerRepo.LogWarning($"Созданы новые роли: {JsonConvert.SerializeObject(roles_that_need_add_in_db)}");
             await identityContext
                 .AddRangeAsync(roles_that_need_add_in_db.Select(r => new ApplicationRole() { Name = r, Title = r, NormalizedName = userManager.NormalizeName(r) }));
             await identityContext.SaveChangesAsync();
@@ -1680,6 +1678,7 @@ public class IdentityTools(
 
         if (roles_that_need_add_in_db.Length != 0)
         { // добавляем пользователю ролей
+            loggerRepo.LogWarning($"Добавление ролей пользователю `{req.UserId}`: {JsonConvert.SerializeObject(roles_that_need_add_in_db)}");
             roles_that_need_add_in_db = await identityContext
                 .Roles
                 .Where(x => roles_that_need_add_in_db.Contains(x.NormalizedName))

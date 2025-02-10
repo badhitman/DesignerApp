@@ -29,7 +29,8 @@ public partial class NLogsLayerContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
 #if DEBUG
-        options.LogTo(Console.WriteLine);
+        options.EnableSensitiveDataLogging(true);
+        options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
 #endif
     }
 

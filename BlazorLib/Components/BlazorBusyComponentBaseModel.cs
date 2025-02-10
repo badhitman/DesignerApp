@@ -36,9 +36,9 @@ public abstract class BlazorBusyComponentBaseModel : ComponentBase, IDisposable
         get => _isBusyProgress;
         set
         {
-#if DEBUG
-            Logger.LogDebug($"{nameof(IsBusyProgress)}:{value}");
-#endif
+//#if DEBUG
+//            Logger.LogDebug($"{nameof(IsBusyProgress)}:{value}");
+//#endif
             _isBusyProgress = value;
         }
     }
@@ -48,9 +48,9 @@ public abstract class BlazorBusyComponentBaseModel : ComponentBase, IDisposable
     /// </summary>
     public async Task SetBusy(bool is_busy = true, CancellationToken token = default)
     {
-#if DEBUG
-        Logger.LogDebug($"{nameof(SetBusy)}:{is_busy}");
-#endif
+//#if DEBUG
+//        Logger.LogDebug($"{nameof(SetBusy)}:{is_busy}");
+//#endif
         _isBusyProgress = is_busy;
         StateHasChanged();
         await Task.Delay(1, token);
