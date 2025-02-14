@@ -519,7 +519,7 @@ public class IdentityTools(
                 PhoneNumber = app_user.PhoneNumber,
                 UserName = app_user.UserName,
                 TelegramId = app_user.ChatTelegramId,
-                Roles = [.. roles_for_user(app_user.Id)],
+                Roles = roles_for_user(app_user.Id)?.ToList(),
                 Claims = [.. claims.Where(x => x.Id == app_user.Id).Select(x => new EntryAltModel() { Id = x.Id, Name = x.Name })]
             };
         }
@@ -598,7 +598,7 @@ public class IdentityTools(
                 PhoneNumber = app_user.PhoneNumber,
                 UserName = app_user.UserName,
                 TelegramId = app_user.ChatTelegramId,
-                Roles = [.. roles_for_user(app_user.Id)],
+                Roles = roles_for_user(app_user.Id)?.ToList(),
                 Claims = [.. claims.Where(x => x.Id == app_user.Id).Select(x => new EntryAltModel() { Id = x.Id, Name = x.Name })]
             };
         }
@@ -1725,7 +1725,7 @@ public class IdentityTools(
             }
             await identityContext.AddAsync(new IdentityUserRole<string>() { RoleId = role_bd.Id, UserId = req.UserIdentityId });
             await identityContext.SaveChangesAsync();
-            res.Response = [.. roles.Select(x => x.Name).Union([req.RoleName])];
+            res.Response = [.. roles.Select(x => x.Name).Union([req.RoleName]).Where(x => !string.IsNullOrWhiteSpace(x))!];
             res.AddSuccess($"Включён в роль: {role_bd.Name}");
         }
         else if (!req.Command && roles.Any(x => x.Name?.Contains(req.RoleName, StringComparison.OrdinalIgnoreCase) == true))
@@ -1733,13 +1733,13 @@ public class IdentityTools(
             role_bd = roles.First(x => x.Name?.Contains(req.RoleName, StringComparison.OrdinalIgnoreCase) == true);
             identityContext.Remove(role_bd);
             await identityContext.SaveChangesAsync();
-            res.Response = [.. roles.Select(x => x.Name).Where(x => x?.Equals(req.RoleName, StringComparison.OrdinalIgnoreCase) != true)];
+            res.Response = [.. roles.Select(x => x.Name).Where(x => !string.IsNullOrWhiteSpace(x) && !x.Equals(req.RoleName, StringComparison.OrdinalIgnoreCase))!];
             res.AddSuccess($"Исключён из роли: {req.RoleName}");
         }
         else
         {
             res.AddInfo("Изменения не требуются");
-            res.Response = [.. roles.Select(x => x.Name)];
+            res.Response = [.. roles.Select(x => x.Name).Where(x => !string.IsNullOrWhiteSpace(x))!];
         }
 
         return res;

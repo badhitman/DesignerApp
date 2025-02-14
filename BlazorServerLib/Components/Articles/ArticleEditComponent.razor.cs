@@ -35,6 +35,7 @@ public partial class ArticleEditComponent : BlazorBusyComponentBaseAuthModel
     string images_upload_url = default!;
     Dictionary<string, object> editorConf = default!;
 
+    int[] SelectedNodesRead() => orignArticle?.RubricsJoins?.Select(x => x.RubricId).ToArray() ?? [];
 
     async Task SaveArticle()
     {

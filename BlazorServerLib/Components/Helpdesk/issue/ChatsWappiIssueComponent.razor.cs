@@ -49,6 +49,6 @@ public partial class ChatsWappiIssueComponent : IssueWrapBaseModel
     /// <inheritdoc/>
     protected override void OnInitialized()
     {
-        chats = [.. UsersIdentityDump.Where(x => GlobalTools.IsPhoneNumber(x.PhoneNumber)).Select(x => x.PhoneNumber)];
+        chats = [.. UsersIdentityDump.Where(x => GlobalTools.IsPhoneNumber(x.PhoneNumber)).Select(x => x.PhoneNumber)!];
     }
 }

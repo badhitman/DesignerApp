@@ -187,7 +187,7 @@ builder.Services.AddSwaggerGen(options =>
               {
                   Version = "v1",
                   Title = "tools - REST API",
-                  Description = $"Удалённый RESTful доступ к <a href='https://github.com/badhitman/DesignerApp'>https://github.com/badhitman/DesignerApp</a>. Токен доступа следует передавать с каждым запросом через заголовок с именем '{restConf.TokenAccessHeaderName}'",
+                  Description = $"Удалённый RESTful доступ к <a href='https://github.com/badhitman/BlankCRM'>https://github.com/badhitman/BlankCRM</a>. Токен доступа следует передавать с каждым запросом через заголовок с именем '{restConf.TokenAccessHeaderName}'",
                   Contact = new OpenApiContact
                   {
                       Email = "ru.usa@mail.ru",

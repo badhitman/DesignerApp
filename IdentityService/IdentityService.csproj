@@ -18,7 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\DesignerApp.ServiceDefaults\DesignerApp.ServiceDefaults.csproj" />
+		<ProjectReference Include="..\BlankCRM.ServiceDefaults\BlankCRM.ServiceDefaults.csproj" />
 		<ProjectReference Include="..\ServerLib\ServerLib.csproj" />
 	</ItemGroup>
 

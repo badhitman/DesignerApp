@@ -4,7 +4,7 @@
 > [!NOTE]
 > После того как определена СУБД миграции следует применить для всех контекстов: `IdentityAppDbContext`, `MainDbAppContext`, `StorageContext`, `HelpdeskContext`, `TelegramBotContext`.
 
->Для работы с контекстом `IdentityAppDbContext` в консоли диспетчера пакетов используется **проект по умолчанию**: `IdentityLib`: [команды миграции подготовлены](https://github.com/badhitman/DesignerApp/blob/main/IdentityLib/migrations.md)
+>Для работы с контекстом `IdentityAppDbContext` в консоли диспетчера пакетов используется **проект по умолчанию**: `IdentityLib`: [команды миграции подготовлены](https://github.com/badhitman/BlankCRM/blob/main/IdentityLib/migrations.md)
 
 >Для работы с нужным контекстом в консоли диспетчера пакетов используемый/требуемый **проект по умолчанию** один из: DbMySQLLib, DbPostgreLib или DbSqliteLib. В зависимости от выбранной СУБД нужно выбрать тот или иной проект: MySQL, Postgre или Sqlite. Запускаемым проектом используйте BlazorWebApp службу.
 

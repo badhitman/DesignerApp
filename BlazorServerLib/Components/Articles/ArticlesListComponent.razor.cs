@@ -60,7 +60,7 @@ public partial class ArticlesListComponent : BlazorBusyComponentBaseAuthModel
 
     async Task UpdateUsersData(string?[] users_ids)
     {
-        string[] _ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x) && !usersDump.Any(y => y.UserId == x))];
+        string[] _ids = [.. users_ids.Where(x => !string.IsNullOrWhiteSpace(x) && !usersDump.Any(y => y.UserId == x))!];
         if (_ids.Length == 0)
             return;
 

@@ -133,20 +133,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mmd", "mmd", "{F23783DE-35E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService", "IdentityService\IdentityService.csproj", "{A44C1002-FB5D-4626-B3B3-7E3D50A97E38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesignerApp.AppHost", "DesignerApp.AppHost\DesignerApp.AppHost.csproj", "{D1A9DC55-90EF-4B01-AE96-189C19ADE9B4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlankCRM.AppHost", "BlankCRM.AppHost\BlankCRM.AppHost.csproj", "{D1A9DC55-90EF-4B01-AE96-189C19ADE9B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesignerApp.ServiceDefaults", "DesignerApp.ServiceDefaults\DesignerApp.ServiceDefaults.csproj", "{D2DBA6AF-E491-4715-B154-907BCCA05066}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlankCRM.ServiceDefaults", "BlankCRM.ServiceDefaults\BlankCRM.ServiceDefaults.csproj", "{D2DBA6AF-E491-4715-B154-907BCCA05066}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBotService", "TelegramBotService\TelegramBotService.csproj", "{26000A47-6D72-4CC1-9003-A6B09E829878}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppHost", "AppHost", "{E17C8007-9007-414F-83F3-AFD89B127DC7}"
 	ProjectSection(SolutionItems) = preProject
-		..\secrets-DesignerApp.AppHost\api-access.json = ..\secrets-DesignerApp.AppHost\api-access.json
-		..\secrets-DesignerApp.AppHost\connections-strings.Development.json = ..\secrets-DesignerApp.AppHost\connections-strings.Development.json
-		..\secrets-DesignerApp.AppHost\email-conf.Development.json = ..\secrets-DesignerApp.AppHost\email-conf.Development.json
-		..\secrets-DesignerApp.AppHost\mongo-conf.json = ..\secrets-DesignerApp.AppHost\mongo-conf.json
-		..\secrets-DesignerApp.AppHost\rabbitmq-conf.Development.json = ..\secrets-DesignerApp.AppHost\rabbitmq-conf.Development.json
-		..\secrets-DesignerApp.AppHost\telegram-bot.Development.json = ..\secrets-DesignerApp.AppHost\telegram-bot.Development.json
+		..\secrets-BlankCRM.AppHost\api-access.json = ..\secrets-BlankCRM.AppHost\api-access.json
+		..\secrets-BlankCRM.AppHost\connections-strings.Development.json = ..\secrets-BlankCRM.AppHost\connections-strings.Development.json
+		..\secrets-BlankCRM.AppHost\email-conf.Development.json = ..\secrets-BlankCRM.AppHost\email-conf.Development.json
+		..\secrets-BlankCRM.AppHost\mongo-conf.json = ..\secrets-BlankCRM.AppHost\mongo-conf.json
+		..\secrets-BlankCRM.AppHost\rabbitmq-conf.Development.json = ..\secrets-BlankCRM.AppHost\rabbitmq-conf.Development.json
+		..\secrets-BlankCRM.AppHost\telegram-bot.Development.json = ..\secrets-BlankCRM.AppHost\telegram-bot.Development.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "custom", "custom", "{8EA09A7B-13C1-40A4-8C1E-F99667A9F94A}"

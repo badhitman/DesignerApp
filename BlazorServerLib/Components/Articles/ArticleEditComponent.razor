@@ -53,7 +53,7 @@
             <div class="card">
                 <div class="card-body">
                     <h6 class="card-title">Категории</h6>
-                    <RubricsManageComponent ContextName="@GlobalStaticConstants.Routes.ARTICLES_CONTROLLER_NAME" SelectedValuesChanged="@(new TreeViewOptionsModel(){ SelectedNodes = [.. orignArticle?.RubricsJoins?.Select(x => x.RubricId)], SelectedValuesChangedHandler = SelectedRubricsChange })" />
+                    <RubricsManageComponent ContextName="@GlobalStaticConstants.Routes.ARTICLES_CONTROLLER_NAME" SelectedValuesChanged="@(new TreeViewOptionsModel(){ SelectedNodes = SelectedNodesRead(), SelectedValuesChangedHandler = SelectedRubricsChange })" />
                 </div>
             </div>
         </MudPaper>

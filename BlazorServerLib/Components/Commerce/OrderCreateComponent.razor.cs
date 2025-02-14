@@ -138,7 +138,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
             else
             {
                 _prevSelectedAddresses = null;
-                _selectedAddresses = [.. value];
+                _selectedAddresses = value?.ToList();
             }
         }
     }
@@ -252,7 +252,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
         else
             CurrentCart.AddressesTabs.RemoveAll(x => !_prevSelectedAddresses.Any(y => y.Id == x.AddressOrganizationId));
 
-        _selectedAddresses = [.. _prevSelectedAddresses];
+        _selectedAddresses = _prevSelectedAddresses?.ToList();
         _prevSelectedAddresses = null;
         _visibleChangeAddresses = false;
         await SetBusy();
@@ -364,7 +364,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
             return;
         }
 
-        AllRows = [.. CurrentCart.AddressesTabs?.Where(x => x.Rows is not null).SelectMany(x => x.Rows!)];
+        AllRows = CurrentCart.AddressesTabs?.Where(x => x.Rows is not null).SelectMany(x => x.Rows!).ToArray() ?? [];
         GroupingRows = AllRows.GroupBy(x => x.OfferId).ToList();
         List<int> offers_load = [.. GroupingRows.Where(dc => !RulesCache.ContainsKey(dc.Key)).Select(x => x.Key).Distinct()];
 

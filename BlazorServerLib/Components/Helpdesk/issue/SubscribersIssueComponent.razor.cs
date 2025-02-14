@@ -61,7 +61,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
         await SetBusy();
         TResponseModel<List<SubscriberIssueHelpdeskModelDB>> res = await HelpdeskRepo.SubscribesList(new() { Payload = Issue.Id, SenderActionUserId = CurrentUserSession!.UserId });
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        Issue.Subscribers = [.. res.Response];
+        Issue.Subscribers = res.Response;
         IsBusyProgress = false;
     }
 
@@ -98,7 +98,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
 
         TResponseModel<List<SubscriberIssueHelpdeskModelDB>> res = await HelpdeskRepo.SubscribesList(new TAuthRequestModel<int>() { Payload = Issue.Id, SenderActionUserId = CurrentUserSession!.UserId });
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        Issue.Subscribers = [.. res.Response];
+        Issue.Subscribers = res.Response;
         IsBusyProgress = false;
     }
 
@@ -124,7 +124,7 @@ public partial class SubscribersIssueComponent : IssueWrapBaseModel
             return;
         TResponseModel<List<SubscriberIssueHelpdeskModelDB>> res = await HelpdeskRepo.SubscribesList(new TAuthRequestModel<int>() { Payload = Issue.Id, SenderActionUserId = CurrentUserSession!.UserId });
         SnackbarRepo.ShowMessagesResponse(res.Messages);
-        Issue.Subscribers = [.. res.Response];
+        Issue.Subscribers = res.Response;
         IsBusyProgress = false;
     }
 }

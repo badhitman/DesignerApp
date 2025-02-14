@@ -101,7 +101,7 @@ public partial class TagsViewComponent : MetaPropertyBaseComponent
 
         TPaginationResponseModel<TagModelDB> res = await TagsRepo.TagsSelect(req);
 
-        List<string> res_data = [.. res.Response?.Where(x => TagsSets?.Any(y => y.TagName.Equals(x.TagName, StringComparison.OrdinalIgnoreCase)) != true).Select(x => x.TagName)];
+        List<string> res_data = res.Response?.Where(x => TagsSets?.Any(y => y.TagName.Equals(x.TagName, StringComparison.OrdinalIgnoreCase)) != true).Select(x => x.TagName).ToList() ?? [];
 
         if (!string.IsNullOrWhiteSpace(value) && !res_data.Contains(value))
             res_data.Add(value);

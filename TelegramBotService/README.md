@@ -86,8 +86,8 @@ TelegramDialogResponseModel resp = await receiveService.TelegramDialogHandle(new
     });
 ```
 
-[^1]: Бот [ищет по имени](https://github.com/badhitman/DesignerApp/blob/main/TelegramBotService/Services/UpdateHandler.cs#L155) нужного обработчика. Если не находит, то [использует базовый](https://github.com/badhitman/DesignerApp/blob/main/TelegramBotService/Services/UpdateHandler.cs#L159)
+[^1]: Бот [ищет по имени](https://github.com/badhitman/BlankCRM/blob/main/TelegramBotService/Services/UpdateHandler.cs#L155) нужного обработчика. Если не находит, то [использует базовый](https://github.com/badhitman/BlankCRM/blob/main/TelegramBotService/Services/UpdateHandler.cs#L159)
 
-[^2]: Имя обработчика ответов храниться в [контексте пользователя](https://github.com/badhitman/DesignerApp/blob/main/SharedLib/Models/TelegramUserBaseModelDb.cs#L45)
+[^2]: Имя обработчика ответов храниться в [контексте пользователя](https://github.com/badhitman/BlankCRM/blob/main/SharedLib/Models/TelegramUserBaseModelDb.cs#L45)
 
-[^3]: Обработчик ответов на входящие сообщения в Telegram бота: [базовая реализация](https://github.com/badhitman/DesignerApp/blob/main/TelegramBotService/Services/DefaultTelegramDialogHandle.cs) (по умолчанию)
+[^3]: Обработчик ответов на входящие сообщения в Telegram бота: [базовая реализация](https://github.com/badhitman/BlankCRM/blob/main/TelegramBotService/Services/DefaultTelegramDialogHandle.cs) (по умолчанию)

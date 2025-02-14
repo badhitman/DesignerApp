@@ -54,7 +54,7 @@ public record UserInfoModel : UserInfoMainModel
             LockoutEnd = lockoutEnd,
             LockoutEnabled = lockoutEnabled,
             AccessFailedCount = accessFailedCount,
-            Roles = [..roles],
+            Roles = roles?.ToList(),
             Claims = claims
         };
 

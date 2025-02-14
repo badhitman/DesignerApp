@@ -52,7 +52,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\BlazorServerLib\BlazorWebLib.csproj" />
-		<ProjectReference Include="..\..\DesignerApp.ServiceDefaults\DesignerApp.ServiceDefaults.csproj" />
+		<ProjectReference Include="..\..\BlankCRM.ServiceDefaults\BlankCRM.ServiceDefaults.csproj" />
 		<ProjectReference Include="..\..\ServerLib\ServerLib.csproj" />
 		<ProjectReference Include="..\BlankBlazorApp.Client\BlankBlazorApp.Client.csproj" />
 	</ItemGroup>

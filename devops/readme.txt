@@ -37,22 +37,22 @@ apt update -y && apt upgrade -y && apt dist-upgrade -y && apt install git -y
 
 cd /srv/git
 rm -r *
-git clone https://github.com/badhitman/DesignerApp.git
+git clone https://github.com/badhitman/BlankCRM.git
 git clone https://github.com/badhitman/HtmlGenerator.git
 
-dotnet publish -c Debug --output /srv/git/builds/ApiRestService /srv/git/DesignerApp/ApiRestService/ApiRestService.csproj
-dotnet publish -c Debug --output /srv/git/builds/StorageService /srv/git/DesignerApp/StorageService/StorageService.csproj
-dotnet publish -c Debug --output /srv/git/builds/CommerceService /srv/git/DesignerApp/CommerceService/CommerceService.csproj
-dotnet publish -c Debug --output /srv/git/builds/HelpdeskService /srv/git/DesignerApp/HelpdeskService/HelpdeskService.csproj
-dotnet publish -c Debug --output /srv/git/builds/ConstructorService /srv/git/DesignerApp/ConstructorService/ConstructorService.csproj
-dotnet publish -c Debug --output /srv/git/builds/TelegramBotService /srv/git/DesignerApp/TelegramBotService/TelegramBotService.csproj
+dotnet publish -c Debug --output /srv/git/builds/ApiRestService /srv/git/BlankCRM/ApiRestService/ApiRestService.csproj
+dotnet publish -c Debug --output /srv/git/builds/StorageService /srv/git/BlankCRM/StorageService/StorageService.csproj
+dotnet publish -c Debug --output /srv/git/builds/CommerceService /srv/git/BlankCRM/CommerceService/CommerceService.csproj
+dotnet publish -c Debug --output /srv/git/builds/HelpdeskService /srv/git/BlankCRM/HelpdeskService/HelpdeskService.csproj
+dotnet publish -c Debug --output /srv/git/builds/ConstructorService /srv/git/BlankCRM/ConstructorService/ConstructorService.csproj
+dotnet publish -c Debug --output /srv/git/builds/TelegramBotService /srv/git/BlankCRM/TelegramBotService/TelegramBotService.csproj
 
 #  *** этот билд требует значительной мощьности железа. на стоковом сервере не соберЄтс€ (ресурсоЄмкий процесс, который веро€тно не сможет корректно завершитьс€)
-#  cd /srv/git/DesignerApp/BlankBlazorApp/BlankBlazorApp/
+#  cd /srv/git/BlankCRM/BlankBlazorApp/BlankBlazorApp/
 #  dotnet tool install -g Microsoft.Web.LibraryManager.Cli
 #  dotnet workload restore
 #  libman restore
-#  dotnet publish -c Release --output /srv/git/builds/BlankBlazorApp /srv/git/DesignerApp/BlankBlazorApp/BlankBlazorApp/BlankBlazorApp.csproj
+#  dotnet publish -c Release --output /srv/git/builds/BlankBlazorApp /srv/git/BlankCRM/BlankBlazorApp/BlankBlazorApp/BlankBlazorApp.csproj
 #  *** поэтому € его отдельно собираю локально, отправл€ю через sftp, распаковываю и продолжаю дальше буд-то команды корректно отработали
 
 systemctl stop web.app.service comm.app.service tg.app.service api.app.service bus.app.service constructor.app.service hd.app.service
