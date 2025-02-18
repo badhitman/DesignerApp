@@ -1588,13 +1588,13 @@ public partial class FormsConstructorService(
             return res;
         }
 
-        if ((field_db.SortIndex <= 1 && req.Payload.Direct == VerticalDirectionsEnum.Up) || (field_db.SortIndex >= field_db.Owner!.AllFields.Count() && req.Payload.Direct == VerticalDirectionsEnum.Down))
+        if ((field_db.SortIndex <= 1 && req.Payload.Direct == DirectionsEnum.Up) || (field_db.SortIndex >= field_db.Owner!.AllFields.Count() && req.Payload.Direct == DirectionsEnum.Down))
         {
             res.AddWarning($"Поле формы (простого типа) #{req.Payload} не может быть перемещено: оно уже в крайнем положении. ошибка D46E662C-F643-467E-9EDC-528B0674C66A");
             return res;
         }
 
-        int next_index = field_db.SortIndex + (req.Payload.Direct == VerticalDirectionsEnum.Up ? -1 : 1);
+        int next_index = field_db.SortIndex + (req.Payload.Direct == DirectionsEnum.Up ? -1 : 1);
 
         if (field_db.Owner.Fields!.Any(x => x.SortIndex == next_index))
         {
@@ -1664,13 +1664,13 @@ public partial class FormsConstructorService(
             return res;
         }
 
-        if ((field_db.SortIndex <= 1 && req.Payload.Direct == VerticalDirectionsEnum.Up) || (field_db.SortIndex >= field_db.Owner!.AllFields.Count() && req.Payload.Direct == VerticalDirectionsEnum.Down))
+        if ((field_db.SortIndex <= 1 && req.Payload.Direct == DirectionsEnum.Up) || (field_db.SortIndex >= field_db.Owner!.AllFields.Count() && req.Payload.Direct == DirectionsEnum.Down))
         {
             res.AddWarning($"Поле формы (тип: справочник) #{req.Payload} не может быть перемещено: оно уже в крайнем положении. ошибка 4DA195B0-F0B1-43AB-96F5-F282CB74FFF5");
             return res;
         }
 
-        int next_index = field_db.SortIndex + (req.Payload.Direct == VerticalDirectionsEnum.Up ? -1 : 1);
+        int next_index = field_db.SortIndex + (req.Payload.Direct == DirectionsEnum.Up ? -1 : 1);
 
         if (field_db.Owner.Fields!.Any(x => x.SortIndex == next_index))
         {
@@ -2443,13 +2443,13 @@ public partial class FormsConstructorService(
             res.AddInfo($"Страницы опроса/анкеты меняются индексами сортировки: #{_fns.Id} i:{_fns.SortIndex} '{_fns.Name}' && #{tab_of_document_scheme_db.Id} i:{tab_of_document_scheme_db.SortIndex} '{tab_of_document_scheme_db.Name}'");
             int next_index = _fns.SortIndex;
             int tmp_id = tab_of_document_scheme_db.SortIndex;
-            if (req.Payload.Direct == VerticalDirectionsEnum.Down)
+            if (req.Payload.Direct == DirectionsEnum.Down)
             {
-                tab_of_document_scheme_db.SortIndex = r.Next(10000 * (req.Payload.Direct == VerticalDirectionsEnum.Down ? 1 : -1), 50000 * (req.Payload.Direct == VerticalDirectionsEnum.Down ? 1 : -1));
+                tab_of_document_scheme_db.SortIndex = r.Next(10000 * (req.Payload.Direct == DirectionsEnum.Down ? 1 : -1), 50000 * (req.Payload.Direct == DirectionsEnum.Down ? 1 : -1));
             }
             else
             {
-                tab_of_document_scheme_db.SortIndex = r.Next(50000 * (req.Payload.Direct == VerticalDirectionsEnum.Down ? 1 : -1), 10000 * (req.Payload.Direct == VerticalDirectionsEnum.Down ? 1 : -1));
+                tab_of_document_scheme_db.SortIndex = r.Next(50000 * (req.Payload.Direct == DirectionsEnum.Down ? 1 : -1), 10000 * (req.Payload.Direct == DirectionsEnum.Down ? 1 : -1));
             }
             context_forms.Update(tab_of_document_scheme_db);
             await context_forms.SaveChangesAsync(cancellationToken);
@@ -2695,9 +2695,9 @@ public partial class FormsConstructorService(
             int next_index = _fns.SortIndex;
             int tmp_id = questionnaire_page_join_db.SortIndex;
 
-            questionnaire_page_join_db.SortIndex = req.Payload.Direct == VerticalDirectionsEnum.Down
-                ? questionnaire_page_join_db.SortIndex = r.Next(10000 * (req.Payload.Direct == VerticalDirectionsEnum.Down ? 1 : -1), 50000 * (req.Payload.Direct == VerticalDirectionsEnum.Down ? 1 : -1))
-                : questionnaire_page_join_db.SortIndex = r.Next(50000 * (req.Payload.Direct == VerticalDirectionsEnum.Down ? 1 : -1), 10000 * (req.Payload.Direct == VerticalDirectionsEnum.Down ? 1 : -1));
+            questionnaire_page_join_db.SortIndex = req.Payload.Direct == DirectionsEnum.Down
+                ? questionnaire_page_join_db.SortIndex = r.Next(10000 * (req.Payload.Direct == DirectionsEnum.Down ? 1 : -1), 50000 * (req.Payload.Direct == DirectionsEnum.Down ? 1 : -1))
+                : questionnaire_page_join_db.SortIndex = r.Next(50000 * (req.Payload.Direct == DirectionsEnum.Down ? 1 : -1), 10000 * (req.Payload.Direct == DirectionsEnum.Down ? 1 : -1));
 
             context_forms.Update(questionnaire_page_join_db);
             await context_forms.SaveChangesAsync(cancellationToken);

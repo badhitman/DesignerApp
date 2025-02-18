@@ -41,7 +41,7 @@ public partial class CommerceImplementService : ICommerceService
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
 
-        IOrderedQueryable<RecordsAttendanceModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+        IOrderedQueryable<RecordsAttendanceModelDB> oq = req.SortingDirection == DirectionsEnum.Up
            ? q.OrderBy(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC)
            : q.OrderByDescending(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC);
 
@@ -537,7 +537,7 @@ public partial class CommerceImplementService : ICommerceService
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.AfterDateUpdate));
 
-        IOrderedQueryable<WeeklyScheduleModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+        IOrderedQueryable<WeeklyScheduleModelDB> oq = req.SortingDirection == DirectionsEnum.Up
            ? q.OrderBy(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC)
            : q.OrderByDescending(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC);
 
@@ -754,7 +754,7 @@ public partial class CommerceImplementService : ICommerceService
         if (req.Payload.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.Payload.AfterDateUpdate || (x.LastAtUpdatedUTC == DateTime.MinValue && x.CreatedAtUTC >= req.Payload.Payload.AfterDateUpdate));
 
-        IOrderedQueryable<CalendarScheduleModelDB> oq = req.Payload.SortingDirection == VerticalDirectionsEnum.Up
+        IOrderedQueryable<CalendarScheduleModelDB> oq = req.Payload.SortingDirection == DirectionsEnum.Up
            ? q.OrderBy(x => x.DateScheduleCalendar).ThenBy(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC)
            : q.OrderByDescending(x => x.DateScheduleCalendar).ThenByDescending(x => x.StartPart).ThenByDescending(x => x.LastAtUpdatedUTC);
 

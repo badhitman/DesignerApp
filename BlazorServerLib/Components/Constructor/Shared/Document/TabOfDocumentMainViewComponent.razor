@@ -81,8 +81,8 @@ else
                         <MudSpacer />
                         <div>
                             <MudIconButton OnClick="DeleteJoinForm" Disabled="@(IsEdited || IsDisabled)" Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" Size="Size.Small" />
-                            <MudIconButton OnClick="async () => { await DocumentPageJoinFormMove( VerticalDirectionsEnum.Down); }" Disabled="@(IsEdited || IsDisabled || !CanDown)" Icon="@Icons.Material.Filled.ArrowDownward" Color="Color.Primary" Size="Size.Small" />
-                            <MudIconButton OnClick="async () => { await DocumentPageJoinFormMove( VerticalDirectionsEnum.Up); }" Disabled="@(IsEdited || IsDisabled || !CanUp)" Icon="@Icons.Material.Filled.ArrowUpward" Color="Color.Primary" Size="Size.Small" />
+                            <MudIconButton OnClick="async () => { await DocumentPageJoinFormMove( DirectionsEnum.Down); }" Disabled="@(IsEdited || IsDisabled || !CanDown)" Icon="@Icons.Material.Filled.ArrowDownward" Color="Color.Primary" Size="Size.Small" />
+                            <MudIconButton OnClick="async () => { await DocumentPageJoinFormMove( DirectionsEnum.Up); }" Disabled="@(IsEdited || IsDisabled || !CanUp)" Icon="@Icons.Material.Filled.ArrowUpward" Color="Color.Primary" Size="Size.Small" />
                         </div>
                     }
                 </div>

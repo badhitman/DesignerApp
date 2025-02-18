@@ -35,10 +35,10 @@
                 {
                     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                         <div class="btn-group" role="group" aria-label="First group">
-                            <button @onclick="() => MoveRow(VerticalDirectionsEnum.Up)" disabled="@(!CanUpMove || IsEdited)" type="button" class="btn btn-outline-@(CanUpMove ? "primary" : "secondary")">Сдвинуть страницу левее</button>
+                            <button @onclick="() => MoveRow(DirectionsEnum.Up)" disabled="@(!CanUpMove || IsEdited)" type="button" class="btn btn-outline-@(CanUpMove ? "primary" : "secondary")">Сдвинуть страницу левее</button>
                         </div>
                         <div class="btn-group" role="group" aria-label="First group">
-                            <button @onclick="() => MoveRow(VerticalDirectionsEnum.Down)" disabled="@(!CanDownMove || IsEdited)" type="button" class="btn btn-outline-@(CanDownMove ? "primary" : "secondary")">Сдвинуть страницу правее</button>
+                            <button @onclick="() => MoveRow(DirectionsEnum.Down)" disabled="@(!CanDownMove || IsEdited)" type="button" class="btn btn-outline-@(CanDownMove ? "primary" : "secondary")">Сдвинуть страницу правее</button>
                         </div>
                     </div>
                 }

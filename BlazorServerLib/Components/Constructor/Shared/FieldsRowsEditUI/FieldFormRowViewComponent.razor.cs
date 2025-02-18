@@ -518,9 +518,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseAuthMode
         await SetBusy();
         TResponseModel<FormConstructorModelDB> rest;
         if (_field_master is FieldFormConstructorModelDB sf)
-            rest = await ConstructorRepo.FieldFormMove(new() { Payload = new() { Id = sf.Id, Direct = VerticalDirectionsEnum.Up }, SenderActionUserId = CurrentUserSession!.UserId });
+            rest = await ConstructorRepo.FieldFormMove(new() { Payload = new() { Id = sf.Id, Direct = DirectionsEnum.Up }, SenderActionUserId = CurrentUserSession!.UserId });
         else if (_field_master is FieldFormAkaDirectoryConstructorModelDB df)
-            rest = await ConstructorRepo.FieldDirectoryFormMove(new() { Payload = new() { Id = df.Id, Direct = VerticalDirectionsEnum.Up }, SenderActionUserId = CurrentUserSession!.UserId });
+            rest = await ConstructorRepo.FieldDirectoryFormMove(new() { Payload = new() { Id = df.Id, Direct = DirectionsEnum.Up }, SenderActionUserId = CurrentUserSession!.UserId });
         else
         {
             SnackbarRepo.Add("ошибка 591195A4-959D-4CDD-9410-F8984F790CBE", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);
@@ -555,9 +555,9 @@ public partial class FieldFormRowViewComponent : BlazorBusyComponentBaseAuthMode
         await SetBusy();
         TResponseModel<FormConstructorModelDB> rest;
         if (_field_master is FieldFormConstructorModelDB sf)
-            rest = await ConstructorRepo.FieldFormMove(new() { Payload = new() { Id = sf.Id, Direct = VerticalDirectionsEnum.Down }, SenderActionUserId = CurrentUserSession!.UserId });
+            rest = await ConstructorRepo.FieldFormMove(new() { Payload = new() { Id = sf.Id, Direct = DirectionsEnum.Down }, SenderActionUserId = CurrentUserSession!.UserId });
         else if (_field_master is FieldFormAkaDirectoryConstructorModelDB df)
-            rest = await ConstructorRepo.FieldDirectoryFormMove(new() { Payload = new() { Id = df.Id, Direct = VerticalDirectionsEnum.Down }, SenderActionUserId = CurrentUserSession!.UserId });
+            rest = await ConstructorRepo.FieldDirectoryFormMove(new() { Payload = new() { Id = df.Id, Direct = DirectionsEnum.Down }, SenderActionUserId = CurrentUserSession!.UserId });
         else
         {
             SnackbarRepo.Add("ошибка 8768E090-BE63-4FE4-A693-7E24ED1A1876", Severity.Error, cf => cf.DuplicatesBehavior = SnackbarDuplicatesBehavior.Allow);

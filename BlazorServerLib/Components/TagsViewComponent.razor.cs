@@ -96,7 +96,7 @@ public partial class TagsViewComponent : MetaPropertyBaseComponent
             },
             PageNum = 0,
             PageSize = int.MaxValue,
-            SortingDirection = VerticalDirectionsEnum.Down,
+            SortingDirection = DirectionsEnum.Down,
         };
 
         TPaginationResponseModel<TagModelDB> res = await TagsRepo.TagsSelect(req);
@@ -124,7 +124,7 @@ public partial class TagsViewComponent : MetaPropertyBaseComponent
             },
             PageNum = 0,
             PageSize = int.MaxValue,
-            SortingDirection = VerticalDirectionsEnum.Down,
+            SortingDirection = DirectionsEnum.Down,
         };
 
         TPaginationResponseModel<TagModelDB> res = await TagsRepo.TagsSelect(req);

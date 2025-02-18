@@ -489,7 +489,7 @@ public partial class CommerceImplementService : ICommerceService
             q = q.Where(x => x.DeliveryDate >= req.Payload.AfterDeliveryDate || (x.DeliveryDate == DateTime.MinValue && x.DeliveryDate >= req.Payload.AfterDeliveryDate));
 
 
-        IOrderedQueryable<WarehouseDocumentModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+        IOrderedQueryable<WarehouseDocumentModelDB> oq = req.SortingDirection == DirectionsEnum.Up
            ? q.OrderBy(x => x.CreatedAtUTC)
            : q.OrderByDescending(x => x.CreatedAtUTC);
 
@@ -542,7 +542,7 @@ public partial class CommerceImplementService : ICommerceService
                       join gj in context.Nomenclatures on offerAv.NomenclatureId equals gj.Id
                       select new { Register = offerAv, Offer = oj, Good = gj };
 
-        var dbRes = req.SortingDirection == VerticalDirectionsEnum.Up
+        var dbRes = req.SortingDirection == DirectionsEnum.Up
            ? await exQuery.OrderBy(x => x.Offer.Name).Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync()
            : await exQuery.OrderByDescending(x => x.Offer.Name).Skip(req.PageNum * req.PageSize).Take(req.PageSize).ToArrayAsync();
 

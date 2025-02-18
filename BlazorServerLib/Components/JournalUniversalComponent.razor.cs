@@ -80,7 +80,7 @@ public partial class JournalUniversalComponent : BlazorBusyComponentBaseModel
                 SortBy = state.SortLabel,
                 PageNum = state.Page,
                 PageSize = state.PageSize,
-                SortingDirection = state.SortDirection == SortDirection.Descending ? VerticalDirectionsEnum.Down : VerticalDirectionsEnum.Up
+                SortingDirection = state.SortDirection == SortDirection.Descending ? DirectionsEnum.Down : DirectionsEnum.Up
             }, ProjectId);
         IsBusyProgress = false;
 

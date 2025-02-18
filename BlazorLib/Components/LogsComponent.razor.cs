@@ -205,7 +205,7 @@ public partial class LogsComponent : BlazorBusyComponentBaseModel
             },
             PageNum = state.Page,
             PageSize = state.PageSize,
-            SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
+            SortingDirection = state.SortDirection == SortDirection.Ascending ? DirectionsEnum.Up : DirectionsEnum.Down,
         };
         await SetBusy(token: token);
         if (selectedRecord != 0)

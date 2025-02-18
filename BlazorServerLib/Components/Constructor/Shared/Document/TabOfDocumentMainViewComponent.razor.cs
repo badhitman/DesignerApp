@@ -117,7 +117,7 @@ public partial class TabOfDocumentMainViewComponent : BlazorBusyComponentBaseAut
     bool IsEdited => _join_name_origin != PageJoinFormName || SetTitleForm != _join_set_title_origin || IsTable != _is_table_origin;
 
     /// <inheritdoc/>
-    protected async Task DocumentPageJoinFormMove(VerticalDirectionsEnum direct)
+    protected async Task DocumentPageJoinFormMove(DirectionsEnum direct)
     {
         await SetBusy();
         TResponseModel<TabOfDocumentSchemeConstructorModelDB> rest = await ConstructorRepo.MoveTabDocumentSchemeJoinForm(new() { Payload = new() { Id = PageJoinForm.Id, Direct = direct }, SenderActionUserId = CurrentUserSession!.UserId });

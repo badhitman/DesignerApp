@@ -257,7 +257,7 @@ public partial class CommerceImplementService : ICommerceService
         if (!string.IsNullOrWhiteSpace(req.Payload.ForUserIdentityId))
             q = q.Where(x => context.OrganizationsUsers.Any(y => y.OrganizationId == x.Id && y.UserPersonIdentityId == req.Payload.ForUserIdentityId));
 
-        q = req.SortingDirection == VerticalDirectionsEnum.Up
+        q = req.SortingDirection == DirectionsEnum.Up
             ? q.OrderBy(x => x.Name)
             : q.OrderByDescending(x => x.Name);
 
@@ -527,13 +527,13 @@ public partial class CommerceImplementService : ICommerceService
         if (req.Payload.OrganizationsFilter is not null && req.Payload.OrganizationsFilter.Length != 0)
         {
             q = q.Where(x => req.Payload.OrganizationsFilter.Any(y => y == x.OrganizationId));
-            q = req.SortingDirection == VerticalDirectionsEnum.Up
+            q = req.SortingDirection == DirectionsEnum.Up
             ? q.OrderBy(x => x.UserStatus)
             : q.OrderByDescending(x => x.UserStatus);
         }
         else
         {
-            q = req.SortingDirection == VerticalDirectionsEnum.Up
+            q = req.SortingDirection == DirectionsEnum.Up
             ? q.OrderBy(x => x.Organization!.Name)
             : q.OrderByDescending(x => x.Organization!.Name);
         }

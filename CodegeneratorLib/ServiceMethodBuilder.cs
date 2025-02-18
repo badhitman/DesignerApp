@@ -68,7 +68,7 @@ public class ServiceMethodBuilder : BaseMethodBuilder
         AddPayload("switch (result.SortBy)");
         AddPayload("{");
         AddPayload($"{_tab}default:");
-        AddPayload($"{_tab}{_tab}query = result.SortingDirection == VerticalDirectionsEnum.Up");
+        AddPayload($"{_tab}{_tab}query = result.SortingDirection == DirectionsEnum.Up");
         AddPayload($"{_tab}{_tab}{_tab}? query.OrderByDescending(x => x.Id)");
         AddPayload($"{_tab}{_tab}{_tab}: query.OrderBy(x => x.Id);");
         AddPayload($"{_tab}{_tab}break;");

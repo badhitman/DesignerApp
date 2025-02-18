@@ -17,5 +17,5 @@ public class MoveObjectModel
     /// <summary>
     /// Direct
     /// </summary>
-    public VerticalDirectionsEnum Direct { get; set; }
+    public DirectionsEnum Direct { get; set; }
 }

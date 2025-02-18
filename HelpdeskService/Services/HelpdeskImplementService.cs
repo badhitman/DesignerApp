@@ -546,7 +546,7 @@ public class HelpdeskImplementService(
             .ToListAsync();
 
         int i = all.FindIndex(x => x.Id == data.Id);
-        if (req.Payload.Direction == VerticalDirectionsEnum.Up)
+        if (req.Payload.Direction == DirectionsEnum.Up)
         {
             if (i == 0)
             {
@@ -805,7 +805,7 @@ public class HelpdeskImplementService(
                 break;
         }
 
-        q = req.Payload.SortingDirection == VerticalDirectionsEnum.Up
+        q = req.Payload.SortingDirection == DirectionsEnum.Up
             ? q.OrderBy(x => x.CreatedAtUTC)
             : q.OrderByDescending(x => x.CreatedAtUTC);
 
@@ -878,7 +878,7 @@ public class HelpdeskImplementService(
         if (!string.IsNullOrWhiteSpace(req.Payload.FilterUserId))
             q = q.Where(x => x.AuthorIdentityUserId == req.Payload.FilterUserId || x.ExecutorIdentityUserId == req.Payload.FilterUserId || context.SubscribersOfIssues.Any(y => y.IssueId == x.Id && y.UserId == req.Payload.FilterUserId));
 
-        IOrderedQueryable<IssueHelpdeskModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+        IOrderedQueryable<IssueHelpdeskModelDB> oq = req.SortingDirection == DirectionsEnum.Up
             ? q.OrderBy(x => x.CreatedAtUTC)
             : q.OrderByDescending(x => x.CreatedAtUTC);
 
@@ -1830,7 +1830,7 @@ public class HelpdeskImplementService(
             .PulseEvents
             .Where(x => x.IssueId == req.Payload.Payload.IssueId);
 
-        IOrderedQueryable<PulseIssueModelDB> oq = req.Payload.SortingDirection == VerticalDirectionsEnum.Down
+        IOrderedQueryable<PulseIssueModelDB> oq = req.Payload.SortingDirection == DirectionsEnum.Down
             ? q.OrderByDescending(x => x.CreatedAt)
             : q.OrderBy(x => x.CreatedAt);
 

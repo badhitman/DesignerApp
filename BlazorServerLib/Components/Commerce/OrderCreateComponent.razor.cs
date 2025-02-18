@@ -420,7 +420,7 @@ public partial class OrderCreateComponent : BlazorBusyComponentBaseAuthModel
             PageNum = 0,
             PageSize = int.MaxValue,
             SortBy = nameof(OrderDocumentModelDB.Name),
-            SortingDirection = VerticalDirectionsEnum.Up,
+            SortingDirection = DirectionsEnum.Up,
         };
 
         TPaginationResponseModel<OrganizationModelDB> res = await CommerceRepo.OrganizationsSelect(req);

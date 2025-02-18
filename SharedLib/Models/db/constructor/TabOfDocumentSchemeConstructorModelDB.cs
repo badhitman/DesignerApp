@@ -31,12 +31,12 @@ public class TabOfDocumentSchemeConstructorModelDB : EntryDescriptionOwnedModel
     /// <summary>
     /// Получить крайний элемент в границах restriction_sort_index
     /// </summary>
-    public FormToTabJoinConstructorModelDB? GetOutermostJoinForm(VerticalDirectionsEnum direct, int restriction_sort_index)
+    public FormToTabJoinConstructorModelDB? GetOutermostJoinForm(DirectionsEnum direct, int restriction_sort_index)
     {
         if (JoinsForms is null || JoinsForms.Count == 0)
             return null;
 
-        return direct == VerticalDirectionsEnum.Down
+        return direct == DirectionsEnum.Down
             ? JoinsForms.FirstOrDefault(x => x.SortIndex > restriction_sort_index)
             : JoinsForms.OrderByDescending(x => x.SortIndex).FirstOrDefault(x => x.SortIndex < restriction_sort_index);
     }

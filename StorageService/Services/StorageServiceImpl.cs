@@ -55,7 +55,7 @@ public class StorageServiceImpl(
         if (!await q.AnyAsync(x => x.Id == req.Payload))
             return res;
 
-        IOrderedQueryable<NLogRecordModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+        IOrderedQueryable<NLogRecordModelDB> oq = req.SortingDirection == DirectionsEnum.Up
           ? q.OrderBy(x => x.RecordTime)
           : q.OrderByDescending(x => x.RecordTime);
 
@@ -171,7 +171,7 @@ public class StorageServiceImpl(
         if (req.Payload.ApplicationsFilter is not null && req.Payload.ApplicationsFilter.Length != 0)
             q = q.Where(x => req.Payload.ApplicationsFilter.Contains(x.ApplicationName));
 
-        IOrderedQueryable<NLogRecordModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+        IOrderedQueryable<NLogRecordModelDB> oq = req.SortingDirection == DirectionsEnum.Up
           ? q.OrderBy(x => x.RecordTime)
           : q.OrderByDescending(x => x.RecordTime);
 
@@ -251,7 +251,7 @@ public class StorageServiceImpl(
         if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
             q = q.Where(x => x.NormalizedFileNameUpper!.Contains(req.Payload.SearchQuery.ToUpper()));
 
-        IQueryable<StorageFileModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+        IQueryable<StorageFileModelDB> oq = req.SortingDirection == DirectionsEnum.Up
           ? q.OrderBy(x => x.CreatedAt).Skip(req.PageNum * req.PageSize).Take(req.PageSize)
           : q.OrderByDescending(x => x.CreatedAt).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
 
@@ -567,7 +567,7 @@ public class StorageServiceImpl(
         if (!string.IsNullOrWhiteSpace(req.Payload.SearchQuery))
             q = q.Where(x => x.NormalizedTagNameUpper!.Contains(req.Payload.SearchQuery.ToUpper()));
 
-        IQueryable<TagModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+        IQueryable<TagModelDB> oq = req.SortingDirection == DirectionsEnum.Up
           ? q.OrderBy(x => x.TagName).Skip(req.PageNum * req.PageSize).Take(req.PageSize)
           : q.OrderByDescending(x => x.TagName).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
 

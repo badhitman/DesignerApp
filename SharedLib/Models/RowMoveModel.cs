@@ -12,7 +12,7 @@ public class RowMoveModel
     /// <summary>
     /// Direction
     /// </summary>
-    public VerticalDirectionsEnum Direction { get; set; }
+    public DirectionsEnum Direction { get; set; }
 
     /// <summary>
     /// Object Id

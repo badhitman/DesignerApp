@@ -71,7 +71,7 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
         {
             PageNum = pageNum,
             PageSize = 5,
-            SortingDirection = VerticalDirectionsEnum.Down,
+            SortingDirection = DirectionsEnum.Down,
             Payload = new()
             {
                 Status = StepIssue,

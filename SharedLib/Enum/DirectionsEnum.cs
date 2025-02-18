@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Направления (вертикальные). Вверх, Вниз
 /// </summary>
-public enum VerticalDirectionsEnum
+public enum DirectionsEnum
 {
     /// <summary>
     /// Вверх

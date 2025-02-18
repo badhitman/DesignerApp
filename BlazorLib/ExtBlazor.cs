@@ -29,13 +29,13 @@ public static class ExtBlazor
     }
 
     /// <inheritdoc/>
-    public static VerticalDirectionsEnum GetVerticalDirection(this SortDirection sort_direction)
+    public static DirectionsEnum GetVerticalDirection(this SortDirection sort_direction)
     {
         return sort_direction switch
         {
-            SortDirection.Descending => VerticalDirectionsEnum.Down,
-            SortDirection.Ascending => VerticalDirectionsEnum.Up,
-            _ => VerticalDirectionsEnum.Up
+            SortDirection.Descending => DirectionsEnum.Down,
+            SortDirection.Ascending => DirectionsEnum.Up,
+            _ => DirectionsEnum.Up
         };
     }
 }

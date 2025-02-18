@@ -102,7 +102,7 @@ public class ArticlesService(IDbContextFactory<HelpdeskContext> helpdeskDbFactor
                 select article_element;
         }
 
-        IQueryable<ArticleModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+        IQueryable<ArticleModelDB> oq = req.SortingDirection == DirectionsEnum.Up
           ? q.OrderBy(x => x.LastUpdatedAtUTC).ThenBy(x => x.CreatedAtUTC).Skip(req.PageNum * req.PageSize).Take(req.PageSize)
           : q.OrderByDescending(x => x.LastUpdatedAtUTC).ThenByDescending(x => x.CreatedAtUTC).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
 

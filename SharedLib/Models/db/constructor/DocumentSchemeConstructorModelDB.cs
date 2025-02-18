@@ -22,12 +22,12 @@ public class DocumentSchemeConstructorModelDB : EntryConstructedModel
     /// </summary>
     /// <param name="direct">Направление определения (первая или последняя)</param>
     /// <param name="restriction_sort_index">Индекс сортировки от которого следует отталкиваться</param>
-    public TabOfDocumentSchemeConstructorModelDB? GetOutermostPage(VerticalDirectionsEnum direct, int restriction_sort_index)
+    public TabOfDocumentSchemeConstructorModelDB? GetOutermostPage(DirectionsEnum direct, int restriction_sort_index)
     {
         if (Tabs is null || Tabs.Count == 0)
             return null;
 
-        return direct == VerticalDirectionsEnum.Down
+        return direct == DirectionsEnum.Down
            ? Tabs.OrderBy(x => x.SortIndex).FirstOrDefault(x => x.SortIndex > restriction_sort_index)
            : Tabs.OrderByDescending(x => x.SortIndex).FirstOrDefault(x => x.SortIndex < restriction_sort_index);
     }

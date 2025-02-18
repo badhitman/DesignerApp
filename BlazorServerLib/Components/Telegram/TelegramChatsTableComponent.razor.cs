@@ -44,7 +44,7 @@ public partial class TelegramChatsTableComponent : BlazorBusyComponentBaseAuthMo
             PageNum = state.Page,
             PageSize = state.PageSize,
             SortBy = state.SortLabel,
-            SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
+            SortingDirection = state.SortDirection == SortDirection.Ascending ? DirectionsEnum.Up : DirectionsEnum.Down,
         };
         TPaginationResponseModel<ChatTelegramModelDB> rest = await TgRepo.ChatsSelect(req);
         IsBusyProgress = false;
@@ -94,7 +94,7 @@ public partial class TelegramChatsTableComponent : BlazorBusyComponentBaseAuthMo
                              PageNum = 0,
                              PageSize = int.MaxValue,
                              SortBy = nameof(IssueHelpdeskModel.LastUpdateAt),
-                             SortingDirection = VerticalDirectionsEnum.Down,
+                             SortingDirection = DirectionsEnum.Down,
                          },
                          SenderActionUserId = CurrentUserSession.UserId
                      });

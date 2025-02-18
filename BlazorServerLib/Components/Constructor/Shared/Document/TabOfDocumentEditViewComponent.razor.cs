@@ -140,7 +140,7 @@ public partial class TabOfDocumentEditViewComponent : BlazorBusyComponentBaseAut
     /// <summary>
     /// Перемещение страницы опроса/анкеты (сортировка страниц внутри опроса/анкеты)
     /// </summary>
-    protected async Task MoveRow(VerticalDirectionsEnum direct)
+    protected async Task MoveRow(DirectionsEnum direct)
     {
         await SetBusy();
 

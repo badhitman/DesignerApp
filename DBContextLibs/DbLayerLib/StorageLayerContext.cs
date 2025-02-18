@@ -7,14 +7,10 @@ using SharedLib;
 
 namespace DbcLib;
 
-/// <summary>
-/// Промежуточный/общий слой контекста базы данных
-/// </summary>
+/// <inheritdoc/>
 public partial class StorageLayerContext : DbContext
 {
-    /// <summary>
-    /// Промежуточный/общий слой контекста базы данных
-    /// </summary>
+    /// <inheritdoc/>
     public StorageLayerContext(DbContextOptions options)
         : base(options)
     {

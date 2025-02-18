@@ -39,8 +39,8 @@
                     <div class="hstack">
                         @if (!ReadOnly)
                         {
-                            <MudIconButton OnClick="() => MoveRow( VerticalDirectionsEnum.Up, Item)" Disabled="CantUpMove.Contains(Item.MoveRowState)" Icon="@Icons.Material.Filled.ArrowDropUp"></MudIconButton>
-                            <MudIconButton OnClick="() => MoveRow( VerticalDirectionsEnum.Down, Item)" Disabled="CantDownMove.Contains(Item.MoveRowState)" Icon="@Icons.Material.Filled.ArrowDropDown"></MudIconButton>
+                            <MudIconButton OnClick="() => MoveRow( DirectionsEnum.Up, Item)" Disabled="CantUpMove.Contains(Item.MoveRowState)" Icon="@Icons.Material.Filled.ArrowDropUp"></MudIconButton>
+                            <MudIconButton OnClick="() => MoveRow( DirectionsEnum.Down, Item)" Disabled="CantDownMove.Contains(Item.MoveRowState)" Icon="@Icons.Material.Filled.ArrowDropDown"></MudIconButton>
                             <div class="btn-group" role="group" aria-label="Basic example">
                                 <button title="Переименовать элемент" @onclick="() => IsRenameMode = true" type="button" class="btn btn-outline-info btn-sm bi bi bi-pencil"></button>
                                 <button disabled="@IsEditedName" @onclick="async () => { ItemModel!.IsDisabled = !ItemModel.IsDisabled; await SaveRubric(); }" type="button" class="btn btn-outline-@(ItemModel?.IsDisabled == true ? "secondary" : "info") btn-sm bi bi-toggle-@(ItemModel?.IsDisabled == true ? "off" : "on")"></button>

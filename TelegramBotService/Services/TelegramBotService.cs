@@ -73,9 +73,9 @@ public class TelegramBotServiceImplement(ILogger<TelegramBotServiceImplement> _l
             );
         }
 
-        IQueryable<ChatTelegramModelDB> TakePart(IQueryable<ChatTelegramModelDB> q, VerticalDirectionsEnum direct)
+        IQueryable<ChatTelegramModelDB> TakePart(IQueryable<ChatTelegramModelDB> q, DirectionsEnum direct)
         {
-            return direct == VerticalDirectionsEnum.Up
+            return direct == DirectionsEnum.Up
                 ? q.OrderBy(x => x.LastUpdateUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize)
                 : q.OrderByDescending(x => x.LastUpdateUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
         }
@@ -118,9 +118,9 @@ public class TelegramBotServiceImplement(ILogger<TelegramBotServiceImplement> _l
         if (req.Payload is not null && req.Payload.Length != 0)
             q = q.Where(x => req.Payload.Any(y => y == x.ChatId));
 
-        IQueryable<ErrorSendingMessageTelegramBotModelDB> TakePart(IQueryable<ErrorSendingMessageTelegramBotModelDB> q, VerticalDirectionsEnum direct)
+        IQueryable<ErrorSendingMessageTelegramBotModelDB> TakePart(IQueryable<ErrorSendingMessageTelegramBotModelDB> q, DirectionsEnum direct)
         {
-            return direct == VerticalDirectionsEnum.Up
+            return direct == DirectionsEnum.Up
                 ? q.OrderBy(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize)
                 : q.OrderByDescending(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
         }
@@ -287,9 +287,9 @@ public class TelegramBotServiceImplement(ILogger<TelegramBotServiceImplement> _l
             return dbData.Select(x => x.msg).ToList();
         }
 
-        IQueryable<MessageTelegramModelDB> TakePart(IQueryable<MessageTelegramModelDB> q, VerticalDirectionsEnum direct)
+        IQueryable<MessageTelegramModelDB> TakePart(IQueryable<MessageTelegramModelDB> q, DirectionsEnum direct)
         {
-            return direct == VerticalDirectionsEnum.Up
+            return direct == DirectionsEnum.Up
                 ? q.OrderBy(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize)
                 : q.OrderByDescending(x => x.CreatedAtUtc).Skip(req.PageNum * req.PageSize).Take(req.PageSize);
         }

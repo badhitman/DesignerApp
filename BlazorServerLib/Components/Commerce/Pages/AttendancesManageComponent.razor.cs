@@ -68,7 +68,7 @@ public partial class AttendancesManageComponent : BlazorBusyComponentBaseAuthMod
             PageNum = page_num,
             PageSize = 10,
             SortBy = nameof(OfferModelDB.Name),
-            SortingDirection = VerticalDirectionsEnum.Up,
+            SortingDirection = DirectionsEnum.Up,
             Payload = new()
             {
                 ContextName = GlobalStaticConstants.Routes.ATTENDANCES_CONTROLLER_NAME

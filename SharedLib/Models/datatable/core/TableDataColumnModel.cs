@@ -22,7 +22,7 @@ public class TableDataColumnModel
     /// <summary>
     /// Направление сортировки таблицы
     /// </summary>
-    public VerticalDirectionsEnum? SortingDirection { get; set; } = null;
+    public DirectionsEnum? SortingDirection { get; set; } = null;
 
     /// <summary>
     /// Стиль колонки (css/style)

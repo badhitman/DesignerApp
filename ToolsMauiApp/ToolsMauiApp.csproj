@@ -74,7 +74,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\BlazorLib\BlazorLib.csproj" />
-		<ProjectReference Include="..\DBContextLibs\DbPostgreLib\DbPostgreLib.csproj" />
+		<ProjectReference Include="..\DBContextLibs\DbSqliteLib\DbSqliteLib.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -271,7 +271,7 @@ public partial class CommerceImplementService(
         if (req.Payload.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.Payload.AfterDateUpdate);
 
-        IOrderedQueryable<OfferModelDB> oq = req.Payload.SortingDirection == VerticalDirectionsEnum.Up
+        IOrderedQueryable<OfferModelDB> oq = req.Payload.SortingDirection == DirectionsEnum.Up
           ? q.OrderBy(x => x.CreatedAtUTC)
           : q.OrderByDescending(x => x.CreatedAtUTC);
 
@@ -426,7 +426,7 @@ public partial class CommerceImplementService(
         if (req.Payload.AfterDateUpdate is not null)
             q = q.Where(x => x.LastAtUpdatedUTC >= req.Payload.AfterDateUpdate);
 
-        IOrderedQueryable<NomenclatureModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+        IOrderedQueryable<NomenclatureModelDB> oq = req.SortingDirection == DirectionsEnum.Up
           ? q.OrderBy(x => x.CreatedAtUTC)
           : q.OrderByDescending(x => x.CreatedAtUTC);
 
@@ -535,7 +535,7 @@ public partial class CommerceImplementService(
         if (req.Payload.Payload.StatusesFilter is not null && req.Payload.Payload.StatusesFilter.Length != 0)
             q = q.Where(x => req.Payload.Payload.StatusesFilter.Any(y => y == x.StatusDocument));
 
-        IOrderedQueryable<OrderDocumentModelDB> oq = req.SortingDirection == VerticalDirectionsEnum.Up
+        IOrderedQueryable<OrderDocumentModelDB> oq = req.SortingDirection == DirectionsEnum.Up
            ? q.OrderBy(x => x.CreatedAtUTC)
            : q.OrderByDescending(x => x.CreatedAtUTC);
 

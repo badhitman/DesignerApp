@@ -49,7 +49,7 @@ public abstract class TableProviderAbstract
     /// <summary>
     /// Сортировка (от большего к меньшему или от меньшего к большему)
     /// </summary>
-    public VerticalDirectionsEnum SortingDirection { get; set; }
+    public DirectionsEnum SortingDirection { get; set; }
 
     /// <summary>
     /// Имя поля по которому должна происходить сортировка
@@ -61,7 +61,7 @@ public abstract class TableProviderAbstract
     /// </summary>
     /// <param name="column_name">Имя колонки для проверки/определения</param>
     /// <returns>Направление сортировки, если в данный момент определена сортировка по определяемой колонке, в противном случае - null</returns>
-    public VerticalDirectionsEnum? DetectSort(string column_name)
+    public DirectionsEnum? DetectSort(string column_name)
     {
         if (!string.IsNullOrWhiteSpace(column_name) && !string.IsNullOrWhiteSpace(SortBy) && column_name.ToLower() == SortBy.ToLower())
             return SortingDirection;

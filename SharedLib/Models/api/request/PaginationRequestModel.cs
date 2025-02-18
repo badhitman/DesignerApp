@@ -34,7 +34,7 @@ public class PaginationRequestModel
     /// <summary>
     /// Сортировка (от большего к меньшему или от меньшего к большему)
     /// </summary>
-    public VerticalDirectionsEnum SortingDirection { get; set; }
+    public DirectionsEnum SortingDirection { get; set; }
 
     /// <summary>
     /// Имя поля по которому должна происходить сортировка

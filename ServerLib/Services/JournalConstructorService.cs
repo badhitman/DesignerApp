@@ -216,7 +216,7 @@ public partial class JournalConstructorService(
 
         if (!string.IsNullOrWhiteSpace(req.SortBy))
         {
-            _response = req.SortingDirection == VerticalDirectionsEnum.Up
+            _response = req.SortingDirection == DirectionsEnum.Up
                 ? [.. _response.OrderBy(x => x.Value[req.SortBy])]
                 : [.. _response.OrderByDescending(x => x.Value[req.SortBy])];
         }

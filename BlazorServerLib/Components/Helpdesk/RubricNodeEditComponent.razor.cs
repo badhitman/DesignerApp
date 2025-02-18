@@ -58,7 +58,7 @@ public partial class RubricNodeEditComponent : BlazorBusyComponentBaseAuthModel
 
     static MoveRowStatesEnum[] CantDownMove => [MoveRowStatesEnum.End, MoveRowStatesEnum.Singleton];
 
-    async Task MoveRow(VerticalDirectionsEnum dir, TreeItemDataRubricModel rubric)
+    async Task MoveRow(DirectionsEnum dir, TreeItemDataRubricModel rubric)
     {
         if (ItemModel is null || CurrentUserSession is null)
             return;

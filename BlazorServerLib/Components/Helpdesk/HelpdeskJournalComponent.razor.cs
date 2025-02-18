@@ -93,7 +93,7 @@ public partial class HelpdeskJournalComponent : BlazorBusyComponentBaseAuthModel
             PageNum = state.Page,
             PageSize = state.PageSize,
             SortBy = state.SortLabel,
-            SortingDirection = state.SortDirection == SortDirection.Ascending ? VerticalDirectionsEnum.Up : VerticalDirectionsEnum.Down,
+            SortingDirection = state.SortDirection == SortDirection.Ascending ? DirectionsEnum.Up : DirectionsEnum.Down,
         };
 
         TResponseModel<TPaginationResponseModel<IssueHelpdeskModel>> rest = await HelpdeskRepo
