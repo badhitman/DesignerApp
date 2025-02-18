@@ -5,17 +5,18 @@
 namespace SharedLib;
 
 /// <summary>
-/// Папка синхронизации
+/// ApiRestBaseModel
 /// </summary>
-public class SyncDirectoryModelDB : ApiRestBaseModel
+public abstract class ApiRestBaseModel : EntryModel
 {
-    /// <summary>
-    /// LocalDirectory
-    /// </summary>
-    public string? LocalDirectory { get; set; }
 
     /// <summary>
-    /// RemoteDirectory
+    /// Родитель
     /// </summary>
-    public string? RemoteDirectory { get; set; }
+    public int ParentId { get; set; }
+
+    /// <summary>
+    /// Родитель
+    /// </summary>
+    public ApiRestConfigModelDB? Parent { get; set; }
 }

@@ -2,6 +2,7 @@
 
 @using BlazorLib
 @using BlazorLib.Components
+@using DbcLib
 @using MudBlazor
 @using SharedLib
 
@@ -15,7 +16,7 @@
         <button disabled="@(!CanSave || IsBusyProgress || HoldPage)" class="btn btn-outline-@(CanSave ? "success" : "secondary")" type="button" @onclick="SaveConfig">Сохранить</button>
         @if (!configEdit.Equals(MauiProgram.ConfigStore.Response))
         {
-            <button disabled="@(IsBusyProgress || HoldPage)" @onclick="() => configEdit = GlobalTools.CreateDeepCopy(MauiProgram.ConfigStore.Response)!" class="btn btn-outline-warning" type="button">Отмена</button>
+                <button disabled="@(IsBusyProgress || HoldPage)" @onclick="() => configEdit = GlobalTools.CreateDeepCopy(MauiProgram.ConfigStore.Response)!" class="btn btn-outline-warning" type="button">Отмена</button>
         }
         <button @onclick="TestConnect" disabled="@(!configEdit.FullSets || IsBusyProgress || HoldPage)" class="btn btn-outline-@(configEdit.ConnectionSet ? "success" : "secondary")" type="button">Test</button>
     </div>
@@ -49,94 +50,95 @@
 
 @if (IsBusyProgress)
 {
-    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
 }
 
 @if (!IsBusyProgress && configEdit.FullSets && testResult?.Response?.Roles is not null && MauiProgram.ConfigStore.Success())
 {
-    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-        <MudTabPanel Text="Статус">
-            <div class="card my-1">
-                <div class="card-body">
-                    <h5 class="card-title">Карточка клиента</h5>
-                    <h6 class="card-subtitle mb-2 text-body-secondary">@testResult.Response.UserName</h6>
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            <MudTabPanel Text="Статус">
+                <div class="card my-1">
+                    <div class="card-body">
+                        <h5 class="card-title">Карточка клиента</h5>
+                        <h6 class="card-subtitle mb-2 text-body-secondary">@testResult.Response.UserName</h6>
                     @foreach (string _r in testResult.Response.Roles)
                     {
-                        <span class="badge text-bg-primary mx-1">@_r</span>
+                                <span class="badge text-bg-primary mx-1">@_r</span>
                     }
+                    </div>
                 </div>
-            </div>
             @if (testResult.Messages.Count != 0)
             {
-                <table class="table table-dark table-hover my-2">
-                    <thead>
-                        <tr>
-                            <th scope="col">Logs</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                        <table class="table table-dark table-hover my-2">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Logs</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                         @foreach (ResultMessage _r in testResult.Messages)
                         {
-                            <tr>
-                                <th scope="row" class="table-@Home.ColorStatus(_r.TypeMessage)">@_r.Text</th>
-                            </tr>
+                                        <tr>
+                                            <th scope="row" class="table-@Home.ColorStatus(_r.TypeMessage)">@_r.Text</th>
+                                        </tr>
                         }
-                    </tbody>
-                </table>
+                            </tbody>
+                        </table>
             }
-        </MudTabPanel>
-        <MudTabPanel Disabled="@(checkDir is null || !configEdit.Equals(MauiProgram.ConfigStore.Response))" Text="Отправка файлов">
+            </MudTabPanel>
+            <MudTabPanel Disabled="@(checkDir is null || !configEdit.Equals(MauiProgram.ConfigStore.Response))" Text="Отправка файлов">
             @if (checkDir is null)
             {
-                <figure class="text-center">
-                    <blockquote class="blockquote">
-                        <p>Данные отсутсвуют.</p>
-                    </blockquote>
-                    <figcaption class="blockquote-footer">
-                        Проверьте <cite title="Настройки">Настройки</cite>
-                    </figcaption>
-                </figure>
+                        <figure class="text-center">
+                            <blockquote class="blockquote">
+                                <p>Данные отсутсвуют.</p>
+                            </blockquote>
+                            <figcaption class="blockquote-footer">
+                                Проверьте <cite title="Настройки">Настройки</cite>
+                            </figcaption>
+                        </figure>
             }
             else if (!configEdit.Equals(MauiProgram.ConfigStore.Response))
             {
-                <figure class="text-center">
-                    <blockquote class="blockquote">
-                        <p>Настройки изменены.</p>
-                    </blockquote>
-                    <figcaption class="blockquote-footer">
-                        Сохраните <cite title="Настройки">Настройки</cite>
-                    </figcaption>
-                </figure>
+                        <figure class="text-center">
+                            <blockquote class="blockquote">
+                                <p>Настройки изменены.</p>
+                            </blockquote>
+                            <figcaption class="blockquote-footer">
+                                Сохраните <cite title="Настройки">Настройки</cite>
+                            </figcaption>
+                        </figure>
             }
             else
             {
-                <SyncFilesComponent ParentPage="this" />
+                        <SyncFilesComponent ParentPage="this" />
             }
-        </MudTabPanel>
-        <MudTabPanel Disabled="@(checkDir is null || !configEdit.Equals(MauiProgram.ConfigStore.Response))" Text="Команды">
-            <ExeCommandsComponent ParentPage="this" />
-        </MudTabPanel>
-        <MudTabPanel Disabled="@(checkDir is null || !configEdit.Equals(MauiProgram.ConfigStore.Response))" Text="Логи">
-            <LogsComponent />
-        </MudTabPanel>
-    </MudTabs>
+            </MudTabPanel>
+            <MudTabPanel Disabled="@(checkDir is null || !configEdit.Equals(MauiProgram.ConfigStore.Response))" Text="Команды">
+                <ExeCommandsComponent ParentPage="this" />
+            </MudTabPanel>
+            <MudTabPanel Disabled="@(checkDir is null || !configEdit.Equals(MauiProgram.ConfigStore.Response))" Text="Логи">
+                <LogsComponent />
+            </MudTabPanel>
+        </MudTabs>
 }
 @if (MauiProgram.ConfigStore.Messages.Count != 0)
 {
-    <table class="table table-dark table-hover my-2">
-        <thead>
-            <tr>
-                <th scope="col">Logs</th>
-            </tr>
-        </thead>
-        <tbody>
+        <table class="table table-dark table-hover my-2">
+            <thead>
+                <tr>
+                    <th scope="col">Logs</th>
+                </tr>
+            </thead>
+            <tbody>
             @foreach (ResultMessage _r in MauiProgram.ConfigStore.Messages)
             {
-                <tr>
-                    <th scope="row" class="table-@Home.ColorStatus(_r.TypeMessage)">@_r.Text</th>
-                </tr>
+                        <tr>
+                            <th scope="row" class="table-@Home.ColorStatus(_r.TypeMessage)">@_r.Text</th>
+                        </tr>
             }
-        </tbody>
+            </tbody>
 
-    </table>
+        </table>
 }
+<p>База данных: @(ToolsAppContext.dbPath)</p>

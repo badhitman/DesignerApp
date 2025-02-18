@@ -3,6 +3,7 @@ using CommunityToolkit.Maui;
 using MudBlazor.Services;
 using Newtonsoft.Json;
 using SharedLib;
+using DbcLib;
 
 namespace ToolsMauiApp;
 
@@ -114,6 +115,17 @@ public static class MauiProgram
 
 
         MauiAppBuilder builder = MauiApp.CreateBuilder();
+        // IDbContextFactory<ToolsAppContext> toolsDbFactory,
+        builder.Services.AddOptions();
+        builder.Services.AddDbContextFactory<ToolsAppContext>(opt =>
+        {
+#if DEBUG
+            opt.EnableSensitiveDataLogging(true);
+            opt.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+#endif
+        });
+
+
         builder.UseMauiApp<App>().ConfigureFonts(fonts =>
         {
             fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

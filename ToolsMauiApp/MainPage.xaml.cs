@@ -1,4 +1,6 @@
-﻿namespace ToolsMauiApp
+﻿using DbcLib;
+
+namespace ToolsMauiApp
 {
     public partial class MainPage : ContentPage
     {

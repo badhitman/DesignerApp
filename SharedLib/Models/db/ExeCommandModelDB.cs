@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Запуск команды (bash/cmd)
 /// </summary>
-public class ExeCommandModelDB : EntryModel
+public class ExeCommandModelDB : ApiRestBaseModel
 {
     /// <summary>
     /// FileName

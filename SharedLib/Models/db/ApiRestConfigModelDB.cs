@@ -28,4 +28,9 @@ public class ApiRestConfigModelDB : EntryModel
     /// Папки синхронизации
     /// </summary>
     public List<SyncDirectoryModelDB>? SyncDirectories { get; set; }
+
+    /// <summary>
+    /// Команды (удалённый запуск)
+    /// </summary>
+    public List<ExeCommandModelDB>? CommandsRemote { get; set; }
 }

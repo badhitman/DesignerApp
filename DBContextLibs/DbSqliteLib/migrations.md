@@ -4,16 +4,6 @@ Update-Database -Context MainDbAppContext -Project DbSqliteLib -StartupProject B
 ```
 
 ```
-Add-Migration StorageContext001 -Context StorageContext -Project DbSqliteLib -StartupProject StorageService
-Update-Database -Context StorageContext -Project DbSqliteLib -StartupProject StorageService
-```
-
-```
-Add-Migration NLogsContext001 -Context NLogsContext -Project DbSqliteLib -StartupProject StorageService
-Update-Database -Context NLogsContext -Project DbSqliteLib -StartupProject StorageService
-```
-
-```
 Add-Migration HelpdeskContext001 -Context HelpdeskContext -Project DbSqliteLib -StartupProject HelpdeskService
 Update-Database -Context HelpdeskContext -Project DbSqliteLib -StartupProject HelpdeskService
 ```
@@ -26,4 +16,14 @@ Update-Database -Context TelegramBotContext -Project DbSqliteLib -StartupProject
 ```
 Add-Migration CommerceContext001 -Context CommerceContext -Project DbSqliteLib -StartupProject CommerceService
 Update-Database -Context CommerceContext -Project DbSqliteLib -StartupProject CommerceService
+```
+
+```
+Add-Migration StorageContext001 -Context StorageContext -Project DbSqliteLib -StartupProject StorageService
+Update-Database -Context StorageContext -Project DbSqliteLib -StartupProject StorageService
+```
+
+```
+Add-Migration NLogsContext001 -Context NLogsContext -Project DbSqliteLib -StartupProject StorageService
+Update-Database -Context NLogsContext -Project DbSqliteLib -StartupProject StorageService
 ```

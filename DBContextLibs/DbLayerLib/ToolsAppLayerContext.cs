@@ -39,4 +39,10 @@ public partial class ToolsAppLayerContext : DbContext
     /// Папки синхронизации
     /// </summary>
     public DbSet<SyncDirectoryModelDB> SyncDirectories { get; set; }
+
+
+    /// <summary>
+    /// Команды
+    /// </summary>
+    public DbSet<ExeCommandModelDB> ExeCommands { get; set; }
 }
