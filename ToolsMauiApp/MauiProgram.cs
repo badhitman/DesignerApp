@@ -4,9 +4,11 @@ using MudBlazor.Services;
 using Newtonsoft.Json;
 using SharedLib;
 using DbcLib;
+using ToolsMauiLib;
 
 namespace ToolsMauiApp;
 
+/// <inheritdoc/>
 public static class MauiProgram
 {
     /// <summary>
@@ -36,7 +38,7 @@ public static class MauiProgram
     /// </summary>
     public static TResponseModel<List<ExeCommandModelDB>> ExeCommands { get; private set; } = new();
 
-
+    /// <inheritdoc/>
     public static MauiApp CreateMauiApp()
     {
         FileInfo _fi = new(ConfigPath);

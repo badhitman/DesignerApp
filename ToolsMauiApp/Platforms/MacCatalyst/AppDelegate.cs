@@ -1,10 +1,11 @@
 ﻿using Foundation;
 
-namespace ToolsMauiApp
+namespace ToolsMauiApp;
+
+/// <inheritdoc/>
+[Register("AppDelegate")]
+public class AppDelegate : MauiUIApplicationDelegate
 {
-    [Register("AppDelegate")]
-    public class AppDelegate : MauiUIApplicationDelegate
-    {
-        protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
-    }
+    /// <inheritdoc/>
+    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }

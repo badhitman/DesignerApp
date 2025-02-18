@@ -1,15 +1,17 @@
-﻿namespace ToolsMauiApp
-{
-    public partial class App : Application
-    {
-        public App()
-        {
-            InitializeComponent();
-        }
+﻿namespace ToolsMauiApp;
 
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            return new Window(new MainPage()) { Title = "ToolsMauiApp" };
-        }
+/// <inheritdoc/>
+public partial class App : Application
+{
+    /// <inheritdoc/>
+    public App()
+    {
+        InitializeComponent();
+    }
+
+    /// <inheritdoc/>
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        return new Window(new MainPage()) { Title = "ToolsMauiApp" };
     }
 }

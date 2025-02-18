@@ -15,12 +15,12 @@ public partial class ToolsAppContext(DbContextOptions<ToolsAppContext> options) 
     /// <summary>
     /// FileName
     /// </summary>
-    static readonly string FileName = nameof(ToolsAppContext);
+    static readonly string ctxName = nameof(ToolsAppContext);
 
     /// <summary>
     /// db Path
     /// </summary>
-    public static string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppDomain.CurrentDomain.FriendlyName, $"{FileName}.db3");
+    public static string DbPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ctxName, $"{AppDomain.CurrentDomain.FriendlyName}.db3");
 
     /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder options)
@@ -28,6 +28,6 @@ public partial class ToolsAppContext(DbContextOptions<ToolsAppContext> options) 
         base.OnConfiguring(options);
         
         options
-            .UseSqlite($"Filename={dbPath}");
+            .UseSqlite($"Filename={DbPath}");
     }
 }

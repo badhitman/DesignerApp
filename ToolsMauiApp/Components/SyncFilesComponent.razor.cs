@@ -49,6 +49,8 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
     ToolsFilesResponseModel[]? forDelete;
     ToolsFilesResponseModel[]? forUpdateOrAdd;
     bool IndeterminateProgress;
+    
+    /// <inheritdoc/>
     public double ValueProgress { get; set; }
     long forUpdateOrAddSum;
 

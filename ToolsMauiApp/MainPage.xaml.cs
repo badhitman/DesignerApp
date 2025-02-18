@@ -1,12 +1,11 @@
-﻿using DbcLib;
+﻿namespace ToolsMauiApp;
 
-namespace ToolsMauiApp
+/// <inheritdoc/>
+public partial class MainPage : ContentPage
 {
-    public partial class MainPage : ContentPage
+    /// <inheritdoc/>
+    public MainPage()
     {
-        public MainPage()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
