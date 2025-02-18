@@ -28,7 +28,7 @@
     <RowTemplate>
         <MudTd DataLabel="Создан">
             <span data-cd="@context.CreatedAtUtc">
-                @context.CreatedAtUtc.GetCustomTime().ToString("d", CultureInfo.GetCultureInfo("ru-RU")) <sup>@context.CreatedAtUtc.GetCustomTime().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup>
+                @context.CreatedAtUtc.GetCustomTime().ToString("d", GlobalStaticConstants.RU) <sup>@context.CreatedAtUtc.GetCustomTime().ToString("t", GlobalStaticConstants.RU)</sup>
             </span>
         </MudTd>
         <MudTd DataLabel="From">

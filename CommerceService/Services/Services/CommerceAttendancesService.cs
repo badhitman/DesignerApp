@@ -244,7 +244,7 @@ public partial class CommerceImplementService : ICommerceService
 
         string subject_email = "Создана новая бронь";
         DateTime _dt = DateTime.UtcNow.GetCustomTime();
-        string _dtAsString = $"{_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}";
+        string _dtAsString = $"{_dt.ToString("d", GlobalStaticConstants.RU)} {_dt.ToString("t", GlobalStaticConstants.RU)}";
         string _about_order = $"Новая бронь {_dtAsString}";
 
         if (CommerceNewOrderSubjectNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceNewOrderSubjectNotification.Response))

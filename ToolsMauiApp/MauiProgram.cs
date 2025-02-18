@@ -117,7 +117,7 @@ public static class MauiProgram
 
         MauiAppBuilder builder = MauiApp.CreateBuilder();
         //
-        
+
         builder.Services.AddDbContextFactory<ToolsAppContext>(opt =>
         {
 #if DEBUG
@@ -133,9 +133,13 @@ public static class MauiProgram
         }).UseMauiCommunityToolkit();
         builder.Services.AddMauiBlazorWebView();
 
+        ApiRestConfigModelDB _conf = new() { Name = "" };
+        //builder.Services.AddSingleton(sp => _conf);
+        builder.Services.AddCascadingValue(sp => _conf);
+
         builder.Services.AddScoped<ILogsService, LogsService>();
         builder.Services.AddScoped<IToolsAppManager, ToolsAppManager>();
-        
+
         builder.Services.AddMudServices();
         builder.Services.AddScoped<IClientHTTPRestService, ToolsSystemHTTPRestService>();
         builder.Services.AddScoped<IServerToolsService, ToolsSystemService>();

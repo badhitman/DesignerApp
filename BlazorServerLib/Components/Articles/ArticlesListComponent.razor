@@ -20,11 +20,11 @@
     <RowTemplate>
         <MudTd DataLabel="Updated">
             <a href="/articles/edit-card/@(context.Id)">
-                @context.LastUpdatedAtUTC?.GetCustomTime().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))
-                <sup>@context.LastUpdatedAtUTC?.GetCustomTime().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup>
+                @context.LastUpdatedAtUTC?.GetCustomTime().ToString("d", GlobalStaticConstants.RU)
+                <sup>@context.LastUpdatedAtUTC?.GetCustomTime().ToString("t", GlobalStaticConstants.RU)</sup>
             </a>
         </MudTd>
-        <MudTd DataLabel="Created">@context.CreatedAtUTC.GetCustomTime().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))</MudTd>
+        <MudTd DataLabel="Created">@context.CreatedAtUTC.GetCustomTime().ToString("d", GlobalStaticConstants.RU)</MudTd>
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Author">@(usersDump.FirstOrDefault(x => x.UserId == context.AuthorIdentityId)?.UserName ?? context.AuthorIdentityId)</MudTd>
         <MudTd DataLabel="Rubrics">@context.RubricsJoins?.Count</MudTd>

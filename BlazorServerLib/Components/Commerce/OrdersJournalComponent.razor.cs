@@ -47,7 +47,6 @@ public partial class OrdersJournalComponent : BlazorBusyComponentBaseAuthModel
     public int? OfferFilter { get; set; }
 
 
-    private static readonly CultureInfo cultureInfo = new("ru-RU");
     List<OrderDocumentModelDB> documentsPartData = [];
     readonly List<IssueHelpdeskModelDB> IssuesCacheDump = [];
 

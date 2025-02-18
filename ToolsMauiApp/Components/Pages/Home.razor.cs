@@ -20,6 +20,13 @@ public partial class Home : BlazorBusyComponentBaseModel
     IToolsAppManager ToolsApp { get; set; } = default!;
 
 
+    /// <summary>
+    /// ApiConnect
+    /// </summary>
+    [CascadingParameter, EditorRequired]
+    public required ApiRestConfigModelDB ApiConnect { get; set; }
+
+
     ConfigStoreModel configEdit = new();
     TResponseModel<ExpressProfileResponseModel>? testResult;
     TResponseModel<List<ToolsFilesResponseModel>>? checkDir;

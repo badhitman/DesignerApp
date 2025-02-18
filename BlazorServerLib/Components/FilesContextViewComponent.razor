@@ -23,8 +23,8 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="CreatedAt">
-            @context.CreatedAt.GetCustomTime().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))
-            <sup>@context.CreatedAt.GetCustomTime().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup>
+            @context.CreatedAt.GetCustomTime().ToString("d", GlobalStaticConstants.RU)
+            <sup>@context.CreatedAt.GetCustomTime().ToString("t", GlobalStaticConstants.RU)</sup>
         </MudTd>
         @if (ApplicationsNames.Length != 1)
         {

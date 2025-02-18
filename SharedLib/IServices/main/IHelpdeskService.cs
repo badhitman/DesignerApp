@@ -12,16 +12,12 @@ namespace SharedLib;
 public interface IHelpdeskService
 {
     /// <summary>
-    /// cultureInfo
-    /// </summary>
-    static readonly CultureInfo cultureInfo = new("ru-RU");
-    /// <summary>
     /// ReplaceTags
     /// </summary>
     public static string ReplaceTags(string documentName, DateTime dateCreated, int documentId, StatusesDocumentsEnum stepIssue, string raw, string? clearBaseUri, string aboutDocument, bool clearMd = false, string documentPagePath = "issue-card")
     {
         return raw.Replace(GlobalStaticConstants.DocumentNameProperty, documentName)
-        .Replace(GlobalStaticConstants.DocumentDateProperty, $"{dateCreated.GetCustomTime().ToString("d", cultureInfo)} {dateCreated.GetCustomTime().ToString("t", cultureInfo)}")
+        .Replace(GlobalStaticConstants.DocumentDateProperty, $"{dateCreated.GetCustomTime().ToString("d", GlobalStaticConstants.RU)} {dateCreated.GetCustomTime().ToString("t", GlobalStaticConstants.RU)}")
         .Replace(GlobalStaticConstants.DocumentStatusProperty, stepIssue.DescriptionInfo())
         .Replace(GlobalStaticConstants.DocumentLinkAddressProperty, clearMd ? $"{clearBaseUri}/{documentPagePath}/{documentId}" : $"<a href='{clearBaseUri}/{documentPagePath}/{documentId}'>{aboutDocument}</a>")
         .Replace(GlobalStaticConstants.HostAddressProperty, clearMd ? clearBaseUri : $"<a href='{clearBaseUri}'>{clearBaseUri}</a>");

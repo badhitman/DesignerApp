@@ -20,17 +20,12 @@ public static class DateTimeExtensions
         => TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.FindSystemTimeZoneById(timeZone));
 
     /// <summary>
-    /// ru-RU: CultureInfo
-    /// </summary>
-    public static readonly CultureInfo cultureInfo = new("ru-RU");
-
-    /// <summary>
     /// Дата + время
     /// </summary>
     public static string GetHumanDateTime(this DateTime dateTime, string timeZone = "Europe/Moscow")
     {
         DateTime _cdt = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.FindSystemTimeZoneById(timeZone));
-        return $"{_cdt.ToString("d", cultureInfo)} {_cdt.ToString("t", cultureInfo)}";
+        return $"{_cdt.ToString("d", GlobalStaticConstants.RU)} {_cdt.ToString("t", GlobalStaticConstants.RU)}";
     }
 
 

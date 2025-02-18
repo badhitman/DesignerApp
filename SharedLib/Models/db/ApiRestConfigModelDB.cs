@@ -33,4 +33,17 @@ public class ApiRestConfigModelDB : EntryModel
     /// Команды (удалённый запуск)
     /// </summary>
     public List<ExeCommandModelDB>? CommandsRemote { get; set; }
+
+    /// <inheritdoc/>
+    public void Reload(ApiRestConfigModelDB other)
+    {
+        AddressBaseUri = other.AddressBaseUri;
+        TokenAccess = other.TokenAccess;
+        HeaderName = other.HeaderName;
+        Name = other.Name;
+        Id = other.Id;
+
+        SyncDirectories = other.SyncDirectories;
+        CommandsRemote = other.CommandsRemote;
+    }
 }

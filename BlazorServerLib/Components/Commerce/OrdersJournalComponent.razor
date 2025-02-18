@@ -24,13 +24,13 @@
             @if (hd_doc is null)
             {
                 <span>
-                    @msk_dt.ToString("d", cultureInfo) <sup>@msk_dt.ToString("t", cultureInfo)</sup>
+                    @msk_dt.ToString("d", GlobalStaticConstants.RU) <sup>@msk_dt.ToString("t", GlobalStaticConstants.RU)</sup>
                 </span>
             }
             else
             {
                 <a href="/issue-card/@context.HelpdeskId">
-                    @msk_dt.ToString("d", cultureInfo) <sup>@msk_dt.ToString("t", cultureInfo)</sup>
+                    @msk_dt.ToString("d", GlobalStaticConstants.RU) <sup>@msk_dt.ToString("t", GlobalStaticConstants.RU)</sup>
                 </a>
             }
         </MudTd>

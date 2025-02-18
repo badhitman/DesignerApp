@@ -27,7 +27,7 @@
     <RowTemplate>
         <MudTd DataLabel="Создан">
             <a href="@($"/issue-card/{context.Id}")">
-                @context.CreatedAtUTC.GetCustomTime().ToString("d", CultureInfo.GetCultureInfo("ru-RU"))<sup>@context.CreatedAtUTC.GetCustomTime().ToString("t", CultureInfo.GetCultureInfo("ru-RU"))</sup>
+                @context.CreatedAtUTC.GetCustomTime().ToString("d", GlobalStaticConstants.RU)<sup>@context.CreatedAtUTC.GetCustomTime().ToString("t", GlobalStaticConstants.RU)</sup>
             </a>
         </MudTd>
         <MudTd DataLabel="Статус">@context.StatusDocument.DescriptionInfo()</MudTd>

@@ -38,18 +38,17 @@
             </AuthorizeView>
 
             @{
-                CultureInfo ci = CultureInfo.GetCultureInfo("ru-RU");
                 DateTime dc = Issue.CreatedAtUTC.GetCustomTime();
                 DateTime du = Issue.LastUpdateAt.GetCustomTime();
             }
             <dt>Создан:</dt>
             <dd>
-                @dc.ToString("d", ci) <sup>@dc.ToString("t", ci)</sup>
+                @dc.ToString("d", GlobalStaticConstants.RU) <sup>@dc.ToString("t", GlobalStaticConstants.RU)</sup>
             </dd>
 
             <dt>Обновлён:</dt>
             <dd>
-                @du.ToString("d", ci) <sup>@du.ToString("t", ci)</sup>
+                @du.ToString("d", GlobalStaticConstants.RU) <sup>@du.ToString("t", GlobalStaticConstants.RU)</sup>
             </dd>
         </dl>
     </div>

@@ -263,7 +263,7 @@ public class HelpdeskImplementService(
                 if (find_orders.Success() && find_orders.Response is not null && find_orders.Response.Length != 0)
                 {
                     OrderDocumentModelDB order_obj = find_orders.Response[0];
-                    _about_document = $"Заказ '{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", IHelpdeskService.cultureInfo)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", IHelpdeskService.cultureInfo)}";
+                    _about_document = $"Заказ '{order_obj.Name}' {order_obj.CreatedAtUTC.GetCustomTime().ToString("d", GlobalStaticConstants.RU)} {order_obj.CreatedAtUTC.GetCustomTime().ToString("t", GlobalStaticConstants.RU)}";
                     if (CommerceNewMessageOrderSubjectNotification.Success() && !string.IsNullOrWhiteSpace(CommerceNewMessageOrderSubjectNotification.Response))
                         subject_email = IHelpdeskService.ReplaceTags(order_obj.Name, order_obj.CreatedAtUTC, order_obj.HelpdeskId!.Value, order_obj.StatusDocument, CommerceNewMessageOrderSubjectNotification.Response, wc.ClearBaseUri, _about_document);
 

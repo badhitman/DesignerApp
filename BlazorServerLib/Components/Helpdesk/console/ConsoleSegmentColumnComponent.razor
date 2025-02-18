@@ -53,7 +53,7 @@ else
                     <a title="открыть обращение" href="/issue-card/@issue_element.Id" class="card-link">Перейти</a>
                     <MudSpacer />
                     <code title="Дата последнего обновления">
-                        @(IsLarge ? issue_element.LastUpdateAt.ToString("dd.MM.yy HH:mm") : issue_element.LastUpdateAt.GetCustomTime().ToString("d", cultureInfo))
+                        @(IsLarge ? issue_element.LastUpdateAt.ToString("dd.MM.yy HH:mm") : issue_element.LastUpdateAt.GetCustomTime().ToString("d", GlobalStaticConstants.RU))
                     </code>
                 </MudStack>
             </div>

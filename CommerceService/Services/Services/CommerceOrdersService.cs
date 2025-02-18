@@ -32,8 +32,6 @@ public partial class CommerceImplementService(
     WebConfigModel _webConf,
     IStorageTransmission StorageTransmissionRepo) : ICommerceService
 {
-    private static readonly CultureInfo cultureInfo = new("ru-RU");
-
     #region payment-document
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> PaymentDocumentUpdate(TAuthRequestModel<PaymentDocumentBaseModel> req)
@@ -1055,7 +1053,7 @@ public partial class CommerceImplementService(
 
                 string subject_email = "Создан новый заказ";
                 DateTime _dt = DateTime.UtcNow.GetCustomTime();
-                string _dtAsString = $"{_dt.ToString("d", cultureInfo)} {_dt.ToString("t", cultureInfo)}";
+                string _dtAsString = $"{_dt.ToString("d", GlobalStaticConstants.RU)} {_dt.ToString("t", GlobalStaticConstants.RU)}";
                 string _about_order = $"'{req.Name}' {_dtAsString}";
 
                 if (CommerceNewOrderSubjectNotification?.Success() == true && !string.IsNullOrWhiteSpace(CommerceNewOrderSubjectNotification.Response))

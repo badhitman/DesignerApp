@@ -22,13 +22,13 @@
         }
         <MudTd DataLabel="Примечание"><a href="/nomenclature/warehouse/editing/@(context.Id)">@context.Name</a></MudTd>
         <MudTd DataLabel="Доставка">
-            <span>@ddt.ToString("d", DateTimeExtensions.cultureInfo) <sup class="text-secondary">@ddt.ToString("t", DateTimeExtensions.cultureInfo)</sup></span>
+            <span>@ddt.ToString("d", GlobalStaticConstants.RU) <sup class="text-secondary">@ddt.ToString("t", GlobalStaticConstants.RU)</sup></span>
         </MudTd>
         <MudTd DataLabel="Склад">@(RubricsCache.FirstOrDefault(x => x.Id == context.WarehouseId)?.Name ?? context.WarehouseId.ToString())</MudTd>
         <MudTd DataLabel="">
-            <span>@cdt.ToString("d", DateTimeExtensions.cultureInfo) <sup class="text-secondary">@cdt.ToString("t", DateTimeExtensions.cultureInfo)</sup></span>
+            <span>@cdt.ToString("d", GlobalStaticConstants.RU) <sup class="text-secondary">@cdt.ToString("t", GlobalStaticConstants.RU)</sup></span>
             /
-            <span>@udt.ToString("d", DateTimeExtensions.cultureInfo) <sup class="text-secondary">@udt.ToString("t", DateTimeExtensions.cultureInfo)</sup></span>
+            <span>@udt.ToString("d", GlobalStaticConstants.RU) <sup class="text-secondary">@udt.ToString("t", GlobalStaticConstants.RU)</sup></span>
         </MudTd>
     </RowTemplate>
     <NoRecordsContent>

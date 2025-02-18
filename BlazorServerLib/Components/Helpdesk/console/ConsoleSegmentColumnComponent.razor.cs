@@ -41,7 +41,6 @@ public partial class ConsoleSegmentColumnComponent : BlazorBusyComponentBaseMode
     public string? UserFilter { get; set; }
 
 
-    static CultureInfo cultureInfo = new("ru-RU");
 
     string? _searchQuery;
     string? SearchQuery
