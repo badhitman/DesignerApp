@@ -30,7 +30,7 @@ public partial class RowCommandComponent : BlazorBusyComponentBaseModel
     public required ExeCommandsComponent OwnerComponent { get; set; }
 
 
-    ExeCommandModel CurrentCommand = default!;
+    ExeCommandModelDB CurrentCommand = default!;
 
 
     async Task RunCommand()

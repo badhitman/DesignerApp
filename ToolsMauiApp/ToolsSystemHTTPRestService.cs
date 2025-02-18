@@ -58,7 +58,7 @@ public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : 
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<string>> ExeCommand(ExeCommandModel req)
+    public async Task<TResponseModel<string>> ExeCommand(ExeCommandModelDB req)
     {
         using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Tools.ToString());
         using HttpResponseMessage response = await client.PostAsJsonAsync($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.CMD_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.EXE_ACTION_NAME}", req);

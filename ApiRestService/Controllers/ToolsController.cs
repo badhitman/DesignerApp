@@ -248,7 +248,7 @@ public class ToolsController(
     /// Роль: <see cref="ExpressApiRolesEnum.SystemRoot"/>
     /// </remarks>
     [HttpPost($"/{Routes.API_CONTROLLER_NAME}/{Routes.TOOLS_CONTROLLER_NAME}/{Routes.CMD_CONTROLLER_NAME}/{Routes.EXE_ACTION_NAME}")]
-    public TResponseModel<string> ExeCommand(ExeCommandModel req)
+    public TResponseModel<string> ExeCommand(ExeCommandModelDB req)
     {
         TResponseModel<string> res = new();
 

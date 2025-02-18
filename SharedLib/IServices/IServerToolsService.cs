@@ -12,7 +12,7 @@ public interface IServerToolsService
     /// <summary>
     /// ExeCommand
     /// </summary>
-    public Task<TResponseModel<string>> ExeCommand(ExeCommandModel req);
+    public Task<TResponseModel<string>> ExeCommand(ExeCommandModelDB req);
 
     /// <summary>
     /// GetDirectory

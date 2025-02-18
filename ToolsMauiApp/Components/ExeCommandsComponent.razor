@@ -25,7 +25,7 @@
             int i = -1;
             <ul class="list-group list-group-flush">
 
-                @foreach (ExeCommandModel rowCmd in MauiProgram.ExeCommands.Response)
+                @foreach (ExeCommandModelDB rowCmd in MauiProgram.ExeCommands.Response)
                 {
                     i++;
                     <li @key="@($"r-{i}")" class="list-group-item">

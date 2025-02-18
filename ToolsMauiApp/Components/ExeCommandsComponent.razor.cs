@@ -27,7 +27,7 @@ public partial class ExeCommandsComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required Home ParentPage { get; set; }
 
-    private ExeCommandModel newCommand = new() { FileName = "", Arguments = "" };
+    private ExeCommandModelDB newCommand = new() { FileName = "", Arguments = "", Name = "" };
         
 
     async Task AddNewCommand()
@@ -38,7 +38,7 @@ public partial class ExeCommandsComponent : BlazorBusyComponentBaseModel
         await SetBusy();
         await MauiProgram.SaveCommands(MauiProgram.ExeCommands.Response);
         await ParentPage.HoldPageUpdate(false);
-        newCommand = new() { FileName = "", Arguments = "" };
+        newCommand = new() { FileName = "", Arguments = "", Name = "" };
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(MauiProgram.ExeCommands.Messages);
     }

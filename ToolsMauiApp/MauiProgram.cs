@@ -33,7 +33,7 @@ public static class MauiProgram
     /// <summary>
     /// Exe Commands
     /// </summary>
-    public static TResponseModel<List<ExeCommandModel>> ExeCommands { get; private set; } = new();
+    public static TResponseModel<List<ExeCommandModelDB>> ExeCommands { get; private set; } = new();
 
 
     public static MauiApp CreateMauiApp()
@@ -80,7 +80,7 @@ public static class MauiProgram
         {
             try
             {
-                File.WriteAllText(_fi.FullName, JsonConvert.SerializeObject(new List<ExeCommandModel>() { }));
+                File.WriteAllText(_fi.FullName, JsonConvert.SerializeObject(new List<ExeCommandModelDB>() { }));
                 ConfigStore.AddInfo($"Создан файл команд: {_fi.FullName}");
             }
             catch (Exception ex)
@@ -93,10 +93,10 @@ public static class MauiProgram
         {
             try
             {
-                List<ExeCommandModel>? _cs = JsonConvert.DeserializeObject<List<ExeCommandModel>>(File.ReadAllText(_fi.FullName));
+                List<ExeCommandModelDB>? _cs = JsonConvert.DeserializeObject<List<ExeCommandModelDB>>(File.ReadAllText(_fi.FullName));
                 if (_cs is null)
                 {
-                    File.WriteAllText(_fi.FullName, JsonConvert.SerializeObject(new List<ExeCommandModel>() { }));
+                    File.WriteAllText(_fi.FullName, JsonConvert.SerializeObject(new List<ExeCommandModelDB>() { }));
                     ConfigStore.AddWarning($"Создан новый (перезаписан) файл команд: {_fi.FullName}");
                 }
                 else
@@ -164,7 +164,7 @@ public static class MauiProgram
     /// <summary>
     /// SaveCommands
     /// </summary>
-    public static async Task SaveCommands(List<ExeCommandModel> commands)
+    public static async Task SaveCommands(List<ExeCommandModelDB> commands)
     {
         ExeCommands.Messages.Clear();
         FileInfo _fi = new(CommandsPath);

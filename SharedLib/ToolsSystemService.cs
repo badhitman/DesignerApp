@@ -121,7 +121,7 @@ public class ToolsSystemService : IServerToolsService
     }
 
     /// <inheritdoc/>
-    public Task<TResponseModel<string>> ExeCommand(ExeCommandModel req)
+    public Task<TResponseModel<string>> ExeCommand(ExeCommandModelDB req)
     {
         TResponseModel<string> res = new();
 

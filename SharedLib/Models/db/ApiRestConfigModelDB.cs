@@ -29,29 +29,3 @@ public class ApiRestConfigModelDB : EntryModel
     /// </summary>
     public List<SyncDirectoryModelDB>? SyncDirectories { get; set; }
 }
-
-/// <summary>
-/// Папка синхронизации
-/// </summary>
-public class SyncDirectoryModelDB : EntryModel
-{
-    /// <summary>
-    /// LocalDirectory
-    /// </summary>
-    public string? LocalDirectory { get; set; }
-
-    /// <summary>
-    /// RemoteDirectory
-    /// </summary>
-    public string? RemoteDirectory { get; set; }
-
-    /// <summary>
-    /// Родитель
-    /// </summary>
-    public int ParentId { get; set; }
-
-    /// <summary>
-    /// Родитель
-    /// </summary>
-    public ApiRestConfigModelDB? Parent { get; set; }
-}

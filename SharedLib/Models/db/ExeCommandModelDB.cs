@@ -7,7 +7,7 @@ namespace SharedLib;
 /// <summary>
 /// Запуск команды (bash/cmd)
 /// </summary>
-public class ExeCommandModel
+public class ExeCommandModelDB : EntryModel
 {
     /// <summary>
     /// FileName
@@ -25,7 +25,7 @@ public class ExeCommandModel
         if (obj == null)
             return false;
 
-        if (obj is ExeCommandModel _ec)
+        if (obj is ExeCommandModelDB _ec)
             return
                 FileName.Equals(_ec.FileName) &&
                 Arguments.Equals(_ec.Arguments);
