@@ -3,10 +3,12 @@
 ////////////////////////////////////////////////
 
 using static SharedLib.GlobalStaticConstants;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using Newtonsoft.Json;
 using System.Text;
 using SharedLib;
+using DbcLib;
 
 namespace ToolsMauiApp;
 

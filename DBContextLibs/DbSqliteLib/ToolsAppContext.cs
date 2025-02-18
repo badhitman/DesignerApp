@@ -20,7 +20,7 @@ public partial class ToolsAppContext(DbContextOptions<ToolsAppContext> options) 
     /// <summary>
     /// db Path
     /// </summary>
-    public static string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"{FileName}.db3");
+    public static string dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppDomain.CurrentDomain.FriendlyName, $"{FileName}.db3");
 
     /// <inheritdoc/>
     protected override void OnConfiguring(DbContextOptionsBuilder options)

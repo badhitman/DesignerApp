@@ -14,7 +14,10 @@ namespace ToolsMauiApp.Components.Pages;
 public partial class Home : BlazorBusyComponentBaseModel
 {
     [Inject]
-    IClientHTTPRestService ToolsRepo { get; set; } = default!;
+    IClientHTTPRestService RestClientRepo { get; set; } = default!;
+
+    [Inject]
+    IToolsAppManager ToolsApp { get; set; } = default!;
 
 
     ConfigStoreModel configEdit = new();
@@ -76,9 +79,9 @@ public partial class Home : BlazorBusyComponentBaseModel
 
         await SetBusy();
 
-        testResult = await ToolsRepo.GetMe();
+        testResult = await RestClientRepo.GetMe();
         SnackbarRepo.ShowMessagesResponse(testResult.Messages);
-        checkDir = await ToolsRepo.GetDirectory(req);
+        checkDir = await RestClientRepo.GetDirectory(req);
         SnackbarRepo.ShowMessagesResponse(checkDir.Messages);
 
         await SetBusy(false);
@@ -87,6 +90,8 @@ public partial class Home : BlazorBusyComponentBaseModel
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
+        ApiRestConfigModelDB[] tokens = await ToolsApp.GetAllConfigurations();
+
         if (MauiProgram.ConfigStore.Response is null)
         {
             MauiProgram.ConfigStore.AddError("MauiProgram.ConfigStore.Response is null");
@@ -98,7 +103,7 @@ public partial class Home : BlazorBusyComponentBaseModel
         if (MauiProgram.ConfigStore.Response.FullSets)
         {
             await SetBusy();
-            testResult = await ToolsRepo.GetMe();
+            testResult = await RestClientRepo.GetMe();
             //if (testResult.Messages.Count != 0)
             //    MauiProgram.ConfigStore.Messages.AddRange(testResult.Messages);
             await SetBusy(false);

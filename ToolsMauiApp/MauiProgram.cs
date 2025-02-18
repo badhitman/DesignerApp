@@ -113,10 +113,9 @@ public static class MauiProgram
             }
         }
 
-
         MauiAppBuilder builder = MauiApp.CreateBuilder();
-        // IDbContextFactory<ToolsAppContext> toolsDbFactory,
-        builder.Services.AddOptions();
+        //
+        
         builder.Services.AddDbContextFactory<ToolsAppContext>(opt =>
         {
 #if DEBUG
@@ -133,7 +132,8 @@ public static class MauiProgram
         builder.Services.AddMauiBlazorWebView();
 
         builder.Services.AddScoped<ILogsService, LogsService>();
-
+        builder.Services.AddScoped<IToolsAppManager, ToolsAppManager>();
+        
         builder.Services.AddMudServices();
         builder.Services.AddScoped<IClientHTTPRestService, ToolsSystemHTTPRestService>();
         builder.Services.AddScoped<IServerToolsService, ToolsSystemService>();
