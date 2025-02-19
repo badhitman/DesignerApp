@@ -74,7 +74,9 @@ public partial class ConnectionConfigComponent : BlazorBusyComponentBaseModel
 
     async Task TestConnect()
     {
+        await SetBusy();
 
+        await SetBusy(false);
     }
 
     async Task SaveToken()

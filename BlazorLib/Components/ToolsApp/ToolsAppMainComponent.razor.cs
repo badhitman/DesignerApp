@@ -7,6 +7,9 @@ using SharedLib;
 
 namespace BlazorLib.Components.ToolsApp;
 
+/// <summary>
+/// ToolsAppMainComponent
+/// </summary>
 public partial class ToolsAppMainComponent : BlazorBusyComponentBaseModel
 {
     [Inject]
