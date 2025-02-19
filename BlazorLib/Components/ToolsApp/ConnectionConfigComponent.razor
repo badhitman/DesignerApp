@@ -2,7 +2,7 @@
 
 @if (ApiConnect.Id == 0)
 {
-    <h3>Создание нового подключения (новый токен)</h3>
+    <h4>Создание нового подключения (новый токен)</h4>
 }
 else
 {
@@ -15,23 +15,30 @@ else
 }
 
 <div class="my-3">
-    <div class="input-group">
-        <span class="input-group-text">API</span>
-        <input type="text" aria-label="Name" class="form-control" placeholder="Name" @bind-value="Name" @bind-value:event="oninput">
-        <input type="password" aria-label="Token" class="form-control" placeholder="Токен доступа" @bind-value="TokenAccess" @bind-value:event="oninput">
+    <div class="mb-3">
+        <label for="nameFormControlInput" class="form-label">Имя</label>
+        <input @bind-value="Name" @bind-value:event="oninput" type="text" class="form-control" id="nameFormControlInput" placeholder="Название">
+    </div>
+    <div class="mb-3">
+        <label for="hostFormControlInput" class="form-label">API: Base address</label>
+        <input @bind-value="AddressBaseUri" @bind-value:event="oninput" type="text" class="form-control" id="hostFormControlInput" placeholder="Адрес хоста API">
+    </div>
+    <hr />
+    <div class="input-group my-2">
+        <span class="input-group-text">Авторизация</span>
         <input type="text" aria-label="HeaderName" class="form-control" placeholder="Имя заголовка" @bind-value="HeaderName" @bind-value:event="oninput">
-        <input type="text" aria-label="HOST API" class="form-control" placeholder="Адрес хоста API" @bind-value="AddressBaseUri" @bind-value:event="oninput">
+        <input type="password" aria-label="Token" class="form-control" placeholder="Токен доступа" @bind-value="TokenAccess" @bind-value:event="oninput">
+    </div>
 
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            @if (CanSave)
-            {
-                <button @onclick="SaveToken" class="btn btn-outline-secondary" type="button">Сохранить</button>
-                <button @onclick="ResetForm" class="btn btn-outline-warning" type="button">Сброс</button>
-            }
-            @if (ValidateForm)
-            {
-                <button @onclick="TestConnect" class="btn btn-outline-secondary" type="button">Проверить</button>
-            }
-        </div>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button disabled="@(!CanSave)" @onclick="SaveToken" class="btn btn-outline-secondary" type="button">Сохранить</button>
+        @if (CanSave)
+        {
+            <button @onclick="ResetForm" class="btn btn-outline-warning" type="button">Сброс</button>
+        }
+        @if (ValidateForm)
+        {
+            <button @onclick="TestConnect" class="btn btn-outline-secondary" type="button">Проверить</button>
+        }
     </div>
 </div>

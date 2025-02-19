@@ -43,7 +43,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
     //TResponseModel<List<ToolsFilesResponseModel>>? remoteScan;
     //bool remoteScanBusy;
 
-    //bool IndeterminateProgress;
+    bool IndeterminateProgress;
     //long forUpdateOrAddSum;
 
 
@@ -71,7 +71,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         //    return;
         //}
 
-        //IndeterminateProgress = true;
+        IndeterminateProgress = true;
         //await ParentPage.HoldPageUpdate(true);
         await SetBusy();
 
@@ -123,7 +123,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         //if (forDelete.Length == 0 && forUpdateOrAdd.Length == 0)
         //    return;
 
-        //IndeterminateProgress = true;
+        IndeterminateProgress = true;
         //ValueProgress = 0;
         //await ParentPage.HoldPageUpdate(true);
         await SetBusy();
@@ -147,7 +147,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         //using MD5 md5 = MD5.Create();
         //string _hash;
         //long totalTransferData = 0, totalReadData = 0;
-        //IndeterminateProgress = false;
+        IndeterminateProgress = false;
 
         //if (forUpdateOrAdd.Length != 0)
         //{

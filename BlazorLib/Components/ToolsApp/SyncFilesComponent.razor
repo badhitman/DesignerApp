@@ -3,7 +3,7 @@
 
 @inherits BlazorBusyComponentBaseModel
 
-@* <h4>Синхронизация папок <sup class="font-monospace">@InfoAbout</sup></h4>
+<h4>Синхронизация папок</h4>
 
 @if (IsBusyProgress)
 {
@@ -15,7 +15,7 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Локальный каталог</h5>
-                @if (localScanBusy)
+                @* @if (localScanBusy)
                 {
                     <div class="text-center">
                         <div class="spinner-border" role="status">
@@ -40,7 +40,7 @@
                     <p class="card-text">
                         Данные отсутствуют.
                     </p>
-                }
+                } *@
             </div>
         </div>
     </div>
@@ -48,7 +48,7 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Удалённый каталог</h5>
-                @if (remoteScanBusy)
+               @*  @if (remoteScanBusy)
                 {
                     <div class="text-center">
                         <div class="spinner-border" role="status">
@@ -73,11 +73,11 @@
                     <p class="card-text">
                         Данные отсутствуют.
                     </p>
-                }
+                } *@
             </div>
         </div>
     </div>
-</div> *@
+</div>
 
 @* @if (forDelete is not null && forUpdateOrAdd is not null)
 {
@@ -171,3 +171,62 @@
         <button disabled="@(IsBusyProgress || (forDelete.Length == 0 && forUpdateOrAdd.Length == 0))" @onclick="Send" class="btn btn-primary" type="button">@(IsBusyProgress ? "Отправка..." : ((forDelete.Length == 0 && forUpdateOrAdd.Length == 0) ? "Папки синхронизированы." : "Отправить!"))</button>
     }
 </div> *@
+
+
+@* <div class="my-3">
+    <div class="row g-3 align-items-center my-1">
+        <div class="col-auto">
+            <label for="inputLocalDir" class="col-form-label">Локальная папка</label>
+        </div>
+        <div class="col">
+            <input disabled="@(IsBusyProgress || HoldPage)" type="text" id="inputLocalDir" class="form-control" aria-describedby="localDirHelpInline" @bind-value="configEdit.LocalDirectory" @bind-value:event="oninput">
+        </div>
+        <div class="col-auto">
+            <span id="localDirHelpInline" class="form-text">
+                Данные, отправляемые на удалённый сервер.
+            </span>
+        </div>
+    </div>
+    <div class="row g-3 align-items-center my-1">
+        <div class="col-auto">
+            <label for="inputRemoteDir" class="col-form-label">Удалённая папка</label>
+        </div>
+        <div class="col">
+            <input disabled="@(IsBusyProgress || HoldPage)" type="text" id="inputRemoteDir" class="form-control" aria-describedby="remoteHelpInline" @bind-value="configEdit.RemoteDirectory" @bind-value:event="oninput">
+        </div>
+        <div class="col-auto">
+            <span id="remoteHelpInline" class="form-text">
+                Принимающая папка на удалённом сервере.
+            </span>
+        </div>
+    </div>
+</div> *@
+
+           @*  
+@if (checkDir is null)
+            {
+                <figure class="text-center">
+                    <blockquote class="blockquote">
+                        <p>Данные отсутсвуют.</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        Проверьте <cite title="Настройки">Настройки</cite>
+                    </figcaption>
+                </figure>
+            }
+            else if (!configEdit.Equals(MauiProgram.ConfigStore.Response))
+            {
+                <figure class="text-center">
+                    <blockquote class="blockquote">
+                        <p>Настройки изменены.</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        Сохраните <cite title="Настройки">Настройки</cite>
+                    </figcaption>
+                </figure>
+            }
+            else
+            {
+
+            }
+           *@

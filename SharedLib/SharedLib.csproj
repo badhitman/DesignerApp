@@ -9,8 +9,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 

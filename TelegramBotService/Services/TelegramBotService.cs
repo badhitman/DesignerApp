@@ -327,7 +327,7 @@ public class TelegramBotServiceImplement(ILogger<TelegramBotServiceImplement> _l
             res.AddWarning(msg);
         }
 
-        IReplyMarkup? replyKB = message.ReplyKeyboard is null
+        ReplyMarkup? replyKB = message.ReplyKeyboard is null
             ? null
             : new InlineKeyboardMarkup(message.ReplyKeyboard
             .Select(x => x.Select(y => InlineKeyboardButton.WithCallbackData(y.Title, y.Data))));

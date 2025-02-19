@@ -237,7 +237,7 @@ public class UpdateHandler(
             return;
         }
 
-        IReplyMarkup? replyKB = resp.ReplyKeyboard is null
+        ReplyMarkup? replyKB = resp.ReplyKeyboard is null
             ? null
             : new InlineKeyboardMarkup(resp.ReplyKeyboard
             .Select(x => x.Select(y => InlineKeyboardButton.WithCallbackData(y.Title, y.Data))));

@@ -24,12 +24,24 @@ public partial class ConnectionConfigComponent : BlazorBusyComponentBaseModel
     public required Action<int> SetActiveHandle { get; set; }
 
 
+    /// <summary>
+    /// Форма подключения заполнена?
+    /// </summary>
     bool ValidateForm => !string.IsNullOrWhiteSpace(TokenAccess) &&
         !string.IsNullOrWhiteSpace(AddressBaseUri);
 
-    bool CanSave => IsEdited && ValidateForm;
+    /// <summary>
+    /// Форма изменена?
+    /// </summary>
+    public bool IsEdited => ApiConnect.Name != Name || ApiConnect.TokenAccess != TokenAccess || ApiConnect.AddressBaseUri != AddressBaseUri;
 
-    bool IsEdited => ApiConnect.Name != Name || ApiConnect.TokenAccess != TokenAccess || ApiConnect.AddressBaseUri != AddressBaseUri;
+    /// <summary>
+    /// Форма может быть сохранена?
+    /// </summary>
+    /// <remarks>
+    /// Если форма изменена и корректно заполнена
+    /// </remarks>
+    bool CanSave => IsEdited && ValidateForm;
 
 
     string name = default!;
@@ -72,7 +84,10 @@ public partial class ConnectionConfigComponent : BlazorBusyComponentBaseModel
         }
     }
 
-    async Task TestConnect()
+    /// <summary>
+    /// Проверить подключение
+    /// </summary>
+    public async Task TestConnect()
     {
         await SetBusy();
 
