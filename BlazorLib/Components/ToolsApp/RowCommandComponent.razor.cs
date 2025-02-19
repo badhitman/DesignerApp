@@ -35,11 +35,11 @@ public partial class RowCommandComponent : BlazorBusyComponentBaseModel
 
     async Task RunCommand()
     {
-        //await SetBusy();
+        await SetBusy();
         //await OwnerComponent.SetBusy();
         //TResponseModel<string> res = await ToolsExtRepo.ExeCommand(MauiProgram.ExeCommands.Response![RowIndex]);
         //SnackbarRepo.ShowMessagesResponse(res.Messages);
-        //await SetBusy(false);
+        await SetBusy(false);
         //await OwnerComponent.SetBusy(false);
     }
 
@@ -50,22 +50,22 @@ public partial class RowCommandComponent : BlazorBusyComponentBaseModel
 
     async Task SaveRow()
     {
-        //await SetBusy();
+        await SetBusy();
         //await OwnerComponent.SetBusy();
         //MauiProgram.ExeCommands.Response![RowIndex] = GlobalTools.CreateDeepCopy(CurrentCommand)!;
         //await MauiProgram.SaveCommands(MauiProgram.ExeCommands.Response!);
         //await OwnerComponent.SetBusy(false);
-        //await SetBusy(false);
+        await SetBusy(false);
     }
 
     async Task DeleteCommand()
     {
-        //await SetBusy();
+        await SetBusy();
         //await OwnerComponent.SetBusy();
         //MauiProgram.ExeCommands.Response!.RemoveAt(RowIndex);
         //await MauiProgram.SaveCommands(MauiProgram.ExeCommands.Response!);
         //await OwnerComponent.SetBusy(false);
-        //await SetBusy(false);
+        await SetBusy(false);
     }
 
     /// <inheritdoc/>

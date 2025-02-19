@@ -3,7 +3,7 @@
 
 @inherits BlazorBusyComponentBaseModel
 
-<h4>Синхронизация папок <sup class="font-monospace">@InfoAbout</sup></h4>
+@* <h4>Синхронизация папок <sup class="font-monospace">@InfoAbout</sup></h4>
 
 @if (IsBusyProgress)
 {
@@ -77,9 +77,9 @@
             </div>
         </div>
     </div>
-</div>
+</div> *@
 
-@if (forDelete is not null && forUpdateOrAdd is not null)
+@* @if (forDelete is not null && forUpdateOrAdd is not null)
 {
     if (forDelete.Length == 0)
     {
@@ -159,9 +159,9 @@
             </div>
         </div>
     }
-}
+} *@
 
-<div class="d-grid gap-2 mt-3">
+@* <div class="d-grid gap-2 mt-3">
     @if (forDelete is null || forUpdateOrAdd is null)
     {
         <button disabled="@(IsBusyProgress || remoteScanBusy || localScanBusy)" @onclick="SyncRun" class="btn btn-primary" type="button">@(IsBusyProgress ? "Сравнение данных..." : "Сравнить содержимое папок") </button>
@@ -170,4 +170,4 @@
     {
         <button disabled="@(IsBusyProgress || (forDelete.Length == 0 && forUpdateOrAdd.Length == 0))" @onclick="Send" class="btn btn-primary" type="button">@(IsBusyProgress ? "Отправка..." : ((forDelete.Length == 0 && forUpdateOrAdd.Length == 0) ? "Папки синхронизированы." : "Отправить!"))</button>
     }
-</div>
+</div> *@

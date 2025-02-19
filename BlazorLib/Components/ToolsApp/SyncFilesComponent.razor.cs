@@ -32,25 +32,23 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
     [Parameter, EditorRequired]
     public required ToolsAppMainComponent ParentPage { get; set; }
 
-
-    string? InfoAbout;
-
     private string searchStringQuery = "";
 
-    TResponseModel<List<ToolsFilesResponseModel>>? localScan;
-    bool localScanBusy;
 
-    TResponseModel<List<ToolsFilesResponseModel>>? remoteScan;
-    bool remoteScanBusy;
+    //string? InfoAbout;
 
-    ToolsFilesResponseModel[]? forDelete;
-    ToolsFilesResponseModel[]? forUpdateOrAdd;
-    bool IndeterminateProgress;
-    
+    //TResponseModel<List<ToolsFilesResponseModel>>? localScan;
+    //bool localScanBusy;
+
+    //TResponseModel<List<ToolsFilesResponseModel>>? remoteScan;
+    //bool remoteScanBusy;
+
+    //bool IndeterminateProgress;
+    //long forUpdateOrAddSum;
+
+
     /// <inheritdoc/>
     public double ValueProgress { get; set; }
-    long forUpdateOrAddSum;
-
     private bool FilterFunc1(ToolsFilesResponseModel element) => SyncFilesComponent.FilterFunc(element, searchStringQuery);
 
     private static bool FilterFunc(ToolsFilesResponseModel element, string searchString)
@@ -75,14 +73,14 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
 
         //IndeterminateProgress = true;
         //await ParentPage.HoldPageUpdate(true);
-        //await SetBusy();
+        await SetBusy();
 
         //forDelete = null;
         //forUpdateOrAdd = null;
 
         //await Task.WhenAll([ReadLocalData(), ReadRemoteData()]);
         //await ParentPage.HoldPageUpdate(false);
-        //await SetBusy(false);
+        await SetBusy(false);
 
         //if (localScan?.Response is null || remoteScan?.Response is null)
         //{
@@ -128,7 +126,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         //IndeterminateProgress = true;
         //ValueProgress = 0;
         //await ParentPage.HoldPageUpdate(true);
-        //await SetBusy();
+        await SetBusy();
 
         //MemoryStream ms;
 
@@ -150,7 +148,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         //string _hash;
         //long totalTransferData = 0, totalReadData = 0;
         //IndeterminateProgress = false;
-        //StateHasChanged();
+
         //if (forUpdateOrAdd.Length != 0)
         //{
         //    InfoAbout = "Отправка файлов...";
@@ -222,7 +220,7 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
         //            SnackbarRepo.Add(ex.Message, MudBlazor.Severity.Error, c => c.DuplicatesBehavior = MudBlazor.SnackbarDuplicatesBehavior.Allow);
         //            LoggerRepo.LogError(ex, $"Ошибка отправки порции данных: {tFile}");
         //        }
-        //        StateHasChanged();
+
         //    }
         //}
 
@@ -231,13 +229,14 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
 
         //if (totalTransferData != 0)
         //    SnackbarRepo.Add($"Отправлено: {GlobalTools.SizeDataAsString(totalTransferData)}", MudBlazor.Severity.Info, c => c.DuplicatesBehavior = MudBlazor.SnackbarDuplicatesBehavior.Allow);
+        await SetBusy(false);
     }
 
     async Task ReadLocalData()
     {
         //localScanBusy = true;
-        //await Task.Delay(1);
-        //StateHasChanged();
+        await Task.Delay(1);
+        StateHasChanged();
         //localScan = await ToolsLocalRepo.GetDirectory(new ToolsFilesRequestModel
         //{
         //    RemoteDirectory = MauiProgram.ConfigStore.Response!.LocalDirectory!,
@@ -249,8 +248,8 @@ public partial class SyncFilesComponent : BlazorBusyComponentBaseModel
     async Task ReadRemoteData()
     {
         //remoteScanBusy = true;
-        //await Task.Delay(1);
-        //StateHasChanged();
+        await Task.Delay(1);
+        StateHasChanged();
         //remoteScan = await ToolsExtRepo.GetDirectory(new ToolsFilesRequestModel
         //{
         //    RemoteDirectory = MauiProgram.ConfigStore.Response!.RemoteDirectory!,
