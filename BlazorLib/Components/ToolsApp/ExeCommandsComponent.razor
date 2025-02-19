@@ -20,7 +20,7 @@
             <button @onclick="AddNewCommand" disabled="@(string.IsNullOrEmpty(newCommand.FileName))" class="btn btn-outline-secondary" type="button" id="button-addon2">Создать</button>
         </div>
         <hr />
-        @if (MauiProgram.ExeCommands.Response is not null)
+        @* @if (MauiProgram.ExeCommands.Response is not null)
         {
             int i = -1;
             <ul class="list-group list-group-flush">
@@ -34,6 +34,6 @@
 
                 }
             </ul>
-        }
+        } *@
     </div>
 </div>

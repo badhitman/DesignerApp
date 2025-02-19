@@ -22,5 +22,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\DBContextLibs\DbSqliteLib\DbSqliteLib.csproj" />
 		<ProjectReference Include="..\SharedLib\SharedLib.csproj" />
+		<ProjectReference Include="..\ToolsMauiLib\ToolsMauiLib.csproj" />
 	</ItemGroup>
 </Project>

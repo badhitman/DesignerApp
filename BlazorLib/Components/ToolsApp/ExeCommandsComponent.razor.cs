@@ -3,11 +3,10 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
-using ToolsMauiApp.Components.Pages;
 using SharedLib;
 using BlazorLib;
 
-namespace ToolsMauiApp.Components;
+namespace BlazorLib.Components.ToolsApp;
 
 /// <summary>
 /// ExeCommandsComponent
@@ -25,21 +24,21 @@ public partial class ExeCommandsComponent : BlazorBusyComponentBaseModel
     /// Home page
     /// </summary>
     [Parameter, EditorRequired]
-    public required Home ParentPage { get; set; }
+    public required ToolsAppMainComponent ParentPage { get; set; }
 
     private ExeCommandModelDB newCommand = new() { FileName = "", Arguments = "", Name = "" };
         
 
     async Task AddNewCommand()
     {
-        MauiProgram.ExeCommands.Response ??= [];
-        MauiProgram.ExeCommands.Response.Add(newCommand);
-        await ParentPage.HoldPageUpdate(true);
-        await SetBusy();
-        await MauiProgram.SaveCommands(MauiProgram.ExeCommands.Response);
-        await ParentPage.HoldPageUpdate(false);
-        newCommand = new() { FileName = "", Arguments = "", Name = "" };
-        await SetBusy(false);
-        SnackbarRepo.ShowMessagesResponse(MauiProgram.ExeCommands.Messages);
+        //MauiProgram.ExeCommands.Response ??= [];
+        //MauiProgram.ExeCommands.Response.Add(newCommand);
+        //await ParentPage.HoldPageUpdate(true);
+        //await SetBusy();
+        //await MauiProgram.SaveCommands(MauiProgram.ExeCommands.Response);
+        //await ParentPage.HoldPageUpdate(false);
+        //newCommand = new() { FileName = "", Arguments = "", Name = "" };
+        //await SetBusy(false);
+        //SnackbarRepo.ShowMessagesResponse(MauiProgram.ExeCommands.Messages);
     }
 }
