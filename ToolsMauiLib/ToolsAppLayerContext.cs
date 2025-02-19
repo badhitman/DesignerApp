@@ -8,24 +8,17 @@ using SharedLib;
 namespace DbcLib;
 
 /// <inheritdoc/>
-public abstract partial class ToolsAppLayerContext : DbContext
+public partial class ToolsAppLayerContext : DbContext
 {
-    protected abstract string CtxName { get; }
-    protected abstract string DbPath { get; }
-
     /// <inheritdoc/>
     public ToolsAppLayerContext(DbContextOptions options)
         : base(options)
     {
-        FileInfo _fi = new(DbPath);
-
-        if (_fi.Directory?.Exists != true)
-            Directory.CreateDirectory(Path.GetDirectoryName(DbPath)!);
-
-        if (!_fi.Exists)
-            Database.EnsureCreated();
-        else
-            Database.Migrate();
+        //#if DEBUG
+        //        Database.EnsureCreated();
+        //#else
+        Database.Migrate();
+        //#endif
     }
 
     /// <inheritdoc/>

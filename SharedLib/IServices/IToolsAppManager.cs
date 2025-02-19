@@ -14,7 +14,7 @@ public interface IToolsAppManager
     public Task<ApiRestConfigModelDB> ReadConfiguration(int confId);
 
     /// <inheritdoc/>
-    public Task<TResponseModel<int>> UpdateOrCreateConfig(ApiRestConfigModelDB req);
+    public Task<ResponseBaseModel> UpdateOrCreateConfig(ApiRestConfigModelDB req);
 
     /// <inheritdoc/>
     public Task<ResponseBaseModel> DeleteConfig(int confId);

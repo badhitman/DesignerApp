@@ -1,58 +1,9 @@
 @using BlazorLib
-@using MudBlazor
 
 @inherits BlazorBusyComponentBaseModel
 
-@if (IsBusyProgress)
-{
-    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
-}
-
-<div class="card">
-    <div class="card-header">
-        <div class="input-group">
-            <label class="input-group-text" for="inputGroupSelect01">Токены</label>
-            <select @bind="SelectedConfId" class="form-select" aria-label="Default select example">
-                @if (AllTokens.Length == 0)
-                {
-                    <option value="0" selected>Справочник подключений пуст</option>
-                }
-                else
-                {
-                    foreach (ApiRestConfigModelDB connect in AllTokens.OrderBy(x => x.Name))
-                    {
-                        <option value="@connect.Id">@connect.Name @connect.AddressBaseUri</option>
-                    }
-                }
-            </select>
-            @if (SelectedConfId != 0)
-            {
-                <button @onclick="() => ApiConnect.Empty()" class="btn btn-outline-secondary" type="button">Создать новый</button>
-            }
-            else
-            {
-
-            }
-        </div>
-    </div>
-    <div class="card-body">
-        <ConnectionConfigComponent @ref="configRef" SetActiveHandle="SetActiveHandler" />
-        @if (AllTokens.Length == 0)
-        {
-            <figure class="text-center">
-                <blockquote class="blockquote">
-                    <p>Доступные подключения отсутствуют.</p>
-                </blockquote>
-                <figcaption class="blockquote-footer">
-                    Добавьте первое <cite title="токен">подключение</cite>
-                </figcaption>
-            </figure>
-        }
-    </div>
-</div>
-
-@* <div class="my-3">
-    <div class="input-group">
+<div class="my-3">
+   @*  <div class="input-group">
         <span class="input-group-text">API</span>
         <input disabled="@(IsBusyProgress || HoldPage)" type="password" aria-label="Token" class="form-control" placeholder="Токен доступа" @bind-value="configEdit.AccessToken" @bind-value:event="oninput">
         <input disabled="@(IsBusyProgress || HoldPage)" type="text" aria-label="HOST API" class="form-control" placeholder="Адрес хоста API" @bind-value="configEdit.ApiAddress" @bind-value:event="oninput">
@@ -62,7 +13,7 @@
             <button disabled="@(IsBusyProgress || HoldPage)" @onclick="() => configEdit = GlobalTools.CreateDeepCopy(MauiProgram.ConfigStore.Response)!" class="btn btn-outline-warning" type="button">Отмена</button>
         }
         <button @onclick="TestConnect" disabled="@(!configEdit.FullSets || IsBusyProgress || HoldPage)" class="btn btn-outline-@(configEdit.ConnectionSet ? "success" : "secondary")" type="button">Test</button>
-    </div>
+    </div> *@
     <div class="row g-3 align-items-center my-1">
         <div class="col-auto">
             <label for="inputLocalDir" class="col-form-label">Локальная папка</label>
@@ -89,7 +40,12 @@
             </span>
         </div>
     </div>
-</div> *@
+</div>
+
+@if (IsBusyProgress)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
+}
 
 @* @if (!IsBusyProgress && configEdit.FullSets && testResult?.Response?.Roles is not null && MauiProgram.ConfigStore.Success())
 {
@@ -178,4 +134,4 @@
         </tbody>
     </table>
 }
-*@
+<p>База данных: @(ToolsAppContext.DbPath)</p> *@

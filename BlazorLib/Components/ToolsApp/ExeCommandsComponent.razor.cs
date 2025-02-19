@@ -34,11 +34,11 @@ public partial class ExeCommandsComponent : BlazorBusyComponentBaseModel
         //MauiProgram.ExeCommands.Response ??= [];
         //MauiProgram.ExeCommands.Response.Add(newCommand);
         //await ParentPage.HoldPageUpdate(true);
-        await SetBusy();
+        //await SetBusy();
         //await MauiProgram.SaveCommands(MauiProgram.ExeCommands.Response);
         //await ParentPage.HoldPageUpdate(false);
         //newCommand = new() { FileName = "", Arguments = "", Name = "" };
-        await SetBusy(false);
+        //await SetBusy(false);
         //SnackbarRepo.ShowMessagesResponse(MauiProgram.ExeCommands.Messages);
     }
 }

@@ -46,17 +46,4 @@ public class ApiRestConfigModelDB : EntryModel
         SyncDirectories = other.SyncDirectories;
         CommandsRemote = other.CommandsRemote;
     }
-
-    /// <inheritdoc/>
-    public void Empty()
-    {
-        AddressBaseUri = string.Empty;
-        TokenAccess = string.Empty;
-        HeaderName = "token-access";
-        Name = string.Empty;
-        Id = 0;
-
-        SyncDirectories = [];
-        CommandsRemote = [];
-    }
 }
