@@ -2,7 +2,6 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using BlazorLib;
 using Microsoft.AspNetCore.Components;
 using SharedLib;
 
@@ -20,92 +19,35 @@ public partial class ToolsAppMainComponent : BlazorBusyComponentBaseModel
     ApiRestConfigModelDB ApiConnect { get; set; } = default!;
 
 
-    ConfigStoreModel configEdit = new();
-    TResponseModel<ExpressProfileResponseModel>? testResult;
-    TResponseModel<List<ToolsFilesResponseModel>>? checkDir;
+    ApiRestConfigModelDB[] AllTokens = [];
+    ConnectionConfigComponent configRef = default!;
 
-    bool CanSave => true;//configEdit.FullSets && !configEdit.Equals(MauiProgram.ConfigStore.Response);
-
-    bool HoldPage = false;
-
+    //int? _selectedOfferId;
     /// <summary>
-    /// HoldPageUpdate
+    /// SelectedOfferId
     /// </summary>
-    public async Task HoldPageUpdate(bool _set)
+    public int SelectedConfId
     {
-        HoldPage = _set;
-        await Task.Delay(1);
-        StateHasChanged();
+        get => ApiConnect.Id;
+        set => InvokeAsync(() => SetActiveHandler(value));
     }
 
-    static string ColorStatus(ResultTypesEnum rt) => rt switch
+    async void SetActiveHandler(int selectedConfId)
     {
-        ResultTypesEnum.Error => "danger",
-        ResultTypesEnum.Success => "success",
-        ResultTypesEnum.Info => "info",
-        ResultTypesEnum.Alert => "primary",
-        ResultTypesEnum.Warning => "warning",
-        _ => throw new NotImplementedException(),
-    };
+        await SetBusy();
+        if (!AllTokens.Any(x => x.Id == selectedConfId))
+            AllTokens = await ToolsApp.GetAllConfigurations();
 
-    async Task SaveConfig()
-    {
-        //await SetBusy();
-        //await MauiProgram.SaveConfig(configEdit);
-        //await SetBusy(false);
-        //SnackbarRepo.ShowMessagesResponse(MauiProgram.ConfigStore.Messages);
-    }
-
-    async Task TestConnect()
-    {
-        //if (string.IsNullOrWhiteSpace(configEdit.LocalDirectory) || string.IsNullOrWhiteSpace(configEdit.RemoteDirectory))
-        //{
-        //    SnackbarRepo.Error("Не установлена директория");
-        //    return;
-        //}
-
-        //DirectoryInfo _fi = new(configEdit.LocalDirectory);
-        //if (!_fi.Exists)
-        //{
-        //    SnackbarRepo.Error("Локальная директория отсутствует");
-        //    return;
-        //}
-
-        //MauiProgram.ConfigStore.Messages.Clear();
-        //ToolsFilesRequestModel req = new()
-        //{
-        //    RemoteDirectory = configEdit.RemoteDirectory,
-        //};
-
-        //await SetBusy();
-
-        //testResult = await RestClientRepo.GetMe();
-        //SnackbarRepo.ShowMessagesResponse(testResult.Messages);
-        //checkDir = await RestClientRepo.GetDirectory(req);
-        //SnackbarRepo.ShowMessagesResponse(checkDir.Messages);
-
-        //await SetBusy(false);
+        ApiRestConfigModelDB selectedConnect = AllTokens.First(x => x.Id == selectedConfId);
+        ApiConnect.Update(selectedConnect);
+        await SetBusy(false);
     }
 
     /// <inheritdoc/>
     protected override async Task OnInitializedAsync()
     {
-        //ApiRestConfigModelDB[] tokens = await ToolsApp.GetAllConfigurations();
+        AllTokens = await ToolsApp.GetAllConfigurations();
+        SelectedConfId = AllTokens.OrderBy(x => x.Name).FirstOrDefault()?.Id ?? 0;
 
-        //if (MauiProgram.ConfigStore.Response is null)
-        //{
-        //    MauiProgram.ConfigStore.AddError("MauiProgram.ConfigStore.Response is null");
-        //    return;
-        //}
-
-        //configEdit = GlobalTools.CreateDeepCopy(MauiProgram.ConfigStore.Response)!;
-
-        //if (MauiProgram.ConfigStore.Response.FullSets)
-        //{
-        //    await SetBusy();
-        //    testResult = await RestClientRepo.GetMe();
-            
-        //    await SetBusy(false);
-        //}
     }
 }
