@@ -12,19 +12,19 @@ namespace ToolsMauiLib;
 /// <summary>
 /// ToolsSystemHTTPRestService
 /// </summary>
-public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : IClientHTTPRestService
+public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory, ApiRestConfigModelDB ApiConnect) : IClientHTTPRestService
 {
     /// <inheritdoc/>
     public async Task<ResponseBaseModel> PartUpload(SessionFileRequestModel req)
     {
         using HttpClient httpClient = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Tools.ToString());
-
+        
         MultipartFormDataContent form = new()
         {
             { new ByteArrayContent(req.Data, 0, req.Data.Length), "uploadedFile", Path.GetFileName(req.FileName) }
         };
 
-        string routeUri = $"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}";
+        string routeUri = $"{ApiConnect.AddressBaseUri}/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}";
 
         routeUri += $"?{GlobalStaticConstants.Routes.SESSION_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}={Convert.ToBase64String(Encoding.UTF8.GetBytes(req.SessionId))}";
         routeUri += $"&{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.TOKEN_CONTROLLER_NAME}={Convert.ToBase64String(Encoding.UTF8.GetBytes(req.FileId))}";
@@ -42,7 +42,7 @@ public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : 
     public async Task<TResponseModel<PartUploadSessionModel>> PartUploadSessionStart(PartUploadSessionStartRequestModel req)
     {
         using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Tools.ToString());
-        using HttpResponseMessage response = await client.PostAsJsonAsync($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.SESSION_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}-{GlobalStaticConstants.Routes.START_ACTION_NAME}", req);
+        using HttpResponseMessage response = await client.PostAsJsonAsync($"{ApiConnect.AddressBaseUri}/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.SESSION_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.PART_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPLOAD_ACTION_NAME}-{GlobalStaticConstants.Routes.START_ACTION_NAME}", req);
         string rj = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<TResponseModel<PartUploadSessionModel>>(rj)!;
     }
@@ -51,7 +51,7 @@ public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : 
     public async Task<TResponseModel<bool>> DeleteFile(DeleteRemoteFileRequestModel req)
     {
         using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Tools.ToString());
-        using HttpResponseMessage response = await client.PostAsJsonAsync($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}", req);
+        using HttpResponseMessage response = await client.PostAsJsonAsync($"{ApiConnect.AddressBaseUri}/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.DELETE_ACTION_NAME}", req);
         string rj = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<TResponseModel<bool>>(rj)!;
     }
@@ -60,7 +60,7 @@ public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : 
     public async Task<TResponseModel<string>> ExeCommand(ExeCommandModelDB req)
     {
         using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Tools.ToString());
-        using HttpResponseMessage response = await client.PostAsJsonAsync($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.CMD_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.EXE_ACTION_NAME}", req);
+        using HttpResponseMessage response = await client.PostAsJsonAsync($"{ApiConnect.AddressBaseUri}/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.CMD_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.EXE_ACTION_NAME}", req);
         string rj = await response.Content.ReadAsStringAsync();
 
         return JsonConvert.DeserializeObject<TResponseModel<string>>(rj)!;
@@ -70,7 +70,7 @@ public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : 
     public async Task<TResponseModel<List<ToolsFilesResponseModel>>> GetDirectory(ToolsFilesRequestModel req)
     {
         using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Tools.ToString());
-        using HttpResponseMessage response = await client.PostAsJsonAsync($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DIRECTORY_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.GET_ACTION_NAME}", req);
+        using HttpResponseMessage response = await client.PostAsJsonAsync($"{ApiConnect.AddressBaseUri}/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.DIRECTORY_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.GET_ACTION_NAME}", req);
         string rj = await response.Content.ReadAsStringAsync();
         TResponseModel<List<ToolsFilesResponseModel>> res = JsonConvert.DeserializeObject<TResponseModel<List<ToolsFilesResponseModel>>>(rj)!;
 
@@ -91,10 +91,11 @@ public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : 
     }
 
     /// <inheritdoc/>
-    public async Task<TResponseModel<ExpressProfileResponseModel>> GetMe()
+    public async Task<TResponseModel<ExpressProfileResponseModel>> GetMe(CancellationToken cancellationToken = default)
     {
         using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Tools.ToString());
-        TResponseModel<ExpressProfileResponseModel> res = await client.GetStringAsync<ExpressProfileResponseModel>($"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.INFO_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.MY_CONTROLLER_NAME}");
+        
+        TResponseModel<ExpressProfileResponseModel> res = await client.GetStringAsync<ExpressProfileResponseModel>($"{ApiConnect.AddressBaseUri}/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.INFO_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.MY_CONTROLLER_NAME}", cancellationToken: cancellationToken);
 
         if (string.IsNullOrWhiteSpace(res.Response?.UserName))
             res.AddError("Пользователь не настроен");
@@ -123,7 +124,7 @@ public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory) : 
             { new ByteArrayContent(bytes, 0, bytes.Length), "uploadedFile", fileScopeName }
         };
 
-        string routeUri = $"/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}";
+        string routeUri = $"{ApiConnect.AddressBaseUri}/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.FILE_CONTROLLER_NAME}-{GlobalStaticConstants.Routes.UPDATE_ACTION_NAME}";
         routeUri += $"?{GlobalStaticConstants.Routes.REMOTE_CONTROLLER_NAME}_{GlobalStaticConstants.Routes.DIRECTORY_CONTROLLER_NAME}={Convert.ToBase64String(Encoding.UTF8.GetBytes(remoteDirectory))}";
 
         HttpResponseMessage response = await httpClient.PostAsync(routeUri, form);

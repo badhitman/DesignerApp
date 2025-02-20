@@ -48,56 +48,13 @@ public static class MauiProgram
 
         builder.Services.AddHttpClient(HttpClientsNamesEnum.Tools.ToString(), cc =>
         {
-            cc.BaseAddress = new Uri(_conf.AddressBaseUri ?? "localhost");
+            //cc.BaseAddress = new Uri(_conf.AddressBaseUri ?? "localhost");
             cc.DefaultRequestHeaders.Add(_conf.HeaderName, _conf.TokenAccess);
         });
-#if DEBUG
+        // #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
-#endif
+        // #endif
         return builder.Build();
     }
-
-    /*
-    /// <summary>
-    /// SaveConfig
-    /// </summary>
-    public static async Task SaveConfig(ConfigStoreModel conf)
-    {
-        ConfigStore.Messages.Clear();
-        FileInfo _fi = new(ConfigPath);
-        ConfigStore.Response ??= new();
-        try
-        {
-            await File.WriteAllTextAsync(_fi.FullName, JsonConvert.SerializeObject(conf));
-            ConfigStore.Response.Update(conf);
-            ConfigStore.AddInfo($"Записано: {_fi.FullName}");
-        }
-        catch (Exception ex)
-        {
-            ConfigStore.AddError($"Не удалось создать файл конфигурации: {_fi.FullName}. Убедитесь, что есть права на запись");
-            ConfigStore.Messages.InjectException(ex);
-        }
-    }
-
-    /// <summary>
-    /// SaveCommands
-    /// </summary>
-    public static async Task SaveCommands(List<ExeCommandModelDB> commands)
-    {
-        ExeCommands.Messages.Clear();
-        FileInfo _fi = new(CommandsPath);
-        ExeCommands.Response ??= [];
-        try
-        {
-            await File.WriteAllTextAsync(_fi.FullName, JsonConvert.SerializeObject(commands));
-            ExeCommands.Response = commands;
-            ExeCommands.AddInfo($"Записано: {_fi.FullName}");
-        }
-        catch (Exception ex)
-        {
-            ExeCommands.AddError($"Не удалось создать файл команд: {_fi.FullName}. Убедитесь, что есть права на запись");
-            ExeCommands.Messages.InjectException(ex);
-        }
-    }*/
 }

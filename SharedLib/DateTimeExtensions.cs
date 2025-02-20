@@ -60,12 +60,12 @@ public static class DateTimeExtensions
     /// <summary>
     /// Отправка запроса GET согласно указанному универсальному коду ресурса (URI) и возврат текста ответа в виде строки в асинхронной операции.
     /// </summary>
-    public static async Task<TResponseModel<T>> GetStringAsync<T>(this HttpClient httpCli, [StringSyntax(StringSyntaxAttribute.Uri)] string? requestUri) where T : class
+    public static async Task<TResponseModel<T>> GetStringAsync<T>(this HttpClient httpCli, [StringSyntax(StringSyntaxAttribute.Uri)] string? requestUri, CancellationToken cancellationToken = default) where T : class
     {
         TResponseModel<T> res = new();
         try
         {
-            string raw = await httpCli.GetStringAsync(requestUri);
+            string raw = await httpCli.GetStringAsync(requestUri, cancellationToken);
             res.Response = JsonConvert.DeserializeObject<T>(raw) ?? throw new Exception(raw);
         }
         catch (Exception ex)

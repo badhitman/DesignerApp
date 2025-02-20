@@ -59,7 +59,7 @@
                 </figcaption>
             </figure>
         }
-        else
+        else if (configRef?.GetMe?.Success() == true)
         {
             <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
                 <MudTabPanel Text="Статус">

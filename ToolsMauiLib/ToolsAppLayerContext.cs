@@ -10,8 +10,16 @@ namespace DbcLib;
 /// <inheritdoc/>
 public abstract partial class ToolsAppLayerContext : DbContext
 {
-    protected abstract string CtxName { get; }
-    protected abstract string DbPath { get; }
+    /// <summary>
+    /// FileName
+    /// </summary>
+    private static readonly string _ctxName = nameof(ToolsAppContext);
+
+    /// <summary>
+    /// db Path
+    /// </summary>
+    public static readonly string DbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), _ctxName, $"{AppDomain.CurrentDomain.FriendlyName}.db3");
+
 
     /// <inheritdoc/>
     public ToolsAppLayerContext(DbContextOptions options)

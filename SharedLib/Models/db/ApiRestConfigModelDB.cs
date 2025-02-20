@@ -35,7 +35,7 @@ public class ApiRestConfigModelDB : EntryModel
     public List<ExeCommandModelDB>? CommandsRemote { get; set; }
 
     /// <inheritdoc/>
-    public void Reload(ApiRestConfigModelDB other)
+    public virtual void Update(ApiRestConfigModelDB other)
     {
         AddressBaseUri = other.AddressBaseUri;
         TokenAccess = other.TokenAccess;

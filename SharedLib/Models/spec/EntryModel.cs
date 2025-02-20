@@ -35,7 +35,7 @@ public class EntryModel
     public static EntryModel BuildEmpty() => new() { Name = "" };
 
     /// <inheritdoc/>
-    public void Update(EntryModel elementObjectEdit)
+    public virtual void Update(EntryModel elementObjectEdit)
     {
         Name = elementObjectEdit.Name;
         Id = elementObjectEdit.Id;

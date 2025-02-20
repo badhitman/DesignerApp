@@ -18,6 +18,9 @@ public partial class ConnectionConfigComponent : BlazorBusyComponentBaseModel
     [Inject]
     IToolsAppManager ToolsApp { get; set; } = default!;
 
+    [Inject]
+    IClientHTTPRestService RestClientRepo { get; set; } = default!;
+
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
@@ -85,13 +88,38 @@ public partial class ConnectionConfigComponent : BlazorBusyComponentBaseModel
     }
 
     /// <summary>
+    /// getMe
+    /// </summary>
+    public TResponseModel<ExpressProfileResponseModel>? GetMe { get; set; }
+
+    CancellationTokenSource cancelTokenSource = new();
+    CancellationToken? token;
+
+    /// <summary>
     /// Проверить подключение
     /// </summary>
-    public async Task TestConnect()
+    /// <param name="testForm">Если требуется проверить настройки из формы</param>
+    public async Task TestConnect(bool testForm = false)
     {
         await SetBusy();
+        ApiRestConfigModelDB? backupConf = null;
+        if (testForm)
+        {
+            backupConf = GlobalTools.CreateDeepCopy(ApiConnect);
+
+            ApiConnect.AddressBaseUri = AddressBaseUri;
+            ApiConnect.HeaderName = HeaderName;
+            ApiConnect.TokenAccess = TokenAccess;
+        }
+        token = cancelTokenSource.Token;
+        GetMe = await RestClientRepo.GetMe(token.Value);
+        
+
+        if (backupConf is not null)
+            ApiConnect.Update(backupConf);
 
         await SetBusy(false);
+        SnackbarRepo.ShowMessagesResponse(GetMe.Messages);
     }
 
     async Task SaveToken()
@@ -104,12 +132,17 @@ public partial class ConnectionConfigComponent : BlazorBusyComponentBaseModel
             HeaderName = HeaderName,
         };
         await SetBusy();
-        ResponseBaseModel res = await ToolsApp.UpdateOrCreateConfig(req);
+        TResponseModel<int> res = await ToolsApp.UpdateOrCreateConfig(req);
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await SetBusy(false);
+        if (res.Success())
+            SetActiveHandle(res.Response);
     }
 
-    void ResetForm()
+    /// <summary>
+    /// ResetForm
+    /// </summary>
+    public void ResetForm()
     {
         name = ApiConnect.Name;
         tokenAccess = ApiConnect.TokenAccess;

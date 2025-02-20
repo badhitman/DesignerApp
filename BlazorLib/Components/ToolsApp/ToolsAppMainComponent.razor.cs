@@ -38,8 +38,7 @@ public partial class ToolsAppMainComponent : BlazorBusyComponentBaseModel
     async void SetActiveHandler(int selectedConfId)
     {
         await SetBusy();
-        if (!AllTokens.Any(x => x.Id == selectedConfId))
-            AllTokens = await ToolsApp.GetAllConfigurations();
+        AllTokens = await ToolsApp.GetAllConfigurations();
 
         if (selectedConfId == 0)
             ApiConnect.Empty();
@@ -47,8 +46,9 @@ public partial class ToolsAppMainComponent : BlazorBusyComponentBaseModel
         {
             ApiRestConfigModelDB selectedConnect = AllTokens.First(x => x.Id == selectedConfId);
             ApiConnect.Update(selectedConnect);
+            configRef?.ResetForm();
+            configRef?.TestConnect();
         }
-
         await SetBusy(false);
     }
 

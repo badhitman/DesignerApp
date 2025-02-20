@@ -12,7 +12,7 @@ public interface IClientHTTPRestService : IServerToolsService
     /// <summary>
     /// GetMe
     /// </summary>
-    public Task<TResponseModel<ExpressProfileResponseModel>> GetMe();
+    public Task<TResponseModel<ExpressProfileResponseModel>> GetMe(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Создать сессию порционной (частями) загрузки файлов

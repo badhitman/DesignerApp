@@ -12,6 +12,7 @@ else
 @if (IsBusyProgress)
 {
     <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-3" />
+    <span @onclick="() => cancelTokenSource.Cancel()">Отменить</span>
 }
 
 <div class="my-3">
@@ -38,7 +39,7 @@ else
         }
         @if (ValidateForm)
         {
-            <button @onclick="TestConnect" class="btn btn-outline-secondary" type="button">Проверить</button>
+            <button @onclick="() => TestConnect(true)" class="btn btn-outline-secondary" type="button">Проверить</button>
         }
     </div>
 </div>
