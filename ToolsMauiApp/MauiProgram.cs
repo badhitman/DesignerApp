@@ -36,7 +36,7 @@ public static class MauiProgram
         builder.Services.AddMauiBlazorWebView();
         builder.Services.AddMudServices();
 
-        ApiRestConfigModelDB _conf = new() { Name = "" };
+        ApiRestConfigModelDB _conf = ApiRestConfigModelDB.BuildEmpty();
         builder.Services.AddSingleton(sp => _conf);
         //builder.Services.AddCascadingValue(sp => _conf);
 

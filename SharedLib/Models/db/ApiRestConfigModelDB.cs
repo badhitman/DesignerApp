@@ -2,6 +2,8 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
+using System.ComponentModel.DataAnnotations;
+
 namespace SharedLib;
 
 /// <summary>
@@ -12,17 +14,21 @@ public class ApiRestConfigModelDB : EntryModel
     /// <summary>
     /// Адрес
     /// </summary>
-    public string? AddressBaseUri { get; set; }
+    [Required]
+    public required string AddressBaseUri { get; set; }
 
     /// <summary>
     /// Токен доступа
     /// </summary>
-    public string? TokenAccess { get; set; }
+    [Required]
+    public required string TokenAccess { get; set; }
 
     /// <summary>
     /// Имя заголовка
     /// </summary>
+    [Required]
     public string HeaderName { get; set; } = "token-access";
+
 
     /// <summary>
     /// Папки синхронизации
@@ -58,5 +64,11 @@ public class ApiRestConfigModelDB : EntryModel
 
         SyncDirectories = [];
         CommandsRemote = [];
+    }
+
+    /// <inheritdoc/>
+    public static new ApiRestConfigModelDB BuildEmpty()
+    {
+        return new() { AddressBaseUri = string.Empty, Name = string.Empty, TokenAccess = string.Empty };
     }
 }

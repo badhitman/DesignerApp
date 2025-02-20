@@ -94,8 +94,8 @@ public class ToolsSystemHTTPRestService(IHttpClientFactory HttpClientFactory, Ap
     public async Task<TResponseModel<ExpressProfileResponseModel>> GetMe(CancellationToken cancellationToken = default)
     {
         using HttpClient client = HttpClientFactory.CreateClient(HttpClientsNamesEnum.Tools.ToString());
-        
-        TResponseModel<ExpressProfileResponseModel> res = await client.GetStringAsync<ExpressProfileResponseModel>($"{ApiConnect.AddressBaseUri}/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.INFO_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.MY_CONTROLLER_NAME}", cancellationToken: cancellationToken);
+        string _uri = $"{ApiConnect.AddressBaseUri.NormalizedUriEnd()}{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.INFO_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.MY_CONTROLLER_NAME}";
+        TResponseModel<ExpressProfileResponseModel> res = await client.GetStringAsync<ExpressProfileResponseModel>(_uri, cancellationToken: cancellationToken);
 
         if (string.IsNullOrWhiteSpace(res.Response?.UserName))
             res.AddError("Пользователь не настроен");

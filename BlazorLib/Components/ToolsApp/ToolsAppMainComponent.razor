@@ -27,16 +27,16 @@
             </select>
             @if (SelectedConfId != 0)
             {
-                <button @onclick="() => ApiConnect.Empty()" class="btn btn-outline-secondary" type="button">Создать новый</button>
+                <button @onclick="() => SetActiveHandler(0)" class="btn btn-outline-secondary" type="button">Создать новый</button>
             }
             else if (AllTokens.Length != 0)
             {
-                <button @onclick="() => ApiConnect.Update(AllTokens.First())" class="btn btn-outline-secondary" type="button">Отмена</button>
+                <button @onclick="() => SetActiveHandler(AllTokens.First().Id)" class="btn btn-outline-secondary" type="button">Отмена</button>
             }
         </div>
     </div>
     <div class="card-body">
-        <ConnectionConfigComponent @ref="configRef" SetActiveHandle="SetActiveHandler" />
+        <ConnectionConfigComponent @ref="configRef" Parent="this" />
         @if (AllTokens.Length == 0)
         {
             <figure class="text-center">
@@ -59,18 +59,19 @@
                 </figcaption>
             </figure>
         }
-        else if (configRef?.GetMe?.Success() == true)
+        else if (configRef?.GetMe?.Success() == true && configRef.GetMe.Response is not null)
         {
             <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
                 <MudTabPanel Text="Статус">
                     <div class="card my-1">
                         <div class="card-body">
                             <h5 class="card-title">Карточка клиента</h5>
-                            @* <h6 class="card-subtitle mb-2 text-body-secondary">@testResult.Response.UserName</h6>
-                            @foreach (string _r in testResult.Response.Roles)
-                            {
-                                <span class="badge text-bg-primary mx-1">@_r</span>
-                            } *@
+                            <h6 class="card-subtitle mb-2 text-body-secondary">@configRef.GetMe.Response.UserName</h6>
+                            @if (configRef.GetMe.Response.Roles is not null)
+                                @foreach (string _r in configRef.GetMe.Response.Roles)
+                                {
+                                    <span class="badge text-bg-primary mx-1">@_r</span>
+                                }
                         </div>
                     </div>
                 </MudTabPanel>
@@ -82,6 +83,9 @@
                 </MudTabPanel>
                 <MudTabPanel Text="Логи">
                     <LogsComponent />
+                </MudTabPanel>
+                <MudTabPanel Text="КЛАДР 4.0">
+                    КЛАДР 4.0
                 </MudTabPanel>
             </MudTabs>
         }

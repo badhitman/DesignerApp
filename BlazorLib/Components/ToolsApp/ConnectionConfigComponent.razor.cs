@@ -24,7 +24,7 @@ public partial class ConnectionConfigComponent : BlazorBusyComponentBaseModel
 
     /// <inheritdoc/>
     [Parameter, EditorRequired]
-    public required Action<int> SetActiveHandle { get; set; }
+    public required ToolsAppMainComponent Parent { get; set; }
 
 
     /// <summary>
@@ -47,7 +47,7 @@ public partial class ConnectionConfigComponent : BlazorBusyComponentBaseModel
     bool CanSave => IsEdited && ValidateForm;
 
 
-    string name = default!;
+    string name = string.Empty;
     string Name
     {
         get => name;
@@ -57,8 +57,8 @@ public partial class ConnectionConfigComponent : BlazorBusyComponentBaseModel
         }
     }
 
-    string? tokenAccess;
-    string? TokenAccess
+    string tokenAccess = string.Empty;
+    string TokenAccess
     {
         get => tokenAccess;
         set
@@ -67,8 +67,8 @@ public partial class ConnectionConfigComponent : BlazorBusyComponentBaseModel
         }
     }
 
-    string? addressBaseUri;
-    string? AddressBaseUri
+    string addressBaseUri = string.Empty;
+    string AddressBaseUri
     {
         get => addressBaseUri;
         set
@@ -113,19 +113,21 @@ public partial class ConnectionConfigComponent : BlazorBusyComponentBaseModel
         }
         token = cancelTokenSource.Token;
         GetMe = await RestClientRepo.GetMe(token.Value);
-        
 
         if (backupConf is not null)
             ApiConnect.Update(backupConf);
 
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(GetMe.Messages);
+
+        Parent.StateHasChangedCall();
     }
 
     async Task SaveToken()
     {
         ApiRestConfigModelDB req = new()
         {
+            Id = ApiConnect.Id,
             Name = Name,
             AddressBaseUri = AddressBaseUri,
             TokenAccess = TokenAccess,
@@ -136,7 +138,7 @@ public partial class ConnectionConfigComponent : BlazorBusyComponentBaseModel
         SnackbarRepo.ShowMessagesResponse(res.Messages);
         await SetBusy(false);
         if (res.Success())
-            SetActiveHandle(res.Response);
+            await Parent.SetActiveHandler(req.Id > 0 ? req.Id : res.Response);
     }
 
     /// <summary>

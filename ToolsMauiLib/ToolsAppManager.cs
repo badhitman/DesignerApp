@@ -35,8 +35,24 @@ public class ToolsAppManager(IDbContextFactory<ToolsAppContext> toolsDbFactory) 
     /// <inheritdoc/>
     public async Task<TResponseModel<int>> UpdateOrCreateConfig(ApiRestConfigModelDB req)
     {
-        using ToolsAppContext context = await toolsDbFactory.CreateDbContextAsync();
+        req.Name = req.Name.Trim();
+
+        req.HeaderName = req.HeaderName.Trim();
+        req.TokenAccess = req.TokenAccess.Trim();
+        req.AddressBaseUri = req.AddressBaseUri.Trim();
+
         TResponseModel<int> res = new();
+        ValidateReportModel ch = GlobalTools.ValidateObject(req);
+        if (!ch.IsValid)
+        {
+            res.Messages.InjectException(ch.ValidationResults);
+            return res;
+        }
+
+        if (!req.AddressBaseUri.EndsWith('/'))
+            req.AddressBaseUri = $"{req.AddressBaseUri}/";
+
+        using ToolsAppContext context = await toolsDbFactory.CreateDbContextAsync();
         if (req.Id < 1)
         {
             req.SyncDirectories?.ForEach(x => x.Parent = req);
