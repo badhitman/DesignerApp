@@ -2,16 +2,15 @@
 // © https://github.com/badhitman - @FakeGov 
 ////////////////////////////////////////////////
 
-using Newtonsoft.Json;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
+using Newtonsoft.Json;
 
 namespace SharedLib;
 
 /// <summary>
 /// Расширение DateTime
 /// </summary>
-public static class DateTimeExtensions
+public static class Extensions
 {
     /// <summary>
     /// GetCustomTime

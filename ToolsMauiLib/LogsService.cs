@@ -3,11 +3,11 @@
 ////////////////////////////////////////////////
 
 using static SharedLib.GlobalStaticConstants;
-using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using Newtonsoft.Json;
 using System.Text;
 using SharedLib;
+using ToolsMauiLib;
 
 namespace ToolsMauiApp;
 
@@ -42,7 +42,7 @@ public class LogsService : ILogsService
         string json = System.Text.Json.JsonSerializer.Serialize(req, _serializerOptions);
         StringContent content = new(json, Encoding.UTF8, "application/json");
 
-        using HttpResponseMessage response = await _client.PostAsync(new Uri($"/{_confApi.AddressBaseUri}/{Routes.API_CONTROLLER_NAME}/{Routes.TOOLS_CONTROLLER_NAME}/{Routes.LOGS_ACTION_NAME}-{Routes.PAGE_ACTION_NAME}/{Routes.GOTO_ACTION_NAME}-for-{Routes.RECORD_CONTROLLER_NAME}"), content);
+        using HttpResponseMessage response = await _client.PostAsync(new Uri($"/{_confApi.AddressBaseUri.NormalizedUriEnd()}{Routes.API_CONTROLLER_NAME}/{Routes.TOOLS_CONTROLLER_NAME}/{Routes.LOGS_ACTION_NAME}-{Routes.PAGE_ACTION_NAME}/{Routes.GOTO_ACTION_NAME}-for-{Routes.RECORD_CONTROLLER_NAME}"), content);
 
         string rj = await response.Content.ReadAsStringAsync();
 
@@ -58,7 +58,7 @@ public class LogsService : ILogsService
         string json = System.Text.Json.JsonSerializer.Serialize(req, _serializerOptions);
         StringContent content = new(json, Encoding.UTF8, "application/json");
 
-        using HttpResponseMessage response = await _client.PostAsync(new Uri($"{_confApi.AddressBaseUri}/{Routes.API_CONTROLLER_NAME}/{Routes.TOOLS_CONTROLLER_NAME}/{Routes.LOGS_ACTION_NAME}-{Routes.SELECT_ACTION_NAME}"), content);
+        using HttpResponseMessage response = await _client.PostAsync(new Uri($"{_confApi.AddressBaseUri.NormalizedUriEnd()}{Routes.API_CONTROLLER_NAME}/{Routes.TOOLS_CONTROLLER_NAME}/{Routes.LOGS_ACTION_NAME}-{Routes.SELECT_ACTION_NAME}"), content);
         string rj = await response.Content.ReadAsStringAsync();
 
         return JsonConvert.DeserializeObject<TPaginationResponseModel<NLogRecordModelDB>>(rj)!;
@@ -73,7 +73,7 @@ public class LogsService : ILogsService
         string json = System.Text.Json.JsonSerializer.Serialize(req, _serializerOptions);
         StringContent content = new(json, Encoding.UTF8, "application/json");
 
-        using HttpResponseMessage response = await _client.PostAsync(new Uri($"{_confApi.AddressBaseUri}/{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LOGS_ACTION_NAME}-{GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME}"), content);
+        using HttpResponseMessage response = await _client.PostAsync(new Uri($"{_confApi.AddressBaseUri.NormalizedUriEnd()}{GlobalStaticConstants.Routes.API_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.TOOLS_CONTROLLER_NAME}/{GlobalStaticConstants.Routes.LOGS_ACTION_NAME}-{GlobalStaticConstants.Routes.METADATA_CONTROLLER_NAME}"), content);
         string rj = await response.Content.ReadAsStringAsync();
 
         try

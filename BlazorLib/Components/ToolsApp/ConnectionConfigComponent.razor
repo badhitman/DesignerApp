@@ -15,31 +15,47 @@ else
     <span @onclick="() => cancelTokenSource.Cancel()">Отменить</span>
 }
 
-<div class="my-3">
-    <div class="mb-3">
-        <label for="nameFormControlInput" class="form-label">Имя</label>
-        <input @bind-value="Name" @bind-value:event="oninput" type="text" class="form-control" id="nameFormControlInput" placeholder="Название">
-    </div>
-    <div class="mb-3">
-        <label for="hostFormControlInput" class="form-label">API: Base address</label>
-        <input @bind-value="AddressBaseUri" @bind-value:event="oninput" type="text" class="form-control" id="hostFormControlInput" placeholder="Адрес хоста API">
-    </div>
-    <hr />
-    <div class="input-group my-2">
-        <span class="input-group-text">Авторизация</span>
-        <input type="text" aria-label="HeaderName" class="form-control" placeholder="Имя заголовка" @bind-value="HeaderName" @bind-value:event="oninput">
-        <input type="password" aria-label="Token" class="form-control" placeholder="Токен доступа" @bind-value="TokenAccess" @bind-value:event="oninput">
-    </div>
+<MudExpansionPanel Class="mb-2" @ref="ExpFormRef" Text="@($"{Name} {AddressBaseUri}".Trim())" Expanded="true">
+    <TitleContent>
+        <div class="d-flex">
+            @{
+                bool isOnline = GetMe?.Success() == true && !string.IsNullOrWhiteSpace(GetMe.Response?.UserName);
+            }
+            <MudIcon Icon="@(isOnline ? Icons.Material.Filled.OnlinePrediction : Icons.Material.Filled.PowerOff)" Color="@(isOnline ? Color.Success : Color.Default)" class="mr-3"></MudIcon>
+            <MudText>@($"{Name} {AddressBaseUri}".Trim())</MudText>
+        </div>
+    </TitleContent>
+    <ChildContent>
+        <div class="my-3">
+            <div class="mb-3">
+                <label for="nameFormControlInput" class="form-label">Имя</label>
+                <input @bind-value="Name" @bind-value:event="oninput" type="text" class="form-control" id="nameFormControlInput" placeholder="Название">
+            </div>
+            <div class="mb-3">
+                <label for="hostFormControlInput" class="form-label">API: Base address</label>
+                <input @bind-value="AddressBaseUri" @bind-value:event="oninput" type="text" class="form-control" id="hostFormControlInput" placeholder="Адрес хоста API">
+            </div>
+            <hr />
+            <div class="input-group my-2">
+                <span class="input-group-text">Авторизация</span>
+                <input type="text" aria-label="HeaderName" class="form-control" placeholder="Имя заголовка" @bind-value="HeaderName" @bind-value:event="oninput">
+                <input type="password" aria-label="Token" class="form-control" placeholder="Токен доступа" @bind-value="TokenAccess" @bind-value:event="oninput">
+            </div>
 
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <button disabled="@(!CanSave)" @onclick="SaveToken" class="btn btn-outline-secondary" type="button">Сохранить</button>
-        @if (CanSave)
-        {
-            <button @onclick="ResetForm" class="btn btn-outline-warning" type="button">Сброс</button>
-        }
-        @if (ValidateForm)
-        {
-            <button @onclick="() => TestConnect(true)" class="btn btn-outline-secondary" type="button">Проверить</button>
-        }
-    </div>
-</div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button disabled="@(!CanSave)" @onclick="SaveToken" class="btn btn-outline-secondary" type="button">Сохранить</button>
+                @if (CanSave)
+                {
+                    <button @onclick="ResetForm" class="btn btn-outline-warning" type="button">Сброс</button>
+                }
+                @if (ValidateForm)
+                {
+                    <button @onclick="() => TestConnect(true)" class="btn btn-outline-secondary" type="button">Проверить</button>
+                }
+            </div>
+        </div>
+    </ChildContent>
+
+
+
+</MudExpansionPanel>

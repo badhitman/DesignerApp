@@ -162,7 +162,7 @@ public class PasswordGenerator
 /// <summary>
 /// ext
 /// </summary>
-public static class Extensions
+public static class ExtensionsPassword
 {
     private static readonly Lazy<RandomSecureVersion> RandomSecure =
         new(() => new RandomSecureVersion());

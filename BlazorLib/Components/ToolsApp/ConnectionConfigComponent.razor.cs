@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////
 
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using SharedLib;
 
 namespace BlazorLib.Components.ToolsApp;
@@ -46,6 +47,10 @@ public partial class ConnectionConfigComponent : BlazorBusyComponentBaseModel
     /// </remarks>
     bool CanSave => IsEdited && ValidateForm;
 
+    /// <summary>
+    /// Expander form
+    /// </summary>
+    public MudExpansionPanel? ExpFormRef;
 
     string name = string.Empty;
     string Name
@@ -119,6 +124,9 @@ public partial class ConnectionConfigComponent : BlazorBusyComponentBaseModel
 
         await SetBusy(false);
         SnackbarRepo.ShowMessagesResponse(GetMe.Messages);
+
+        if (!testForm && ExpFormRef is not null && GetMe.Success())
+           await ExpFormRef.CollapseAsync();
 
         Parent.StateHasChangedCall();
     }
